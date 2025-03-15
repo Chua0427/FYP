@@ -1,0 +1,838 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    color: #333;
+}
+
+header {
+    position: fixed;
+    width: 100%;
+    padding: 9px 1%;
+    background: rgb(0, 0, 0);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 99;
+}
+
+.logo {
+    height: 60px;
+    width: 250px;
+}
+
+.subtitleContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.subTitle ul {
+    display: flex;
+    justify-content: center;
+    list-style-type: none;
+    gap: 5px;
+    font-size: 16px;
+}
+
+.subTitle li {
+    margin: 15px;
+    color: white;
+    font-style: italic;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.subTitle li a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.subTitle li:hover {
+    color: orangered;
+    transform: scale(1.2);
+}
+
+#promotion {
+    color: red;
+}
+
+#promotion:hover {
+    color: orange;
+}
+
+.iconContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon {
+    display: flex;
+    justify-content: center;
+    list-style-type: none;
+    gap: 20px;
+    font-size: 16px;
+}
+
+.fa-search {
+    color: white;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.fa-search:hover {
+    color: orangered;
+}
+
+.fa-user {
+    color: white;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.fa-user:hover {
+    color: orangered;
+}
+
+.fa-cart-shopping {
+    color: white;
+    font-size: 16px;
+    margin-right: 10px;
+    transition: 0.3s;
+}
+
+
+.shoppingCart {
+    position: relative;
+    display: inlineblock;
+}
+
+.fa-cart-shopping:hover {
+    color: orangered;
+}
+
+#cartCount {
+    position: absolute;
+    top: -12px;
+    right: -3px;
+    color: white;
+    background-color: red;
+    border: 0;
+    border-radius: 50%;
+    font-size: 15px;
+    font-weight: bold;
+    padding: 1px 6px;
+}
+
+.slideshow-container {
+    position: relative;
+    width: 100%;
+    height: 62vh;
+    max-width: 100%;
+    overflow: hidden;
+    top: 78px;
+    z-index: 1;
+}
+
+.slide {
+    position: absolute;
+    margin-bottom: -20px;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    width: 100%;
+    height: 100%;
+}
+
+.slide.active {
+    opacity: 1;
+    position: relative;
+}
+
+.slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdownmenu {
+    position: absolute;
+    top: 100%;
+    left: -400px;
+    width: 900px;
+    height: 300px;
+    background-color: rgb(255, 255, 255);
+    padding: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.category {
+    flex: 1;
+    min-width: 150px;
+}
+
+.category h3 {
+    font-size: 16px;
+    font-weight: bold;
+    border-bottom: 2px solid black;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+}
+
+.category a {
+    text-decoration: none;
+    font-size: 14px;
+    color: black;
+    padding: 4px;
+    display: block;
+    transition: 0.3s;
+}
+
+.category a:hover {
+    color: rgb(255, 51, 0);
+}
+
+.dropdown:hover .dropdownmenu {
+    opacity: 1;
+    visibility: visible;
+}
+
+.slogan-contain {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    position: absolute;
+    background-color: black;
+    color: orangered;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 3px;
+}
+
+.slogan {
+    transform: translateX(100%);
+    animation: scrollRight 30s linear infinite;
+}
+
+@keyframes scrollRight {
+    0% {
+        transform: translateX(100%);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+.column1 {
+    position: relative;
+    margin-top: 10%;
+    display: flex;
+    text-align: center;
+    justify-content: space-around;
+    gap: 60px;
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.column img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    margin-top: 20px;
+    border-radius: 5%;
+    box-shadow: 20px 4px 10px rgba(0, 0, 0, 0.2);
+    object-fit: cover;
+    max-width: 600px;
+    max-height: 600px;
+}
+
+.column p {
+    font-weight: bold;
+    margin-top: 10px;
+    font-size: 20px;
+}
+
+.column1 .button {
+    width: 130px;
+    height: 40px;
+    margin-top: 20px;
+    background-color: rgb(0, 0, 0);
+    color: white;
+    font-weight: bold;
+    position: relative;
+    z-index: 1;
+    border-radius: 10px;
+    padding: 5px;
+    transition: 0.6s;
+}
+
+.column1 .button:hover {
+    background-color: rgb(255, 72, 0);
+    font-weight: bold;
+    border: 0;
+}
+
+.NewArrivalsWrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    align-items: center;
+    margin-top: 250px;
+}
+
+.NewArrivalsContainer {
+    display: flex;
+    gap: 50px;
+    margin-left: 50px;
+    transition: transform 0.4s ease-in-out;
+}
+
+.Newcolumn {
+    justify-items: center;
+    position: relative;
+}
+
+.cartButton {
+    position: absolute;
+    top: 30%;
+    left: 26%;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    width: 150px;
+    height: 150px;
+    background-color: #d8d8d8a1;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+}
+
+.Newcolumn:hover .cartButton {
+    opacity: 1;
+}
+
+.promotion:hover .cartButton {
+    opacity: 1;
+}
+
+.Jersey:hover .cartButton {
+    opacity: 1;
+}
+
+.Newcolumn img {
+    width: 300px;
+    height: 350px;
+}
+
+.Newcolumn .button {
+    width: 100px;
+    height: 40px;
+    top: -58px;
+    left: -80px;
+    border: 0;
+    background-color: rgba(0, 0, 0, 0.692);
+    color: white;
+    padding: 5px;
+    font-weight: bold;
+    position: relative;
+    font-weight: bold;
+    font-size: 15px;
+    transition: 0.3s;
+}
+
+.Newcolumn .button:hover {
+    background-color: rgba(128, 128, 128, 0.76);
+}
+
+
+.fa-arrow-left {
+    background-color: black;
+    width: 40px;
+    height: 36px;
+    padding: 10px;
+    top: 40%;
+    color: white;
+    position: absolute;
+    text-align: center;
+    left: 40px;
+    z-index: 10;
+}
+
+.fa-arrow-left:hover {
+    transform: scale(1.2);
+}
+
+.fa-arrow-right {
+    background-color: black;
+    width: 40px;
+    height: 36px;
+    padding: 10px;
+    top: 40%;
+    color: white;
+    position: absolute;
+    text-align: center;
+    right: 50px;
+}
+
+.fa-arrow-right:hover {
+    transform: scale(1.2);
+}
+
+.title {
+    position: relative;
+    justify-items: center;
+    top: 220px;
+}
+
+.title h2 {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 35px;
+    margin-bottom: 10px;
+    text-shadow: 5px 7px 3px#c9c9c9;
+}
+
+.title p {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 18px;
+}
+
+.sub-billboard {
+    position: relative;
+    width: 100%;
+    height: 560px;
+    top: 80px;
+    box-shadow: 0 25px 40px#0702ff;
+    z-index: 1;
+    text-align: end;
+}
+
+.sub-billboard img {
+    width: 100%;
+    height: 100%;
+}
+
+.sub-billboard .button {
+    width: 200px;
+    height: 60px;
+    top: -90px;
+    right: 20px;
+    border: 0;
+    background-color: rgba(0, 0, 0, 0.911);
+    color: white;
+    padding: 5px;
+    font-weight: bold;
+    position: relative;
+    font-size: 15px;
+    transition: 0.3s;
+}
+
+
+.sub-billboard .button:hover {
+    background-color: #333;
+}
+
+
+.promotionWrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    align-items: center;
+    margin-top: 200px;
+}
+
+.PromotionContainer {
+    display: flex;
+    gap: 50px;
+    margin-left: 50px;
+    transition: transform 0.4s ease-in-out;
+}
+
+.promotion {
+    position: relative;
+}
+
+.promotion img {
+    width: 300px;
+    height: 350px;
+}
+
+.promotion .discount {
+    background-color: rgb(255, 0, 0);
+    position: relative;
+    width: 40px;
+    height: 20px;
+    padding: 2px 5px;
+    font-weight: bold;
+    color: white;
+}
+
+.promotion .button {
+    width: 100px;
+    height: 40px;
+    top: -58px;
+    right: -10px;
+    border: 0;
+    background-color: rgba(0, 0, 0, 0.637);
+    color: white;
+    padding: 5px;
+    font-weight: bold;
+    position: relative;
+    font-size: 15px;
+}
+
+.promotion .button:hover {
+    background-color: rgba(128, 128, 128, 0.76);
+}
+
+.promotionPrice {
+    margin-right: 60px;
+}
+
+.discountPrice {
+    text-decoration: line-through;
+    color: gray;
+}
+
+.jerseyheader {
+    margin-bottom: -50px;
+    text-align: end;
+}
+
+
+.jerseyheader img {
+    width: 100%;
+    height: 450px;
+}
+
+.columnJersey {
+    position: relative;
+    margin-top: 5%;
+    overflow: hidden;
+    align-items: center;
+}
+
+.JerseyContainer {
+    display: flex;
+    gap: 50px;
+    margin-left: 50px;
+    transition: transform 0.4s ease-in-out;
+}
+
+.Jersey img {
+    width: 300px;
+    height: 350px;
+}
+
+.Jersey {
+    text-align: center;
+    position: relative;
+}
+
+.jerseyname {
+    font-weight: bold;
+}
+
+.footballAndGym {
+    margin-top: 100px;
+    position: relative;
+    display: flex;
+    margin-bottom: -43px;
+}
+
+.picture .button {
+    width: 150px;
+    height: 40px;
+    top: -58px;
+    right: -20px;
+    border: 0;
+    background-color: rgba(0, 0, 0, 0.603);
+    color: rgb(255, 255, 255);
+    padding: 5px;
+    font-weight: bold;
+    position: relative;
+    font-size: 15px;
+    transition: 0.3s;
+}
+
+.picture .button:hover {
+    background-color: #8f8f8f;
+}
+
+.picture {
+    flex: 1;
+}
+
+.picture img {
+    width: 100%;
+    height: 500px;
+}
+
+.jerseyheader .button {
+    width: 200px;
+    height: 40px;
+    top: -58px;
+    left: -10px;
+    border: 0;
+    background-color: rgba(8, 8, 8, 0.582);
+    color: white;
+    padding: 5px;
+    font-weight: bold;
+    position: relative;
+    font-size: 15px;
+    transition: 0.3s;
+}
+
+.jerseyheader .button:hover {
+    background-color: rgba(128, 128, 128, 0.637);
+}
+
+.brandWrapper {
+    margin-top: 100px;
+}
+
+.brandWrapper h2 {
+    background-color: rgb(235, 235, 235);
+    color: rgb(0, 0, 0);
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    font-weight: bold;
+    font-size: 45px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.brandContainer {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    text-align: center;
+    background-color: #ffffff;
+    margin-top: 60px;
+}
+
+.brand img {
+    width: 250px;
+    height: 230px;
+    margin: 10px;
+    transition: 0.6s;
+}
+
+.brand img:hover {
+    transform: scale(1.1);
+    box-shadow: 20px 10px 5px rgba(0, 0, 0, 0.2);
+}
+
+.usWrapper {
+    margin-top: 200px;
+    text-align: center;
+}
+
+.usWrapper h3 {
+    background-color: transparent;
+    color: #333;
+    padding: 10px;
+    font-size: 32px;
+    font-weight: bold;
+    position: relative;
+    display: inline-block;
+}
+
+.usWrapper h3::after {
+    content: "";
+    display: block;
+    width: 50%;
+    height: 4px;
+    background-color: #ff5e00;
+    margin: 5px auto 0;
+    border-radius: 2px;
+}
+
+.container {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: stretch;
+    background-color: #ff5e00;
+    padding: 40px 10px;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.container div {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    width: 300px;
+    box-shadow: 20px 20px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+    border-radius: 50px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.container div:hover {
+    transform: scale(1.05);
+}
+
+.container img {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+}
+
+.container p {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.informContainer {
+    position: relative;
+    margin-top: 6%;
+    display: flex;
+    text-align: center;
+    justify-content: space-around;
+    gap: 60px;
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.informContainer img {
+    width: 420px;
+    height: 420px;
+}
+
+.informContainer h3 {
+    text-decoration: underline;
+    margin-top: 10px;
+}
+
+.informContainer p {
+    width: 420px;
+    margin-top: 10px;
+    margin-bottom: 100px;
+}
+
+.informContainer a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+footer {
+    background-color: #222;
+    width: 100%;
+    height: 450px;
+}
+
+.footerMenu {
+    display: flex;
+    gap: 200px;
+    padding: 30px 0px 0px 20px;
+    font-size: 14px;
+    justify-content: center;
+}
+
+.footerMenu h3 {
+    font-weight: bold;
+    font-size: 20px;
+    color: rgb(255, 94, 0);
+}
+
+.footerCategories a {
+    display: block;
+    margin-top: 20px;
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.footerCategories a:hover {
+    color: rgb(255, 123, 0);
+}
+
+.contactUsWrapper form {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.contactUsWrapper input {
+    display: block;
+    width: 400px;
+    padding: 10px;
+    margin-top: 20px;
+    border-radius: 20px;
+}
+
+.contactUsWrapper button {
+    width: 100px;
+    height: 30px;
+    margin-top: 20px;
+    background-color: rgba(255, 68, 0, 0.829);
+    font-weight: bold;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.contactUsWrapper button:hover {
+    background-color: rgba(253, 116, 66, 0.829);
+}
+
+.contactUs ul {
+    list-style: none;
+    margin-top: 20px;
+}
+
+.contactUs li {
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 5px;
+}
+
+.contactUs a,
+i {
+    color: white;
+    text-decoration: none;
+    margin: 1px;
+}
+
+.fa-facebook {
+    color: #0702ff;
+    font-size: 30px;
+    transition: 0.3s;
+}
+
+.fa-instagram {
+    color: rgb(255, 0, 85);
+    font-size: 30px;
+    transition: 0.3s;
+}
+
+.fa-twitter {
+    color: rgb(3, 158, 255);
+    font-size: 30px;
+    transition: 0.3s;
+}
+
+.contactUs i:hover {
+    transform: scale(1.2);
+}
