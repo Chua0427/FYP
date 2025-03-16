@@ -25,14 +25,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function startSlideshow() {
-        interval = setInterval(nextSlide, 3000); // 每 3 秒换一张
+        interval = setInterval(nextSlide, 3000); 
     }
 
     function stopSlideshow() {
         clearInterval(interval);
     }
 
-    // 监听左右箭头点击事件
     prevButton.addEventListener("click", function () {
         stopSlideshow();
         prevSlide();
