@@ -124,9 +124,3 @@ function jerseyArrow() {
 }
 
 jerseyArrow();
-
-
-
-
-
-
