@@ -1,5 +1,5 @@
 <header>
-<img src="/FYP/img/VeroSports.jpeg" class="logo">
+<img src="../Header_and_Footer/img/VeroSports.jpeg" class="logo">
 
         <div class="subtitleContainer">
             <div class="subTitle">
