@@ -21,7 +21,7 @@ body {
 
 .slide {
     position: absolute;
-    margin-bottom: -20px;
+    margin-bottom: -16px;
     opacity: 0;
     transition: opacity 1s ease-in-out;
     width: 100%;
@@ -49,6 +49,7 @@ body {
     font-size: 14px;
     font-weight: bold;
     padding: 1px;
+    margin-top: -3px;
 }
 
 .slogan {
