@@ -133,6 +133,12 @@ body {
 .Newcolumn {
     justify-items: center;
     position: relative;
+    text-align: center;
+}
+
+.Newcolumn a{
+    text-decoration: none;
+    color: #333;
 }
 
 .cartButton {
