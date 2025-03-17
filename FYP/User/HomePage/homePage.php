@@ -14,7 +14,7 @@
 </head>
 
 <body>
-<?php include __DIR__ . '/../Header_and_Footer/header.php'; ?>
+<?php include __DIR__ . '/../Header_and_Footer/header.html'; ?>
 
     <div class="slideshow-container">
         <i class="fa fa-arrow-left" id="BillboardButton" aria-hidden="true"></i>
@@ -402,7 +402,7 @@
         </div>
 
 
-        <?php include __DIR__ . '/../Header_and_Footer/header.php'; ?>
+        <?php include __DIR__ . '/../Header_and_Footer/footer.html'; ?>
         <script src="homePage.js"></script>
 </body>
 
