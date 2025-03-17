@@ -13,7 +13,7 @@ body {
     display: flex;
     max-width: 1200px;
     margin: auto;
-    padding-top: 200px;
+    padding-top: 150px;
     background: white;
     padding-bottom: 100px;
 }
@@ -64,12 +64,12 @@ body {
     font-weight: bold;
     color: #e60000;
     padding-top: 30px;
+    padding-bottom: 20px;
 }
 
 #description {
     margin: 10px 0;
     padding-top: 30px;
-    padding-bottom: 20px;
 }
 
 .sizeContainer{
@@ -137,3 +137,33 @@ input{
 .fa-arrow-right:hover {
     transform: scale(1.2);
 }
+
+.tabContainer{
+    margin-top: 60px;
+}
+
+.tab-content{
+    padding: 20px;
+    display: none;
+}
+
+.tab-content p{
+    font-size: 14px;
+}
+
+.tab-button{
+    background: none;
+    border: none;
+    padding: 10px 10px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.tab-button.active {
+    border-bottom: 3px solid black;
+}
+
+.tab-content.active{
+    display: block;
+}
+
