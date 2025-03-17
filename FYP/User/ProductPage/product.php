@@ -14,9 +14,49 @@
 </head>
 
 <body>
-    <?php include __DIR__ . '/../Header_and_Footer/header.php'; ?>
+        <?php include __DIR__ . '/../Header_and_Footer/header.html'; ?>
 
-    <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
+        <div class="productContainer">
+        
+        <div class="imgContainer">
+            <i class="fa fa-arrow-left" id="imgButton"></i>
+            <img id="main_image" src="images/nike_image.png">
+            <i class="fa fa-arrow-right" id="imgnextButton"></i>
+
+            <div class="thumbnail-container">
+                <img class="thumbnail" src="images/nike_image.png">
+                <img class="thumbnail" src="images/nike_image.png">
+                <img class="thumbnail" src="images/nike_image.png">
+                <img class="thumbnail" src="images/nike_image.png">
+            </div>
+        </div>
+        
+        <div class="productDetails">
+            <h1 id="brand">Nike</h1>
+            <h3 id="name">Nike Phantom GX 2</h3>
+            <p id="sku"><span>SKU :</span>12345678</p>
+            <p id="price"><span>RM </span>99.99</p>
+            <p id="description">The product is the best.</p>
+
+            <div class="sizeContainer">
+                <label style="margin-top: 8px;">Size:</label>
+                <select id="size">
+                    <option>US 7</option>
+                    <option>US 8</option>
+                    <option>US 9</option>
+                    <option>US 10</option>
+                </select>
+            
+                <input type="number" id="quantity" value="1" min="1">
+            </div>
+
+            
+
+            <button class="add-to-cart">Add to Cart</button>
+        </div>
+        </div>
+    
+        <?php include __DIR__ . '/../Header_and_Footer/footer.html'; ?> 
 </body>
 
 </html>
