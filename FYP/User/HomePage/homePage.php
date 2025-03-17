@@ -14,12 +14,12 @@
 </head>
 
 <body>
-<?php include __DIR__ . '/../Header_and_Footer/header.html'; ?>
+    <?php include __DIR__ . '/../Header_and_Footer/header.html'; ?>
 
     <div class="slideshow-container">
         <i class="fa fa-arrow-left" id="BillboardButton" aria-hidden="true"></i>
         <div class="slide">
-            <img src="images/img.png" alt="">
+            <img src="images/billboard.png" alt="">
         </div>
         <div class="slide">
             <img src="images/Screenshot 2025-02-26 001514.png" alt="">

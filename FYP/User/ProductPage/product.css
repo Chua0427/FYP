@@ -8,3 +8,135 @@
 body {
     color: #333;
 }
+
+.productContainer {
+    display: flex;
+    max-width: 1200px;
+    margin: auto;
+    padding-top: 200px;
+    background: white;
+    padding-bottom: 100px;
+}
+
+/* 图片样式 */
+.imgContainer img {
+    width: 700px;
+    height: 450px;
+}
+
+.thumbnail-container{
+    margin-top: 10px;
+    text-align: center;
+}
+
+.thumbnail-container img{
+    width: 130px; 
+    height: 100px;
+    margin: 2px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: transform 0.2s ease-in-out;
+}
+
+/* 详情样式 */
+.productDetails {
+    margin-left: 200px;
+}
+
+.productDetails h1 {
+    font-size: 26px;
+    color: #ff7b00;
+}
+
+.productDetails h3{
+    font-size: 24px;
+    color: #333;
+    padding-top: 30px;
+}
+
+#sku {
+    font-size: 14px;
+    color: #666;
+    padding-top: 20px;
+}
+
+#price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #e60000;
+    padding-top: 30px;
+}
+
+#description {
+    margin: 10px 0;
+    padding-top: 30px;
+    padding-bottom: 20px;
+}
+
+.sizeContainer{
+    display: flex;
+    gap: 20px;
+}
+
+/* 下拉菜单 & 数量选择 */
+select{
+    display: block;
+    padding: 8px;
+    width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+input{
+    padding: 8px;
+    width: 100px;
+    border: 1px solid #ff7b00;
+    border-radius: 5px;
+}
+
+/* 按钮样式 */
+.add-to-cart {
+    background: #e60000;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 380px;
+    margin-top: 20px;
+}
+
+.add-to-cart:hover {
+    background: #b00000;
+}
+
+
+.fa-arrow-left {
+    background-color: black;
+    width: 40px;
+    height: 36px;
+    padding: 10px;
+    top: 45%;
+    color: white;
+    position: absolute;
+    margin-left: -10px;
+    z-index: 10;
+}
+
+.fa-arrow-left:hover {
+    transform: scale(1.2);
+}
+
+.fa-arrow-right {
+    background-color: black;
+    width: 40px;
+    height: 36px;
+    padding: 10px;
+    top: 45%;
+    color: white;
+    position: absolute;
+}
+
+.fa-arrow-right:hover {
+    transform: scale(1.2);
+}
