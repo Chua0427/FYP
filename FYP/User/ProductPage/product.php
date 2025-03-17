@@ -20,14 +20,22 @@
         
             <div class="imgContainer">
                 <i class="fa fa-arrow-left" id="productButton"></i>
-                    <img id="main_image" src="images/nike_image.png">
+                <img id="main_image" src="images/nike_image.png">
                 <i class="fa fa-arrow-right" id="productnextButton"></i>
 
-                <div class="thumbnail-container">
-                    <img class="thumbnail" src="images/nike_image.png">
-                    <img class="thumbnail" src="images/nike_image.png">
-                    <img class="thumbnail" src="images/nike_image.png">
-                    <img class="thumbnail" src="images/nike_image.png">
+                <div class="small-img-group">
+                    <div class="small-column">
+                        <img class="small-img" src="images/nike2.png">
+                    </div>
+                    <div class="small-column">
+                        <img class="small-img" src="images/nike3.png">
+                    </div>
+                    <div class="small-column">
+                        <img class="small-img" src="images/nike4.png">
+                    </div>
+                    <div class="small-column">
+                        <img class="small-img" src="images/nike_image.png">
+                    </div>
                 </div>
             </div>
             
