@@ -76,52 +76,63 @@
 
     <div class="NewArrivalsWrapper">
         <i class="fa fa-arrow-left" id="prevButton" aria-hidden="true"></i>
-
         <div class="NewArrivalsContainer">
-            <div class="Newcolumn"><img src="images/new.png">
+            <div class="Newcolumn">
+                <img src="images/new.png">
                 <p><input type="button" class="button" value="Shop Now"></p>
             </div>
-            <div class="Newcolumn"><img src="images/Screenshot 2025-02-27 152344.png">
+            <div class="Newcolumn">
+                <a href="../ProductPage/product.php">
+                    <img src="images/Screenshot 2025-02-27 152344.png">
+                    <p class="NewArrivalName">Nike</p>
+                    <p class="NewArrivalPrice">RM 100</p>
+                </a>
+                <input type="button" class="cartButton" value="Quick Add">
+            </div>
+            <div class="Newcolumn">
+                <img src="images/bag.png">
                 <p class="NewArrivalName">Nike</p>
                 <p class="NewArrivalPrice">RM 100</p>
                 <input type="button" class="cartButton" value="Quick Add">
             </div>
-            <div class="Newcolumn"><img src="images/bag.png">
+            <div class="Newcolumn">
+                <img src="images/Screenshot 2025-02-27 162528.png">
                 <p class="NewArrivalName">Nike</p>
                 <p class="NewArrivalPrice">RM 100</p>
                 <input type="button" class="cartButton" value="Quick Add">
             </div>
-            <div class="Newcolumn"><img src="images/Screenshot 2025-02-27 162528.png">
+            <div class="Newcolumn">
+                <img src="images/Screenshot 2025-02-27 162611.png">
                 <p class="NewArrivalName">Nike</p>
                 <p class="NewArrivalPrice">RM 100</p>
                 <input type="button" class="cartButton" value="Quick Add">
             </div>
-            <div class="Newcolumn"><img src="images/Screenshot 2025-02-27 162611.png">
+            <div class="Newcolumn">
+                <img src="images/images.jpeg">
                 <p class="NewArrivalName">Nike</p>
                 <p class="NewArrivalPrice">RM 100</p>
                 <input type="button" class="cartButton" value="Quick Add">
             </div>
-            <div class="Newcolumn"><img src="images/images.jpeg">
+            <div class="Newcolumn">
+                <img src="images/images.jpeg">
                 <p class="NewArrivalName">Nike</p>
                 <p class="NewArrivalPrice">RM 100</p>
                 <input type="button" class="cartButton" value="Quick Add">
             </div>
-            <div class="Newcolumn"><img src="images/images.jpeg">
+            <div class="Newcolumn">
+                <img src="images/images.jpeg">
                 <p class="NewArrivalName">Nike</p>
                 <p class="NewArrivalPrice">RM 100</p>
                 <input type="button" class="cartButton" value="Quick Add">
             </div>
-            <div class="Newcolumn"><img src="images/images.jpeg">
+            <div class="Newcolumn">
+                <img src="images/images.jpeg">
                 <p class="NewArrivalName">Nike</p>
                 <p class="NewArrivalPrice">RM 100</p>
                 <input type="button" class="cartButton" value="Quick Add">
             </div>
-            <div class="Newcolumn"><img src="images/images.jpeg">
-                <p class="NewArrivalName">Nike</p>
-                <p class="NewArrivalPrice">RM 100</p>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="Newcolumn"><img src="images/images.jpeg">
+            <div class="Newcolumn">
+                <img src="images/images.jpeg">
                 <p class="NewArrivalName">Nike</p>
                 <p class="NewArrivalPrice">RM 100</p>
                 <input type="button" class="cartButton" value="Quick Add">
