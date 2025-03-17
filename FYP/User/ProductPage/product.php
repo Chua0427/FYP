@@ -24,7 +24,7 @@
                 <i class="fa fa-arrow-right" id="productnextButton"></i>
 
                 <div class="thumbnail-container">
-                    <img class="thumbnail" src="images/Nike.png">
+                    <img class="thumbnail" src="images/nike_image.png">
                     <img class="thumbnail" src="images/nike_image.png">
                     <img class="thumbnail" src="images/nike_image.png">
                     <img class="thumbnail" src="images/nike_image.png">
