@@ -34,7 +34,7 @@
         <div class="productDetails">
             <h1 id="brand">Nike</h1>
             <h3 id="name">Nike Phantom GX 2</h3>
-            <p id="sku"><span>SKU :</span>12345678</p>
+            <span>SKU :</span><span id="sku">12345678</span>
             <p id="price"><span>RM </span>99.99</p>
             <p id="description">The product is the best.</p>
 
