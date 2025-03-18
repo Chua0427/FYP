@@ -54,7 +54,7 @@
         <div class="column">
             <img src="images/football.png">
             <p>All Products</p>
-            <input type="button" class="button" value="Buy Now">
+            <input type="button" class="button" value="Buy Now" onclick="window.location.href='../All_Product_Page/all_product.php'">
         </div>
 
         <div class="column">
@@ -152,7 +152,7 @@
         <i class="fa fa-arrow-left" id="pButton" aria-hidden="true"></i>
         <div class="PromotionContainer">
             <div class="promotion">
-                <img src="images/new.png">
+                <img src="images/promotion-img.jpg">
                 <input type="button" class="button" value="Shop Now">
             </div>
             <div class="promotion">
