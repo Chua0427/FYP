@@ -1,6 +1,6 @@
 function openfilter() {
     let sidebar = document.querySelector(".sidebar");
-    let product= document.querySelector(".product-wrapper");
+
 
     if(sidebar.style.opacity === "0" || sidebar.style.opacity === "")
     {
