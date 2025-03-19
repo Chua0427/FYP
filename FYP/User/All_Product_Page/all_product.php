@@ -18,6 +18,7 @@
 
     <button id="filterbtn" onclick="openfilter()"><i class="fa-solid fa-filter"></i><span>Filter</span></button>
 
+    <div class="container">
         <div class="sidebar">
             <div class="sidebar-container">
                 <div class="filter1">
@@ -66,10 +67,254 @@
         <div class="product-wrapper">
             <div class="product-container">
                 <div class="product-column">
-                    <img src="" alt="">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
+                </div>
+                <div class="product-column">
+                    <img src="images/nike_image.png" alt="">
+                    <p>Nike</p>
+                    <p>RM <span class="price">199.99</span></p>
                 </div>
             </div>
         </div>
+    </div>
+        
 
         <?php include __DIR__ . '/../Header_and_Footer/footer.html'; ?> 
         <script src="all_product.js"></script>
