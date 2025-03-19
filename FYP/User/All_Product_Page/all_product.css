@@ -24,7 +24,7 @@ body {
 }
 
 #filterbtn i, #filterbtn span {
-    color: #353535;
+    color: white;
     margin-right: 15px;
     font-size: 16px;
     font-weight: bold;
@@ -41,11 +41,11 @@ body {
 .sidebar {
     margin-top: 20px;
     left: 0;
-    width: 0px;
-    padding: 0px; 
+    width: 0;
+    padding: 0; 
     opacity: 0;
     visibility: hidden;
-    box-shadow: 1px 5px 10px#666;
+    border: 0.5px solid rgb(228, 228, 228);
 }
 
 .sidebar-container{
@@ -100,6 +100,11 @@ body {
 
 .product-column {
     text-align: center;
+}
+
+.product-column a{
+    text-decoration: none;
+    color: #000000;
 }
 
 .product-column img{

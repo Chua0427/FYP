@@ -50,6 +50,13 @@
                     <label><input type="checkbox" name="category" value="Gym Accessories"> Gym Accessories</label><br>
 
                 </div>
+
+                <div class="filter">
+                    <h3>Gender</h3>
+                    <label><input type="checkbox" name="gender" value="Men"> Men</label><br>
+                    <label><input type="checkbox" name="gender" value="Women"> Women</label><br>
+                    <label><input type="checkbox" name="gender" value="Kid"> Kid</label><br>
+                </div>
                 <div class="filter">
                     <h3>Shop By Brand</h3>
                     <label><input type="checkbox" name="brand" value="Nike"> Nike</label><br>
@@ -67,9 +74,11 @@
         <div class="product-wrapper">
             <div class="product-container">
                 <div class="product-column">
-                    <img src="images/nike_image.png" alt="">
-                    <p>Nike</p>
-                    <p>RM <span class="price">199.99</span></p>
+                    <a href="../ProductPage/product.php">
+                        <img src="images/nike_image.png" alt="">
+                        <p>Nike</p>
+                        <p>RM <span class="price">199.99</span></p>
+                    </a>
                 </div>
                 <div class="product-column">
                     <img src="images/nike_image.png" alt="">
