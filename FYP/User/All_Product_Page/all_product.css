@@ -35,7 +35,6 @@ body {
     align-items: flex-start;
     gap: 20px;
     width: 100%;
-    margin-bottom: 40px;
 }
 
 .sidebar {
@@ -86,9 +85,8 @@ body {
 
 .product-wrapper {
     flex: 1;
-    display: flex;
-    flex-direction: column;
     height: 100%;
+    margin-bottom: 40px;
 }
 
 .product-container {
