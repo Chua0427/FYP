@@ -9,6 +9,44 @@ body {
     color: #333;
 }
 
+.new-billboard{
+    top: 75px;
+    position: relative;
+}
+
+.new-billboard img{
+    width: 100%;
+    height: 600px;
+}
+
+.slogan-contain {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    position: absolute;
+    background-color: black;
+    color: orangered;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 1px;
+    margin-top: -5px;
+}
+
+.slogan {
+    transform: translateX(100%);
+    animation: scrollRight 30s linear infinite;
+}
+
+@keyframes scrollRight {
+    0% {
+        transform: translateX(100%);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
 #filterbtn{
     margin-top: 100px;
     background-color: #ff5100d8;
@@ -101,6 +139,7 @@ body {
     font-size: 20px;
     font-weight: bold;
     color: #222222;
+    
 }
 
 .product-column a{
