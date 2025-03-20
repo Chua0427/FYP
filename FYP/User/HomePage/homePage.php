@@ -152,7 +152,7 @@
         <i class="fa fa-arrow-left" id="pButton" aria-hidden="true"></i>
         <div class="PromotionContainer">
             <div class="promotion">
-                <img src="images/promotion-img.jpg">
+                <img src="images/promotion-img (2).jpg">
                 <input type="button" class="button" value="Shop Now">
             </div>
             <div class="promotion">
