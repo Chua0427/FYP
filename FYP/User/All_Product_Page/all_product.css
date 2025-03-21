@@ -1,0 +1,116 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    color: #333;
+}
+
+#filterbtn{
+    margin-top: 100px;
+    background-color: #ff5100d8;
+    border:none;
+    padding: 10px;
+    border-radius: 10px;
+    margin-left: 30px;
+    width:10%;
+}
+
+#filterbtn:hover{
+    background-color: #ff5100;
+}
+
+#filterbtn i, #filterbtn span {
+    color: white;
+    margin-right: 15px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.container{
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    width: 100%;
+}
+
+.sidebar {
+    margin-top: 20px;
+    left: 0;
+    width: 0;
+    padding: 0; 
+    opacity: 0;
+    visibility: hidden;
+    border: 0.5px solid rgb(228, 228, 228);
+}
+
+.sidebar-container{
+    padding: 20px;
+}
+
+.filter{
+    margin: 30px 0;
+}
+
+.filter h3, .filter1 h3{
+    font-weight: bold;
+    font-size: 18px;
+    color:#000000;
+    margin-bottom: 10px;
+}
+
+.filter1 input[type="number"]{
+    width: 45px;
+}
+
+.filter h4{
+    margin-top: 10px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.filter label {
+    font-size: 14px;
+    color: #666;
+    display: block;
+    margin: 1px 0;
+}
+
+.filter input[type="checkbox"]{
+    margin-right: 5px;
+}
+
+.product-wrapper {
+    flex: 1;
+    height: 100%;
+    margin-bottom: 40px;
+}
+
+.product-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+.product-column {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #222222;
+}
+
+.product-column a{
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: #222222;
+}
+
+.product-column img{
+    width: 350px;
+    height: 300px;
+}
