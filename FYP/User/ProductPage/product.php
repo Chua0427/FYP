@@ -42,8 +42,9 @@
             <div class="productDetails">
                 <h1 id="brand">Nike</h1>
                 <h3 id="name">Nike Phantom GX 2</h3>
-                <span>SKU :</span><span id="sku">12345678</span>
-                <p id="price"><span>RM </span>99.99</p>
+                <span>SKU :</span><span id="sku">12345678</span><p style="padding-top: 20px;"></p>
+                <span style="color: #e60000; font-size: 20px; font-weight: bold;">RM </span><span id="price">99.99</span> 
+                <span class="size-chart-icon" onclick="openModal()"><i class="fa-solid fa-ruler-combined"></i></span>
 
                 <div class="sizeContainer">
                     <label style="margin-top: 8px;">Size:</label>
@@ -84,6 +85,48 @@
                 <div class="tab-content" id="returns">
                     <p>Return policy and refund details.</p>
                 </div>
+            </div>
+        </div>
+
+        <div class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+                <h3>Size Chart</h3>
+                <img id="size-chart-img" src="images/size_chart.jpg" alt="Size Chart" class="size-chart-img">
+            </div>
+        </div>
+
+        <div class="recomend-container">
+            <h1>Recomended</h1>
+            <div class="recomend-column">
+                <div class="recomend-img">
+                    <img src="images/nike_image.png" alt="">
+                    <p class="Name">Nike</p>
+                    <p class="Price">RM 100</p>
+                    <input type="button" class="cartButton" value="Quick Add">
+                </div>
+                
+                <div class="recomend-img">
+                    <img src="images/nike_image.png" alt="">
+                    <p class="Name">Nike</p>
+                    <p class="Price">RM 100</p>
+                    <input type="button" class="cartButton" value="Quick Add">
+                </div>
+                
+                <div class="recomend-img">
+                    <img src="images/nike_image.png" alt="">
+                    <p class="Name">Nike</p>
+                    <p class="Price">RM 100</p>
+                    <input type="button" class="cartButton" value="Quick Add">
+                </div>
+                
+                <div class="recomend-img">
+                    <img src="images/nike_image.png" alt="">
+                    <p class="Name">Nike</p>
+                    <p class="Price">RM 100</p>
+                    <input type="button" class="cartButton" value="Quick Add">
+                </div>
+                
             </div>
         </div>
     
