@@ -52,19 +52,18 @@
 
     <div class="column1">
         <div class="column">
-            <img src="images/football.png">
+            <img src="images/all.jpg">
             <p>All Products</p>
             <input type="button" class="button" value="Buy Now" onclick="window.location.href='../All_Product_Page/all_product.php'">
         </div>
-
         <div class="column">
             <img src="images/Screenshot 2025-02-26 235034.png">
-            <p>Footware</p>
+            <p>Running</p>
             <input type="button" class="button" value="Buy Now">
         </div>
         <div class="column">
-            <img src="images/kids.png">
-            <p>Equipment</p>
+            <img src="images/football.png">
+            <p>Football</p>
             <input type="button" class="button" value="Buy Now">
         </div>
     </div>
@@ -79,7 +78,7 @@
         <div class="NewArrivalsContainer">
             <div class="Newcolumn">
                 <img src="images/new.png">
-                <p><input type="button" class="button" value="Shop Now"></p>
+                <p><input type="button" class="button" value="Shop Now" onclick="window.location.href='../New_Arrival_Page/new_product.php'"></p>
             </div>
             <div class="Newcolumn">
                 <a href="../ProductPage/product.php">

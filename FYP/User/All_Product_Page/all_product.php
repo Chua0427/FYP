@@ -25,7 +25,7 @@
                     <h3>Price</h3>
                     <P>RM <input type="number" value="0" min="0" id="minprice"><span> - RM <input id="maxprice"type="number" value="0" min="0"></span></P>
                 </div>
-                <div class="filter">
+                <div class="filter" id="category-filter">
                     <h3>Product Category</h3>
                     <h4>Footwear</h4>
                     <label><input type="checkbox" name="category" value="Boot"> Boot</label><br>
@@ -51,13 +51,13 @@
 
                 </div>
 
-                <div class="filter">
+                <div class="filter" id="gender-filter">
                     <h3>Gender</h3>
                     <label><input type="checkbox" name="gender" value="Men"> Men</label><br>
                     <label><input type="checkbox" name="gender" value="Women"> Women</label><br>
                     <label><input type="checkbox" name="gender" value="Kid"> Kid</label><br>
                 </div>
-                <div class="filter">
+                <div class="filter" id="brand-filter">
                     <h3>Shop By Brand</h3>
                     <label><input type="checkbox" name="brand" value="Nike"> Nike</label><br>
                     <label><input type="checkbox" name="brand" value="Adidas"> Adidas</label><br>

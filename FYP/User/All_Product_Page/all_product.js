@@ -17,3 +17,27 @@ function openfilter() {
         sidebar.style.padding = "0";
     }
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search); 
+    const category = urlParams.get("category"); 
+    const brand = urlParams.get("brand");     
+    const gender = urlParams.get("gender");   
+
+    const categoryFilter = document.getElementById("category-filter");
+    const genderFilter = document.getElementById("gender-filter");
+    const brandFilter = document.getElementById("brand-filter");
+
+    if (category && categoryFilter) {
+        categoryFilter.style.display = "none";
+    }
+
+    if (gender && genderFilter) {
+        genderFilter.style.display = "none";
+    }
+
+    if (brand && brandFilter) {
+        brandFilter.style.display = "none";
+    }
+});
+
