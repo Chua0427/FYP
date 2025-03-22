@@ -16,6 +16,16 @@
 <body>
     <?php include __DIR__ . '/../Header_and_Footer/header.html'; ?>
 
+    <?php
+        $category = isset($_GET['category']) ? $_GET['category'] : '';
+        $gender = isset($_GET['gender']) ? $_GET['gender'] : '';
+        $brand = isset($_GET['brand']) ? $_GET['brand']:'';
+        $title = $gender ? "$gender $category" : ($category ? "$category $brand" : ($brand ? $brand : "All Product"));
+    ?>
+
+
+    <h2><?php echo $title; ?></h2>
+
     <button id="filterbtn" onclick="openfilter()"><i class="fa-solid fa-filter"></i><span>Filter</span></button>
 
     <div class="container">
