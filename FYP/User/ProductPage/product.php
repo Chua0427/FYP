@@ -74,8 +74,36 @@
                 </div>
 
                 <div class="tab-content" id="review">
-                    <p>Customer reviews will appear here.</p>
+                    <div class="ratingWrapper">
+                    <h2>Review</h2>
+                        <div class="rating-summary">
+                            <div class="rating-averange">5.0</div>
+                        </div>
+                        <div class="ratingContainer">
+                            <div class="ratingbar">
+                                <span>★★★★★</span>
+                                <div class="bar"><div class="fill" style="width: 100%;"></div></div>
+                            </div>
+                            <div class="ratingbar">
+                                <span>★★★★☆</span>
+                                <div class="bar"><div class="fill" style="width: 100%;"></div></div>
+                            </div>
+                            <div class="ratingbar">
+                                <span>★★★☆☆</span>
+                                <div class="bar"><div class="fill" style="width: 100%;"></div></div>
+                            </div>
+                            <div class="ratingbar">
+                                <span>★★☆☆☆</span>
+                                <div class="bar"><div class="fill" style="width: 100%;"></div></div>
+                            </div>
+                            <div class="ratingbar">
+                                <span>★☆☆☆☆</span>
+                                <div class="bar"><div class="fill" style="width: 100%;"></div></div>
+                            </div>
+                        </div> 
+                    </div>
                 </div>
+                    
 
                 <div class="tab-content" id="delivery">
                     <p>Standard Delivery: 2-3 business days for West Malaysia and 2-5 business days for East Malaysia respectively.</p>

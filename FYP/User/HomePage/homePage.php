@@ -77,7 +77,7 @@
         <i class="fa fa-arrow-left" id="prevButton" aria-hidden="true"></i>
         <div class="NewArrivalsContainer">
             <div class="Newcolumn">
-                <img src="images/new.png">
+                <img class="img" src="images/new.png">
                 <p><input type="button" class="button" value="Shop Now" onclick="window.location.href='../New_Arrival_Page/new_product.php'"></p>
             </div>
             <div class="Newcolumn">
@@ -346,24 +346,18 @@
             <div class="column" style="width: 400px; height: 600px;">
                 <img src="images/man.jpg">
                 <p>Men</p>
-                <input type="button" class="button" value="Footware">
-                <input type="button" class="button" value="Apparel">
-                <input type="button" class="button" value="Equipment">
+                <input type="button" class="button" value="Shop Now">
             </div>
 
             <div class="column" style="width: 400px; height: 600px;">
                 <img src="images/women.jpg">
                 <p>Women</p>
-                <input type="button" class="button" value="Footware">
-                <input type="button" class="button" value="Apparel">
-                <input type="button" class="button" value="Equipment">
+                <input type="button" class="button" value="Shop Now">
             </div>
             <div class="column" style="width: 400px; height: 600px;">
                 <img src="images/kids.jpg">
                 <p>Kid</p>
-                <input type="button" class="button" value="Footware">
-                <input type="button" class="button" value="Apparel">
-                <input type="button" class="button" value="Equipment">
+                <input type="button" class="button" value="Shop Now">
             </div>
         </div>
 
