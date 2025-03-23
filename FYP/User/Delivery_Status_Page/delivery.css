@@ -84,6 +84,7 @@ h1{
 
 .invoice {
     border: 2px solid #ccc;
+    border-radius: 20px;
     padding: 20px;
     width: 50%;
     margin: 60px auto;
