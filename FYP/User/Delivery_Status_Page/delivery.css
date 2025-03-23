@@ -48,7 +48,6 @@ h1{
     font-weight: bold;
 }
 
-/* 圆形样式 */
 .circle {
     background-color: #afafaf;
     padding: 20px;
@@ -63,7 +62,6 @@ h1{
     font-size: 20px;
 }
 
-/* 线条使用 before 和 after */
 .step::before {
     content: "";
     position: absolute;
@@ -73,10 +71,9 @@ h1{
     top: 35%;
     left: -50%;
     transform: translateY(-50%);
-    z-index: -1; /* 让线条在 circle 后面 */
+    z-index: -1; 
 }
 
-/* 移除第一个 step 的左边线 */
 .step:first-child::before {
     display: none;
 }
