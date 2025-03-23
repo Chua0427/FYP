@@ -97,23 +97,26 @@ body {
 }
 
 .column1 .button {
-    width: 130px;
+    width: 100%;
     height: 40px;
     margin-top: 20px;
-    background-color: rgb(0, 0, 0);
+    background-color: rgb(22, 22, 22);
     color: white;
+    font-size: 16px;
     font-weight: bold;
     position: relative;
     z-index: 1;
     border-radius: 10px;
-    padding: 5px;
+    padding: 10px;
     transition: 0.6s;
+    border: none;
 }
 
 .column1 .button:hover {
     background-color: rgb(255, 72, 0);
     font-weight: bold;
     border: 0;
+    transform:scale(1.1);
 }
 
 .NewArrivalsWrapper {
@@ -502,7 +505,7 @@ body {
     display: block;
     width: 50%;
     height: 4px;
-    background-color: #ff5e00;
+    background: #ff5e00;
     margin: 5px auto 0;
     border-radius: 2px;
 }
@@ -511,7 +514,7 @@ body {
     display: flex;
     justify-content: space-evenly;
     align-items: stretch;
-    background-color: #ff5e00;
+    background: linear-gradient(to right, #ff8800, #ff5500);
     padding: 40px 10px;
     flex-wrap: wrap;
     gap: 30px;

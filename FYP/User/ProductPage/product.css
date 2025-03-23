@@ -178,6 +178,45 @@ input{
     display: block;
 }
 
+.ratingWrapper {
+    margin-top: 20px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+.rating-summary {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.ratingbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.bar {
+    width: 150px;
+    height: 10px;
+    background: #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 0 10px;
+}
+
+.fill {
+    height: 100%;
+    background: #2ac4b1;
+}
+
+
 .size-chart-icon .fa-ruler-combined{
     color:rgb(255, 255, 255);
     cursor: pointer;
