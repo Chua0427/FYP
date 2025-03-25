@@ -295,3 +295,33 @@ header {
     height: 60px;
     width: 250px;
 }
+.password-container {
+    position: relative;
+}
+
+.password-container i {
+    color: #666;
+    transition: color 0.3s;
+}
+
+.password-container i:hover {
+    color: #ff6b00; /* Match your theme color */
+}
+
+.password-container i.fa-eye-slash {
+    color: #444;
+}
+
+.password-feedback {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+.password-feedback.valid {
+    color: #28a745;
+}
+
+.password-feedback.invalid {
+    color: #dc3545;
+}
