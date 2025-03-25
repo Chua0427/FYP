@@ -6,11 +6,103 @@
 }
 
 body {
+    background-color: #f4f4f4;
     color: #333;
 }
+/* Main Content */
+.container {
+    max-width: 1200px;
+    margin: 100px auto 50px;
+    padding: 0 20px;
+}
 
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 40px;
+}
+
+/* Registration Form */
+.registration-form {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #555;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: 2px solid rgba(255, 68, 0, 0.5);
+}
+
+.gender-options {
+    display: flex;
+    gap: 20px;
+    margin-top: 5px;
+}
+
+.gender-options label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: rgba(255, 68, 0, 0.829);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+    background-color: rgba(253, 116, 66, 0.829);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .gender-options {
+        flex-direction: column;
+    }
+}
 header {
-    position: fixed;
     width: 100%;
     padding: 9px 1%;
     background: rgb(0, 0, 0);
