@@ -153,7 +153,9 @@
     </header>
 
     <main class="container">
+        <div class="form-wrapper"></div>
         <h1>Create New Account</h1>
+
         <form class="registration-form" id="registrationForm">
             <div class="form-grid">
                 <!-- Personal Info -->
@@ -179,11 +181,19 @@
                 <!-- Password -->
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" minlength="8" required>
+                    <div class="password-container">
+                        <input type="password" id="password" name="password" minlength="8" required>
+                        <i class="fa-solid fa-eye" id="togglePassword"></i>
+                    </div>
+                    <span class="password-feedback"></span>
                 </div>
                 <div class="form-group">
                     <label for="confirmPassword">Confirm Password</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    <div class="password-container">
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                        <i class="fa-solid fa-eye" id="toggleConfirmPassword"></i>
+                    </div>
+                    <span class="password-feedback"></span>
                 </div>
 
                 <!-- Address -->
@@ -290,5 +300,6 @@
             }
         });
     </script>
+    <script src="Registration.js"></script>
 </body>
 </html>
