@@ -1,5 +1,5 @@
 <?php
-require_once '/../../vendor/autoload.php';
+require_once '../../vendor/autoload.php';
 require_once '../secrets.php';
 
 \Stripe\Stripe::setApiKey($stripeSecretKey);
@@ -7,7 +7,7 @@ require_once '../secrets.php';
 // If you are testing with the CLI, find the secret by running 'stripe listen'
 // If you are using an endpoint defined with the API or dashboard, look in your webhook settings
 // at https://dashboard.stripe.com/webhooks
-$endpoint_secret = 'whsec_C7rNUfMziKdqbIHkd4Sz2VnFysE5nwSx';
+$endpoint_secret = 'whsec_c18ab38a8b18c63b9c9b7629428aa739010ea77dbd61c5fa07b611a171c011cd';
 
 $payload = @file_get_contents(filename: 'php://input');
 $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
