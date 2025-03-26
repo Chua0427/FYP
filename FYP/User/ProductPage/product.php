@@ -86,19 +86,19 @@
                             </div>
                             <div class="ratingbar">
                                 <span>★★★★☆</span>
-                                <div class="bar"><div class="fill" style="width: 100%;"></div></div>
+                                <div class="bar"><div class="fill" style="width: 50%;"></div></div>
                             </div>
                             <div class="ratingbar">
                                 <span>★★★☆☆</span>
-                                <div class="bar"><div class="fill" style="width: 100%;"></div></div>
+                                <div class="bar"><div class="fill" style="width: 30%;"></div></div>
                             </div>
                             <div class="ratingbar">
                                 <span>★★☆☆☆</span>
-                                <div class="bar"><div class="fill" style="width: 100%;"></div></div>
+                                <div class="bar"><div class="fill" style="width: 10%;"></div></div>
                             </div>
                             <div class="ratingbar">
                                 <span>★☆☆☆☆</span>
-                                <div class="bar"><div class="fill" style="width: 100%;"></div></div>
+                                <div class="bar"><div class="fill" style="width: 5%;"></div></div>
                             </div>
                         </div> 
                     </div>

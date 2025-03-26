@@ -1,0 +1,45 @@
+.sidebar-wrapper{
+    position: fixed;
+    left: 5px;
+    width: 235px;
+    height: 85%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.2);
+    margin-top: 100px;
+    border-radius: 30px;
+    padding: 10px;
+}
+
+.sidebar {
+    width: 100%;
+    height: 100%;
+    margin-top: 10px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li a{
+    padding: 15px 20px;
+    font-size: 16px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    border-bottom: 2px solid gray;
+    text-decoration: none;
+}
+
+.sidebar ul li:hover {
+    background: rgba(255, 255, 255, 0.2); 
+    border-left: 4px solid #ff6600;
+}
+
+.sidebar ul li i {
+    width: 20px;
+}

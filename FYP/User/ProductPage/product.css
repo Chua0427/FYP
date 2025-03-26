@@ -216,6 +216,10 @@ input{
     background: #2ac4b1;
 }
 
+.ratingbar span{
+    color: gold;
+}
+
 
 .size-chart-icon .fa-ruler-combined{
     color:rgb(255, 255, 255);

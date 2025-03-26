@@ -82,56 +82,56 @@
             </div>
             <div class="Newcolumn">
                 <a href="../ProductPage/product.php">
-                    <img src="images/Screenshot 2025-02-27 152344.png">
+                    <img src="images/Screenshot 2025-03-24 124204.png">
                     <p class="NewArrivalName">Nike</p>
                     <p class="NewArrivalPrice">RM 100</p>
                 </a>
                 <input type="button" class="cartButton" value="Quick Add">
             </div>
             <div class="Newcolumn">
-                <img src="images/bag.png">
+                <img src="images/Screenshot 2025-03-24 124123.png">
                 <p class="NewArrivalName">Nike</p>
                 <p class="NewArrivalPrice">RM 100</p>
                 <input type="button" class="cartButton" value="Quick Add">
             </div>
             <div class="Newcolumn">
-                <img src="images/Screenshot 2025-02-27 162528.png">
+                <img src="images/Screenshot 2025-03-24 124204.png">
                 <p class="NewArrivalName">Nike</p>
                 <p class="NewArrivalPrice">RM 100</p>
                 <input type="button" class="cartButton" value="Quick Add">
             </div>
             <div class="Newcolumn">
-                <img src="images/Screenshot 2025-02-27 162611.png">
+                <img src="images/Screenshot 2025-03-24 124220.png">
                 <p class="NewArrivalName">Nike</p>
                 <p class="NewArrivalPrice">RM 100</p>
                 <input type="button" class="cartButton" value="Quick Add">
             </div>
             <div class="Newcolumn">
-                <img src="images/images.jpeg">
+                <img src="images/Screenshot 2025-03-24 124123.png">
                 <p class="NewArrivalName">Nike</p>
                 <p class="NewArrivalPrice">RM 100</p>
                 <input type="button" class="cartButton" value="Quick Add">
             </div>
             <div class="Newcolumn">
-                <img src="images/images.jpeg">
+                <img src="images/Screenshot 2025-03-24 124123.png">
                 <p class="NewArrivalName">Nike</p>
                 <p class="NewArrivalPrice">RM 100</p>
                 <input type="button" class="cartButton" value="Quick Add">
             </div>
             <div class="Newcolumn">
-                <img src="images/images.jpeg">
+                <img src="images/Screenshot 2025-03-24 124204.png">
                 <p class="NewArrivalName">Nike</p>
                 <p class="NewArrivalPrice">RM 100</p>
                 <input type="button" class="cartButton" value="Quick Add">
             </div>
             <div class="Newcolumn">
-                <img src="images/images.jpeg">
+                <img src="images/Screenshot 2025-03-24 124204.png">
                 <p class="NewArrivalName">Nike</p>
                 <p class="NewArrivalPrice">RM 100</p>
                 <input type="button" class="cartButton" value="Quick Add">
             </div>
             <div class="Newcolumn">
-                <img src="images/images.jpeg">
+                <img src="images/Screenshot 2025-03-24 124204.png">
                 <p class="NewArrivalName">Nike</p>
                 <p class="NewArrivalPrice">RM 100</p>
                 <input type="button" class="cartButton" value="Quick Add">
@@ -156,7 +156,7 @@
             </div>
             <div class="promotion">
                 <div class="discount">30%</div>
-                <img src="images/Screenshot 2025-02-27 152344.png">
+                <img src="images/Screenshot 2025-03-24 124204.png">
                 <p class="promotionName">Nike</p>
                 <span class="promotionPrice">RM 100</span>
                 <span class="discountPrice">RM200</span>
@@ -164,7 +164,7 @@
             </div>
             <div class="promotion">
                 <div class="discount">30%</div>
-                <img src="images/bag.png">
+                <img src="images/Screenshot 2025-03-24 124204.png">
                 <p class="promotionName">Nike</p>
                 <span class="promotionPrice">RM 100</span>
                 <span class="discountPrice">RM200</span>
@@ -172,7 +172,7 @@
             </div>
             <div class="promotion">
                 <div class="discount">30%</div>
-                <img src="images/Screenshot 2025-02-27 162528.png">
+                <img src="images/Screenshot 2025-03-24 124204.png">
                 <p class="promotionName">Nike</p>
                 <span class="promotionPrice">RM 100</span>
                 <span class="discountPrice">RM200</span>
@@ -180,7 +180,7 @@
             </div>
             <div class="promotion">
                 <div class="discount">30%</div>
-                <img src="images/Screenshot 2025-02-27 162611.png">
+                <img src="images/Screenshot 2025-03-24 124204.png">
                 <p class="promotionName">Nike</p>
                 <span class="promotionPrice">RM 100</span>
                 <span class="discountPrice">RM200</span>
@@ -188,7 +188,7 @@
             </div>
             <div class="promotion">
                 <div class="discount">30%</div>
-                <img src="images/images.jpeg">
+                <img src="images/Screenshot 2025-03-24 124204.png">
                 <p class="promotionName">Nike</p>
                 <span class="promotionPrice">RM 100</span>
                 <span class="discountPrice">RM200</span>
