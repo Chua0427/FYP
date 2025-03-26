@@ -36,22 +36,26 @@
                 <div class="column1">
                     <div class="form-group">
                         <label>Email:</label>
-                        <input type="email" name="email" required>
+                        <input type="email" name="email" id="email" required>
+                        <span id="emailError" style="color: red; display: none; text-align: center; font-size: 14px;">Please Enter Valid Email...</span>
                     </div>
                     <div class="form-group">
                         <label>Mobile Number:</label>
                         <input type="tel" name="mobile_number" id="mobile_number" required>
+                        <span id="telError" style="color: red; display: none; text-align: center; font-size: 14px;">Please Enter Valid Mobile Number...</span>
                     </div>
                 </div>
 
                 <div class="column1">
                     <div class="form-group">
-                        <label>Password:</label>
-                        <input type="password" name="password" id="password" required>
+                        <label style="display: flex; justify-content:space-between;">Password: <i class="fa-solid fa-eye" id="Password"></i></label>
+                        <input type="password" name="password" id="password" required >
+                        <div id="strength" style="display:block; font-size:14px; font-size:14px; text-align:center;"></div>
                     </div>
                     <div class="form-group">
-                        <label>Confirm Password:</label>
-                        <input type="password" name="confirm_password" id="comfirm_password" required>
+                        <label style="display: flex; justify-content:space-between;">Confirm Password:  <i class="fa-solid fa-eye" id="ConfirmPassword"></i></label>
+                        <input type="password" name="confirm_password" id="confirm_password" required>
+                        <span id="passwordError" style="color: red; display: none; text-align:center; font-size:14px;">Does not match with password</span>
                     </div>
                 </div>
 
@@ -66,21 +70,26 @@
                     <div class="form-group">
                         <label>Post Code:</label>
                         <input type="text" name="postcode" id="postcode" required>
+                        <span id="postcodeError" style="color:red; display:none; text-align:center; font-size:14px;">Please Enter Valid Postcode...</span>
                     </div>
                     <div class="form-group">
                         <label>State:</label>
-                        <input type="text" name="state" id="state" required>
+                        <select id="state" name="state" required>
+                            <option value="">Select State</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>City:</label>
-                        <input type="text" name="city" id="city" required>
+                        <select id="city" name="city" required>
+                            <option value="">Select City</option>
+                        </select>
                     </div>
                 </div>
 
                 <div class="column1">
                     <div class="form-group">
                         <label>Birthday Date:</label>
-                        <input type="date" name="birthday_date" id="birthday_date" required>
+                        <input type="date" name="birthday_date" id="date" required>
                     </div>
                     <div class="form-group">
                         <label>Gender:</label>

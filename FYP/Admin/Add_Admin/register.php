@@ -31,22 +31,22 @@
         $uniqueFileName = time() . '.' . $fileExtension;
         $targetPath = $upload . $uniqueFileName;
 
-            $sql = "INSERT INTO users (first_name, last_name, email, mobile_number, password, 
-                    address, postcode, state, city, birthday_date, gender, user_type, profile_image) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO users (first_name, last_name, email, mobile_number, password, 
+                address, postcode, state, city, birthday_date, gender, user_type, profile_image) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("sssssssssssis", $first_name, $last_name, $email, $mobile_number, 
-                            $password, $address, $postcode, $state, $city, $birthday_date, 
-                            $gender, $user_type, $uniqueFileName);
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sssssssssssis", $first_name, $last_name, $email, $mobile_number, 
+                        $password, $address, $postcode, $state, $city, $birthday_date, 
+                        $gender, $user_type, $uniqueFileName);
 
-            if ($stmt->execute()) {
-                move_uploaded_file($_FILES['profile_image']['tmp_name'], $targetPath);
-                echo "<script>alert('Add Successfully!'); window.location.href='add.php';</script>";
-            } else {
-                echo "Error: " . $stmt->error;
-            }
-            $stmt->close();
+        if ($stmt->execute()) {
+            move_uploaded_file($_FILES['profile_image']['tmp_name'], $targetPath);
+            echo "<script>alert('Add Successfully!'); window.location.href='add.php';</script>";
+        } else {
+            echo "Error: " . $stmt->error;
+        }
+        $stmt->close();
         } else {
             echo "Failed to upload image.";
         }
