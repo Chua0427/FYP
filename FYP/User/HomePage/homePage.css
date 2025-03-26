@@ -16,7 +16,6 @@ body {
     max-width: 100%;
     overflow: hidden;
     top: 78px;
-    z-index: 1;
 }
 
 .slide {
@@ -150,7 +149,7 @@ body {
 
 .cartButton {
     position: absolute;
-    top: 30%;
+    top: 25%;
     left: 26%;
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
