@@ -7,7 +7,7 @@
 <body>
   <form id="payment-form">
     <div id="card-element"></div>
-    <button id="submit">支付 ￥100</button>
+    <button id="submit">Pay MYR100</button>
     <div id="error-message"></div>
   </form>
 
@@ -26,17 +26,23 @@
         card: cardElement,
       });
 
-      if (error) {
-        console.error(error);
-      } else {
-        fetch('/charge.php', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({payment_method_id: paymentMethod.id})
-        }).then(result => {
-          // 处理支付结果
-        });
-      }
+      fetch('/charge.php', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({payment_method_id: paymentMethod.id})
+       })
+      .then(response => response.json())
+      .then(data => {
+    if (data.success) {
+        window.location.href = `/order-success.html?order_id=${data.order_id}`;
+    } else {
+        alert('支付失败: ' + (data.error || '未知错误'));
+    }
+       })
+.catch(error => {
+    console.error('Error:', error);
+alert('网络请求失败');
+     });
     });
   </script>
 </body>
