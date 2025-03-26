@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeroSports</title>
+    <link rel="stylesheet" href="Registration.css">
+    <link rel="stylesheet" href="../Header_and_Footer/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <header>
+            <img src="../HomePage/images/VeroSports.jpeg" class="logo">
+                    <div class="subtitleContainer">
+                        <div class="subTitle">
+                            <ul>
+                                <li id="home">
+                                    <a href="../HomePage/homePage.php">Home</a>
+                                </li>
+                                <li id="newArrival">
+                                    <a href="../New_Arrival_Page/new_product.php">New Arrivals</a>
+                                </li>
+                                <div class="dropdown">
+                                    <li id="men"><a href="../All_Product_Page/all_product.php?gender=Men">Men</a></li>
+                                    <div class="dropdownmenu">
+                                        <div class="category">
+                                            <h3>Footwear</h3>
+                                            <a href="../All_Product_Page/all_product.php?gender=Men&category=Boot">Boot</a>
+                                            <a href="#">Futsal</a>
+                                            <a href="#">Running</a>
+                                            <a href="#">Court</a>
+                                        </div>
+                                        <div class="category">
+                                            <h3>Apparel</h3>
+                                            <a href="#">Jerseys</a>
+                                            <a href="#">Jackets</a>
+                                            <a href="#">Pants</a>
+                                        </div>
+                                        <div class="category">
+                                            <h3>Equipment</h3>
+                                            <a href="#">Bags</a>
+                                            <a href="#">Caps</a>
+                                            <a href="#">Football Accessories</a>
+                                            <a href="#">Socks</a>
+                                            <a href="#">Gym Accessories</a>
+                                        </div>
+                                        <div class="category">
+                                            <h3>Shop By Brand</h3>
+                                            <a href="#">Nike</a>
+                                            <a href="#">Adidas</a>
+                                            <a href="#">Puma</a>
+                                            <a href="#">Umbro</a>
+                                            <a href="#">Lotto</a>
+                                            <a href="#">Asics</a>
+                                            <a href="#">New Balance</a>
+                                            <a href="#">Under Amour</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="dropdown">
+                                    <li id="women"><a href="#">Women</a></li>
+                                    <div class="dropdownmenu">
+                                        <div class="category">
+                                            <h3>Footwear</h3>
+                                            <a href="#">Training</a>
+                                            <a href="#">Running</a>
+                                            <a href="#">Court</a>
+                                        </div>
+                                        <div class="category">
+                                            <h3>Apparel</h3>
+                                            <a href="#">Jerseys</a>
+                                            <a href="#">Jackets</a>
+                                            <a href="#">Leggings</a>
+                                            <a href="#">Pants</a>
+                                        </div>
+                                        <div class="category">
+                                            <h3>Equipment</h3>
+                                            <a href="#">Bags</a>
+                                            <a href="#">Caps</a>
+                                            <a href="#">Socks</a>
+                                            <a href="#">Gym Accessories</a>
+                                        </div>
+                                        <div class="category">
+                                            <h3>Shop By Brand</h3>
+                                            <a href="#">Nike</a>
+                                            <a href="#">Adidas</a>
+                                            <a href="#">Puma</a>
+                                            <a href="#">Lotto</a>
+                                            <a href="#">Asics</a>
+                                            <a href="#">New Balance</a>
+                                            <a href="#">Skechers</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="dropdown">
+                                    <li id="kids"><a href="#">Kids</a></li>
+                                    <div class="dropdownmenu">
+                                        <div class="category">
+                                            <h3>Footwear</h3>
+                                            <a href="#">Football Shoes</a>
+                                            <a href="#">Kids Shoes</a>
+                                            <a href="#">School Shoes</a>
+                                        </div>
+                                        <div class="category">
+                                            <h3>Apparel</h3>
+                                            <a href="#">Jackets</a>
+                                            <a href="#">Jerseys</a>
+                                            <a href="#">Paints</a>
+                                        </div>
+                                        <div class="category">
+                                            <h3>Equipment</h3>
+                                            <a href="bag">Bag</a>
+                                            <a href="#">Caps</a>
+                                            <a href="#">Football Accessories</a>
+                                            <a href="#">Socks</a>
+                                        </div>
+                                        <div class="category">
+                                            <h3>Shop By Brand</h3>
+                                            <a href="#">Nike</a>
+                                            <a href="#">Adidas</a>
+                                            <a href="#">Puma</a>
+                                            <a href="#">Skechers</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <li id="promotion">
+                                    <a href="../Promotion_Page/promotion_product.php">Promotion</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+            
+                    <div class="iconContainer">
+                        <div class="icon">
+                            <div class="search">
+                                <i class="fa-solid fa-search"></i>
+                            </div>
+                            <div class="user">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                            <div class="shoppingCart">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                                <span id="cartCount">0</span>
+                            </div>
+                        </div>
+            
+                    </div>
+                </header>
+    </header>
+
+    <main class="container">
+        <div class="form-wrapper"></div>
+        <h1>Create New Account</h1>
+
+        <form class="registration-form" id="registrationForm">
+            <div class="form-grid">
+                <!-- Personal Info -->
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" name="firstName" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" name="lastName" required>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="mobile">Mobile Number</label>
+                    <input type="tel" id="mobile" name="mobile" pattern="[0-9]{10,11}" required>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="password-container">
+                        <input type="password" id="password" name="password" minlength="8" required>
+                        <i class="fa-solid fa-eye" id="togglePassword"></i>
+                    </div>
+                    <span class="password-feedback"></span>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <div class="password-container">
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                        <i class="fa-solid fa-eye" id="toggleConfirmPassword"></i>
+                    </div>
+                    <span class="password-feedback"></span>
+                </div>
+
+                <!-- Address -->
+                <div class="form-group full-width">
+                    <label for="address">Address</label>
+                    <textarea id="address" name="address" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="postcode">Postcode</label>
+                    <input type="text" id="postcode" name="postcode" pattern="[0-9]{5}" required>
+                </div>
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" id="city" name="city" required>
+                </div>
+                <div class="form-group">
+                    <label for="state">State</label>
+                    <select id="state" name="state" required>
+                        <option value="">Select State</option>
+                        <option value="Johor">Johor</option>
+                        <option value="Kedah">Kedah</option>
+                        <option value="Kelantan">Kelantan</option>
+                        <!-- Add other Malaysian states -->
+                    </select>
+                </div>
+
+                <!-- Additional Info -->
+                <div class="form-group">
+                    <label for="birthdate">Birth Date</label>
+                    <input type="date" id="birthdate" name="birthdate" required>
+                </div>
+                <div class="form-group">
+                    <label>Gender</label>
+                    <div class="gender-options">
+                        <label>
+                            <input type="radio" name="gender" value="male" required> Male
+                        </label>
+                        <label>
+                            <input type="radio" name="gender" value="female"> Female
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Profile Picture -->
+                <div class="form-group full-width">
+                    <label for="profilePic">Profile Picture</label>
+                    <input type="file" id="profilePic" name="profilePic" accept="image/*">
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Register Now</button>
+        </form>
+    </main>
+
+    <footer>
+        <footer>
+            <div class="footerMenu">
+                <div class="footerCategories">
+                    <h3>COMPANY</h3>
+                    <a href="#">About VEROSPORTS</a>
+                    <a href="#">Our Location</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Term & Condition</a>
+                </div>
+                <div class="footerCategories">
+                    <h3>Help & Support</h3>
+                    <a href="#">Size Chart</a>
+                    <a href="#">Return Policy</a>
+                    <a href="#">Cancellation Policy</a>
+                    <a href="#">Contact Us</a>
+                    <a href="#">Track My Order</a>
+                </div>
+                <div class="footerCategories">
+                    <h3>FAQs</h3>
+                    <a href="#">Payment Methods</a>
+                    <a href="#">About Delivery</a>
+                    <a href="#">E-Invoice</a>
+                </div>
+            </div>
+        </footer>
+    </footer>
+
+    <script>
+        // Password validation
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Passwords do not match!');
+            }
+        });
+
+        // Profile picture preview
+        document.getElementById('profilePic').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // You can add a preview image element if needed
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+    <script src="Registration.js"></script>
+</body>
+</html>
