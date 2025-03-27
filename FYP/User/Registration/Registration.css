@@ -25,8 +25,6 @@
         width: 250px;
     }
 
-
-    /* Main Content */
     .container {
         max-width: 900px;
         margin: 100px auto 50px;
@@ -41,7 +39,6 @@
         margin-bottom: 40px;
     }
 
-    /* Registration Form */
     .registration-form {
         background: #ffffff78;
         padding: 30px;
@@ -111,7 +108,6 @@
         background-color: rgba(253, 116, 66, 0.829);
     }
 
-    /* Responsive Design */
     @media (max-width: 768px) {
         .form-grid {
             grid-template-columns: 1fr;
@@ -132,7 +128,7 @@
     }
 
     .password-container i:hover {
-        color: #ff6b00; /* Match your theme color */
+        color: #ff6b00; 
     }
 
     .password-container i.fa-eye-slash {
@@ -162,11 +158,10 @@
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
-        z-index: -2; /* Behind everything */
-        opacity: 0.9; /* Adjust as needed */
+        z-index: -2; 
+        opacity: 0.9; 
     }
     
-    /* Add a dark overlay for better readability */
     .background-image::after {
         content: "";
         position: absolute;
@@ -174,7 +169,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.4); /* Dark overlay */
+        background: rgba(0, 0, 0, 0.4);
         z-index: -1;
     }
     
