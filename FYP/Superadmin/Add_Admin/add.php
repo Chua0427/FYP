@@ -21,7 +21,7 @@
 
         <div class="form-container">
             <h2>Add New Admin</h2>
-            <form action="register.php" method="POST" enctype="multipart/form-data" id="registerForm">
+            <form action="register.php" method="POST" enctype="multipart/form-data">
                 <div class="column1">
                     <div class="form-group">
                         <label>First Name:</label>
@@ -105,7 +105,7 @@
                     <input type="file" name="profile_image">
                 </div>
 
-                <button type="submit">Register Admin</button>
+                <button type="submit" id="submit">Register Admin</button>
             </form>
         </div>
     </div>
