@@ -10,3 +10,8 @@
 [2025-03-27 14:25:29] [ERROR] Webhook Error: Unable to extract timestamp and signatures from header
 [2025-03-27 14:25:34] [ERROR] Charge error: User is not logged in
 [2025-03-27 14:31:08] [ERROR] Webhook Error: Unable to extract timestamp and signatures from header
+[2025-03-27 15:04:23] [ERROR] Charge error: User is not logged in
+[2025-03-27 15:25:53] [ERROR] Webhook Error: Unable to extract timestamp and signatures from header
+[2025-03-27 15:25:55] [ERROR] Webhook Error: Unable to extract timestamp and signatures from header
+[2025-03-27 15:25:57] [ERROR] Webhook Error: Unable to extract timestamp and signatures from header
+[2025-03-27 15:26:02] [ERROR] Webhook Error: Unable to extract timestamp and signatures from header
