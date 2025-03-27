@@ -44,23 +44,28 @@ document.getElementById("mobile_number").addEventListener("input", function(){
 document.getElementById("password").addEventListener("input", function(){
     const password=this.value;
     const strength= document.getElementById("strength");
+    const submitBtn= document.getElementById("submit");
 
-    const weakPattern = /^[a-zA-Z0-9]{8,}$/; 
-    const mediumPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.,]).{8,12}$/; 
-    const strongPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.,]).{12,}$/;   
+    const weakPattern = /^[a-zA-Z0-9]{1,7}$/; 
+    const mediumPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d){8,12}$/; 
+    const strongPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.,]).{8,12}$/;   
 
     if (strongPattern.test(password)) {
         strength.innerText = "🟢🟢🟢 Strong Password";
         strength.style.color = "green";
+        submitBtn.disabled = false; 
     } else if (mediumPattern.test(password)) {
         strength.innerText = "🟠🟠🟠 Medium Password";
         strength.style.color = "orange";
+        submitBtn.disabled = true;
     } else if (weakPattern.test(password)) {
         strength.innerText = "🔴🔴🔴 Weak Password";
         strength.style.color = "red";
+        submitBtn.disabled = true;
     } else {
         strength.innerText = "At least 8 words, 1 lowercase, 1 uppercase, number, and symbol";
         strength.style.color = "red";
+        submitBtn.disabled = true;
     }
 });
 
