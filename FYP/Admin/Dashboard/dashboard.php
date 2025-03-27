@@ -89,6 +89,8 @@
 
 
     <?php
+        session_start();
+
         $servername = "localhost";
         $username = "root";
         $password = "";
@@ -100,8 +102,13 @@
             die("Fail Connect: " . $conn->connect_error);
         }
 
-        $sql = "SELECT * FROM users WHERE user_id=15";
-        $result = $conn->query($sql);
+        $user_id = $_SESSION['user_id'];
+
+        $sql= "SELECT * FROM users WHERE user_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
         while ($row = $result->fetch_assoc()) {
             echo '<div class="admin">
