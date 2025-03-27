@@ -41,7 +41,7 @@ try {
             
             $stmt = $pdo->prepare("INSERT INTO payment_log (payment_id, log_level, log_message) 
                                    SELECT payment_id, 'info', ? FROM payment WHERE stripe_id = ?");
-            $logMsg = "支付成功 | Stripe ID: {$paymentIntent->id}";
+            $logMsg = "Payment success | Stripe ID: {$paymentIntent->id}";
             $stmt->execute([$logMsg, $paymentIntent->id]);
             
             $pdo->commit();
