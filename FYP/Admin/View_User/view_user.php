@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VeroSports</title>
-    <link rel="stylesheet" href="view_admin.css">
+    <link rel="stylesheet" href="view_user.css">
     <link rel="stylesheet" href="../Header_And_Footer/header.css">
     <link rel="stylesheet" href="../sidebar/sidebar.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -14,15 +14,15 @@
 </head>
 
     <?php include __DIR__ . '/../../connect_db/config.php'; ?>
-    
+
 <body>
-    <?php include __DIR__ . '/../Header_And_Footer/header.php'; ?>
+    <?php include __DIR__ . '/..//Header_And_Footer/header.php'; ?>
 
     <div class="contain">
         <?php include __DIR__ . '/../sidebar/sidebar.php'; ?>
 
         <div class="admin-table">
-            <h3>View Admin</h3>
+            <h3>View User</h3>
             <table>
                 <tr>
                     <th>Image</th>
@@ -35,15 +35,10 @@
                     <th>City</th>
                     <th>Birthday Date</th>
                     <th>Gender</th>
-
+                </tr>
                 <?php
-                    $sql= "SELECT * FROM users WHERE user_type = 2";
+                    $sql= "SELECT * FROM users WHERE user_type=1";
                     $result = $conn->query($sql);
-
-                    if ($current_user_type == 3) {
-                        echo '<th>Edit/Delete</th>';
-                    }
-
 
                     while($row= $result->fetch_assoc()){
                         echo '<tr>
@@ -56,26 +51,16 @@
                                 <td>'.$row['state'].'</td>
                                 <td>'.$row['city'].'</td>
                                 <td>'.$row['birthday_date'].'</td>
-                                <td>'.$row['gender'].'</td>';
-
-
-                                if ($current_user_type == 3) {
-                                    echo '<td>
-                                            <div class="button">
-                                                <a href="edit.php?id= '.$row['user_id'].' "class="btn btn-edit" id="edit">Edit</a>
-                                                <a href="delete.php?id='. $row['user_id'].' "class="btn btn-delete" id="delete" onclick="return confirm(\'Are you sure?\')">Delete</a>
-                                            </div>
-                                            
-                                          </td>';
-                                }
-                        
-                                echo '</tr>';
+                                <td>'.$row['gender'].'</td>
+                            </tr>';
                     }
                     ?>
                 
             </table>
                 
         </div>
+
+        
     </div>
 </body>
 </html>
