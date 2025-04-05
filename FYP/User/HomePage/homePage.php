@@ -18,12 +18,19 @@
 
     <div class="slideshow-container">
         <i class="fa fa-arrow-left" id="BillboardButton" aria-hidden="true"></i>
-        <div class="slide">
-            <img src="images/billboard.png" alt="">
-        </div>
-        <div class="slide">
-            <img src="images/Screenshot 2025-02-26 001514.png" alt="">
-        </div>
+
+        <?php
+            include __DIR__ . '/../../connect_db/config.php';
+
+            $sql="SELECT * FROM billboard";
+            $result=$conn->query($sql);
+
+            while($row=$result->fetch_assoc()){
+                echo '<div class="slide">
+                    <img src="../../upload/'.$row['image'].'" alt="">
+                </div>';
+            }
+        ?>
         <i class="fa fas fa-arrow-right" id="BillboardNextButton" aria-hidden="true"></i>
         <div class="slogan-contain">
             <div class="slogan">
@@ -210,7 +217,7 @@
         </div>
     </div>
     <div class="jerseyheader">
-        <img src="images/Screenshot 2025-03-03 143955.png ">
+        <img src="images/jersey.png">
         <input type="button" class="button" value="Shop Now">
     </div>
     <div class="slogan-contain">
