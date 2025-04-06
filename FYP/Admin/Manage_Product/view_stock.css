@@ -123,6 +123,8 @@ body {
 }
 
 .editSize {
+    opacity: 0;
+    visibility: hidden;
     position: fixed;
     top: 50%;
     left: 50%;
