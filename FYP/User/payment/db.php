@@ -49,13 +49,12 @@ class Database {
         return $stmt ? $stmt->get_result()->fetch_all(MYSQLI_ASSOC) : [];
     }
 
-    // 查询单行数据
+
     public function fetchOne($sql, $params = []) {
         $stmt = $this->query($sql, $params);
         return $stmt ? $stmt->get_result()->fetch_assoc() : null;
     }
 
-    // 处理 SELECT 查询
     private function query($sql, $params = []) {
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) {
@@ -72,13 +71,13 @@ class Database {
         return $stmt;
     }
 
-    // 根据参数类型自动绑定 SQL 语句
+
     private function get_param_types($params) {
         $types = '';
         foreach ($params as $param) {
-            if (is_int($param)) $types .= 'i'; // 整数类型
-            elseif (is_float($param)) $types .= 'd'; // 浮点数
-            else $types .= 's'; // 字符串类型
+            if (is_int($param)) $types .= 'i'; 
+            elseif (is_float($param)) $types .= 'd'; 
+            else $types .= 's';
         }
         return $types;
     }

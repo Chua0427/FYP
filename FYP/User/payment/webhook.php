@@ -8,18 +8,18 @@ require __DIR__ . '/../app/init.php';
 \Stripe\Stripe::setApiKey($stripeSecretKey);
 $endpoint_secret = 'whsec_C7rNUfMziKdqbIHkd4Sz2VnFysE5nwSx';
 
-// 创建日志目录（如果不存在）
+
 if (!file_exists(__DIR__ . '/logs')) {
     mkdir(__DIR__ . '/logs', 0777, true);
 }
 
-// 日志记录函数
+
 function log_message($level, $message) {
     $log = date("[Y-m-d H:i:s]") . " [$level] $message" . PHP_EOL;
     error_log($log, 3, __DIR__ . '/logs/payment.log');
 }
 
-// 读取 Webhook 请求
+
 $payload = @file_get_contents('php://input');
 $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'] ?? '';
 
