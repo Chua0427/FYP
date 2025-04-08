@@ -1,11 +1,11 @@
 <?php
 require 'db.php';
 
-// 设置 JSON 响应头
+
 header('Content-Type: application/json');
 
 try {
-    // 输入校验
+
     if (empty($_POST['payment_id']) || empty($_POST['amount']) || empty($_POST['status'])) {
         throw new Exception("Missing required fields");
     }
@@ -14,13 +14,13 @@ try {
     $amount = (float) $_POST['amount'];
     $status = $_POST['status'];
 
-    // 验证支付状态
+
     $valid_status = ['pending', 'completed', 'failed', 'refunded'];
     if (!in_array($status, $valid_status)) {
         throw new Exception("Invalid status value");
     }
 
-    // 连接数据库并插入数据
+
     $db = new Database();
     $result = $db->execute(
         "INSERT INTO payment (payment_id, total_amount, payment_status) VALUES (?, ?, ?)",
@@ -31,7 +31,7 @@ try {
         throw new Exception("Failed to save payment");
     }
 
-    // 关闭数据库连接
+
     $db->close();
 
     echo json_encode(['success' => true]);

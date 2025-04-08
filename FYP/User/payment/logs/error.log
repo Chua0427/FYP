@@ -1,0 +1,5 @@
+[07-Apr-2025 10:04:39 Europe/Berlin] PHP Warning:  Undefined variable $pdo in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 83
+[07-Apr-2025 10:04:39 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function inTransaction() on null in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php:83
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 83
