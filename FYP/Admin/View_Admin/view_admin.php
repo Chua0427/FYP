@@ -13,11 +13,13 @@
 
 </head>
 
+    <?php include __DIR__ . '/../../connect_db/config.php'; ?>
+    
 <body>
-    <?php include __DIR__ . '/../Header_And_Footer/header.html'; ?>
+    <?php include __DIR__ . '/../Header_And_Footer/header.php'; ?>
 
     <div class="contain">
-        <?php include __DIR__ . '/../sidebar/sidebar.html'; ?>
+        <?php include __DIR__ . '/../sidebar/sidebar.php'; ?>
 
         <div class="admin-table">
             <h3>View Admin</h3>
@@ -33,23 +35,15 @@
                     <th>City</th>
                     <th>Birthday Date</th>
                     <th>Gender</th>
-                </tr>
+
                 <?php
-                    $servername = "localhost";
-                    $username = "root";
-                    $password = "";
-                    $dbname = "verosports";
-                
-                    $conn = new mysqli($servername, $username, $password, $dbname);
-                
-                    if ($conn->connect_error) {
-                        die("Fail Connect: " . $conn->connect_error);
+                    $sql= "SELECT * FROM users WHERE user_type = 2";
+                    $result = $conn->query($sql);
+
+                    if ($current_user_type == 3) {
+                        echo '<th>Edit/Delete</th>';
                     }
 
-                    $sql= "SELECT * FROM users WHERE user_type = 2";
-                    $stmt = $conn->prepare($sql);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
 
                     while($row= $result->fetch_assoc()){
                         echo '<tr>
@@ -62,16 +56,26 @@
                                 <td>'.$row['state'].'</td>
                                 <td>'.$row['city'].'</td>
                                 <td>'.$row['birthday_date'].'</td>
-                                <td>'.$row['gender'].'</td>
-                            </tr>';
+                                <td>'.$row['gender'].'</td>';
+
+
+                                if ($current_user_type == 3) {
+                                    echo '<td>
+                                            <div class="button">
+                                                <a href="edit.php?id= '.$row['user_id'].' "class="btn btn-edit" id="edit">Edit</a>
+                                                <a href="delete.php?id='. $row['user_id'].' "class="btn btn-delete" id="delete" onclick="return confirm(\'Are you sure?\')">Delete</a>
+                                            </div>
+                                            
+                                          </td>';
+                                }
+                        
+                                echo '</tr>';
                     }
                     ?>
                 
             </table>
                 
         </div>
-
-        
     </div>
 </body>
 </html>
