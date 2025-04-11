@@ -40,14 +40,14 @@
                     <div class="form-group">
                         <label>Brand:</label>
                             <select name="brand" required>
-                                <option value="nike">Nike</option>
-                                <option value="adidas">Adidas</option>
-                                <option value="puma">Puma</option>
-                                <option value="asics">Asics</option>
-                                <option value="underamour">Under Amour</option>
-                                <option value="skechers">Skechers</option>
-                                <option value="umbro">Umbro</option>
-                                <option value="lotto">Lotto</option>
+                                <option value="Nike">Nike</option>
+                                <option value="Adidas">Adidas</option>
+                                <option value="Puma">Puma</option>
+                                <option value="Asics">Asics</option>
+                                <option value="Under Amour">Under Amour</option>
+                                <option value="New Balance">New Balance</option>
+                                <option value="Umbro">Umbro</option>
+                                <option value="Lotto">Lotto</option>
                             </select>
                     </div>
                     <div class="form-group">
@@ -60,8 +60,8 @@
                     <div class="form-group">
                         <label>Gender:</label>
                         <select name="gender"required>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
+                            <option value="Men">Men</option>
+                            <option value="Women">Women</option>
                             <option value="Kid">Kid</option>
                         </select>
                     </div>
@@ -78,18 +78,18 @@
                     </div>
                     <div class="form-group">
                         <label>Price: </label>
-                        <input type="number" name="price"required>
+                        <input type="number" name="price" step="0.01" required>
                     </div>
                     <div class="form-group">
                         <label>Discount Price: </label>
-                        <input type="number" name="discount_price">
+                        <input type="number" step="0.01" name="discount_price">
                     </div>
                 </div>
 
                 <div class="column1">
                     <div class="form-group" style="flex: 1;">
                         <label>Description:</label>
-                        <textarea type="text" name="description" required style="height:150px; margin-left: 10px; border-radius: 8px;"></textarea>
+                        <textarea name="description" required style="height:150px; margin-left: 10px; border-radius: 8px;"></textarea>
                     </div>
                 </div>
 
@@ -122,40 +122,6 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function(){
-            const categoryByType={
-                "Footwear": ["Boot","Futsal","Running","Court","Training","Football Shoes","Kid Shoes","School Shoes"],
-                "Apparel": ["Jersey","Jacket","Paint","Legging"],
-                "Equipment": ["Bag","Cap","Football Accessories","Socks","Gym Accessories"]
-            }
-
-            const productType= document.getElementById("product_type");
-            const productCategory= document.getElementById('product_categories');
-
-            for(let type in categoryByType){
-                let option= document.createElement("option");
-
-                option.value=type;
-                option.textContent=type;
-                productType.appendChild(option);
-            }
-
-            productType.addEventListener("change", function(){
-                let type=this.value;
-                productCategory.innerHTML ='<option value="">Select Category</option>';
-
-                if(type in categoryByType){
-                    categoryByType[type].forEach(category=>{
-                        let option= document.createElement("option");
-
-                        option.value=category;
-                        option.textContent=category;
-                        productCategory.appendChild(option);
-                    });
-                }
-            });
-        });
-    </script>
+    <script src="add.js"></script>
 </body>
 </html>

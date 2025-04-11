@@ -1,5 +1,4 @@
 <?php
-session_start();
 include __DIR__ . '/../../connect_db/config.php';
 
 if (isset($_GET['id'])) {

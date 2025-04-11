@@ -99,123 +99,34 @@
 
         <div class="product-wrapper">
             <div class="product-container">
-                <div class="product-column">
-                    <div class="discount">30%</div>
-                    <a href="../ProductPage/product.php">
-                        <img src="images/nike_image.png" alt="">
-                        <p>Nike</p>
-                        <p>RM <span class="promotionPrice">199.99</span>
-                        <span class="discountPrice">RM200</span></p>
-                    </a>
-                </div>
-                <div class="product-column">
-                    <div class="discount">30%</div>
-                    <a href="../ProductPage/product.php">
-                        <img src="images/nike_image.png" alt="">
-                        <p>Nike</p>
-                        <p>RM <span class="promotionPrice">199.99</span>
-                        <span class="discountPrice">RM200</span></p>
-                    </a>
-                </div>
-                <div class="product-column">
-                    <div class="discount">30%</div>
-                    <a href="../ProductPage/product.php">
-                        <img src="images/nike_image.png" alt="">
-                        <p>Nike</p>
-                        <p>RM <span class="promotionPrice">199.99</span>
-                        <span class="discountPrice">RM200</span></p>
-                    </a>
-                </div>
-                <div class="product-column">
-                    <div class="discount">30%</div>
-                    <a href="../ProductPage/product.php">
-                        <img src="images/nike_image.png" alt="">
-                        <p>Nike</p>
-                        <p>RM <span class="promotionPrice">199.99</span>
-                        <span class="discountPrice">RM200</span></p>
-                    </a>
-                </div>
-                <div class="product-column">
-                    <div class="discount">30%</div>
-                    <a href="../ProductPage/product.php">
-                        <img src="images/nike_image.png" alt="">
-                        <p>Nike</p>
-                        <p>RM <span class="promotionPrice">199.99</span>
-                        <span class="discountPrice">RM200</span></p>
-                    </a>
-                </div>
-                <div class="product-column">
-                    <div class="discount">30%</div>
-                    <a href="../ProductPage/product.php">
-                        <img src="images/nike_image.png" alt="">
-                        <p>Nike</p>
-                        <p>RM <span class="promotionPrice">199.99</span>
-                        <span class="discountPrice">RM200</span></p>
-                    </a>
-                </div>
-                <div class="product-column">
-                    <div class="discount">30%</div>
-                    <a href="../ProductPage/product.php">
-                        <img src="images/nike_image.png" alt="">
-                        <p>Nike</p>
-                        <p>RM <span class="promotionPrice">199.99</span>
-                        <span class="discountPrice">RM200</span></p>
-                    </a>
-                </div>
-                <div class="product-column">
-                    <div class="discount">30%</div>
-                    <a href="../ProductPage/product.php">
-                        <img src="images/nike_image.png" alt="">
-                        <p>Nike</p>
-                        <p>RM <span class="promotionPrice">199.99</span>
-                        <span class="discountPrice">RM200</span></p>
-                    </a>
-                </div>
-                <div class="product-column">
-                    <div class="discount">30%</div>
-                    <a href="../ProductPage/product.php">
-                        <img src="images/nike_image.png" alt="">
-                        <p>Nike</p>
-                        <p>RM <span class="promotionPrice">199.99</span>
-                        <span class="discountPrice">RM200</span></p>
-                    </a>
-                </div>
-                <div class="product-column">
-                    <div class="discount">30%</div>
-                    <a href="../ProductPage/product.php">
-                        <img src="images/nike_image.png" alt="">
-                        <p>Nike</p>
-                        <p>RM <span class="promotionPrice">199.99</span>
-                        <span class="discountPrice">RM200</span></p>
-                    </a>
-                </div>
-                <div class="product-column">
-                    <div class="discount">30%</div>
-                    <a href="../ProductPage/product.php">
-                        <img src="images/nike_image.png" alt="">
-                        <p>Nike</p>
-                        <p>RM <span class="promotionPrice">199.99</span>
-                        <span class="discountPrice">RM200</span></p>
-                    </a>
-                </div>
-                <div class="product-column">
-                    <div class="discount">30%</div>
-                    <a href="../ProductPage/product.php">
-                        <img src="images/nike_image.png" alt="">
-                        <p>Nike</p>
-                        <p>RM <span class="promotionPrice">199.99</span>
-                        <span class="discountPrice">RM200</span></p>
-                    </a>
-                </div>
-                <div class="product-column">
-                    <div class="discount">30%</div>
-                    <a href="../ProductPage/product.php">
-                        <img src="images/nike_image.png" alt="">
-                        <p>Nike</p>
-                        <p>RM <span class="promotionPrice">199.99</span>
-                        <span class="discountPrice">RM200</span></p>
-                    </a>
-                </div>
+
+            <?php
+                include __DIR__ . '/../../connect_db/config.php';
+
+                $sql= "SELECT* FROM product WHERE status='Promotion'";
+                $result= $conn->query($sql);
+
+                while($row = $result->fetch_assoc())
+                {
+                    $price = $row['price'];
+                    $discount_price = $row['discount_price'];
+
+                    $discountPercent = round((($price - $discount_price) / $price) * 100);
+
+                    echo'<div class="product-column">
+                            <div class="discount">'.$discountPercent.'% OFF</div>
+                            <a href="../ProductPage/product.php?id='.$row['product_id'].'">
+                                <img src="../../upload/'.$row['product_img1'].'" alt="">
+                                <p class="product-name">'.$row['product_name'].'</p>
+                                <div class="price">
+                                    <span class="promotionPrice">RM '.$row['discount_price'].'</span>
+                                    <span class="discountPrice">RM '.$row['price'].'</span>
+                                </div>
+                            </a>
+                        </div>';
+                }
+            ?>
+            
             </div>
         </div>
     </div>

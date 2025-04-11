@@ -108,8 +108,8 @@
                                 <td>'.$row["stock"].'</td>
                                 <td>'.$row["last_update_at"].'</td>
                                 <td><div class="button">
-                                    <a href="#" class="edit" id="edit" data-stock-id="'.$row["stock_id"].'" data-stock="'.$row["stock"].'">Edit</a>
-                                    <a href="delete.php?stock_id='.$row["stock_id"].'" class="delete" id="delete" onclick="return confirm(\'Are you sure?\')">Delete</a>
+                                    <a href="#" class="edit" id="edit" data-stock-id="'.$row["stock_id"].'" data-stock="'.$row["stock"].'" size="'.$row["product_size"].'">Edit</a>
+                                    <a href="delete_stock.php?stock_id='.$row["stock_id"].'&product_id='.$row["product_id"].'" class="delete" id="delete" onclick="return confirm(\'Are you sure?\')">Delete</a>
                                 </div></td>
                                 </tr>';
                         }
@@ -147,7 +147,7 @@
 
         <div class="editSize" id="edit-stock">
             <form action="" method="post" id="edit-form">
-                <h3>Edit Stock
+                <h3>Edit Stock For Size: <span id="size-name" style="margin-left: -150px;"></span>
                     <span id="edit-close-btn">
                         <i class="fa-solid fa-xmark"></i>
                     </span>
@@ -211,9 +211,11 @@
             e.preventDefault();
             let stockId = btn.getAttribute("data-stock-id");
             let stock = btn.getAttribute("data-stock");
+            let size=btn.getAttribute("size");
 
             document.getElementById("edit-stock-input").value = stock;
             document.getElementById("edit-stock-id").value = stockId;
+            document.getElementById("size-name").textContent = size;
 
             editPopup.style.opacity = "1";
             editPopup.style.visibility = "visible";

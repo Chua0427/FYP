@@ -53,7 +53,7 @@ function newArrow() {
     let currentIndex = 0;
     const Newcolumn = document.querySelectorAll(".Newcolumn");
     const NewArrivalsContainer = document.querySelector(".NewArrivalsContainer");
-    const columnWidth = Newcolumn[0].offsetWidth + 20;
+    const columnWidth = Newcolumn[0].offsetWidth + 80;
     const left = document.querySelector("#prevButton");
     const right = document.querySelector("#nextButton");
 
@@ -65,7 +65,7 @@ function newArrow() {
     })
 
     right.addEventListener("click", function () {
-        if (currentIndex < Newcolumn.length - 5) {
+        if (currentIndex < Newcolumn.length - 4) {
             currentIndex++;
             NewArrivalsContainer.style.transform = `translateX(-${currentIndex * columnWidth}px)`;
         }
@@ -79,7 +79,7 @@ function promotionArrow() {
     let currentIndex = 0;
     const promotion = document.querySelectorAll(".promotion");
     const PromotionContainer = document.querySelector(".PromotionContainer");
-    const columnWidth = promotion[0].offsetWidth + 20;
+    const columnWidth = promotion[0].offsetWidth + 250;
     const left = document.querySelector("#pButton");
     const right = document.querySelector("#pnextButton");
 
@@ -91,7 +91,7 @@ function promotionArrow() {
     })
 
     right.addEventListener("click", function () {
-        if (currentIndex < promotion.length - 5) {
+        if (currentIndex < promotion.length - 4) {
             currentIndex++;
             PromotionContainer.style.transform = `translateX(-${currentIndex * columnWidth}px)`;
         }
@@ -104,7 +104,7 @@ function jerseyArrow() {
     let currentIndex = 0;
     const jersey = document.querySelectorAll(".Jersey");
     const JerseyContainer = document.querySelector(".JerseyContainer");
-    const columnWidth = jersey[0].offsetWidth + 20;
+    const columnWidth = jersey[0].offsetWidth + 80;
     const left = document.querySelector("#jButton");
     const right = document.querySelector("#jnextButton");
 
@@ -116,7 +116,7 @@ function jerseyArrow() {
     })
 
     right.addEventListener("click", function () {
-        if (currentIndex < jersey.length - 5) {
+        if (currentIndex < jersey.length - 4) {
             currentIndex++;
             JerseyContainer.style.transform = `translateX(-${currentIndex * columnWidth}px)`;
         }

@@ -66,12 +66,12 @@
         <div class="column">
             <img src="images/Screenshot 2025-02-26 235034.png">
             <p>Running</p>
-            <input type="button" class="button" value="Buy Now">
+            <input type="button" class="button" value="Buy Now" onclick="window.location.href='../All_Product_Page/all_product.php?product_categories=Running'">
         </div>
         <div class="column">
             <img src="images/football.png">
-            <p>Football</p>
-            <input type="button" class="button" value="Buy Now">
+            <p>Football Boots</p>
+            <input type="button" class="button" value="Buy Now" onclick="window.location.href='../All_Product_Page/all_product.php?product_categories=Boot'">
         </div>
     </div>
 
@@ -87,120 +87,66 @@
                 <img class="img" src="images/new.png">
                 <p><input type="button" class="button" value="Shop Now" onclick="window.location.href='../New_Arrival_Page/new_product.php'"></p>
             </div>
-            <div class="Newcolumn">
-                <a href="../ProductPage/product.php">
-                    <img src="images/Screenshot 2025-03-24 124204.png">
-                    <p class="NewArrivalName">Nike</p>
-                    <p class="NewArrivalPrice">RM 100</p>
-                </a>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="Newcolumn">
-                <img src="images/Screenshot 2025-03-24 124123.png">
-                <p class="NewArrivalName">Nike</p>
-                <p class="NewArrivalPrice">RM 100</p>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="Newcolumn">
-                <img src="images/Screenshot 2025-03-24 124204.png">
-                <p class="NewArrivalName">Nike</p>
-                <p class="NewArrivalPrice">RM 100</p>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="Newcolumn">
-                <img src="images/Screenshot 2025-03-24 124220.png">
-                <p class="NewArrivalName">Nike</p>
-                <p class="NewArrivalPrice">RM 100</p>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="Newcolumn">
-                <img src="images/Screenshot 2025-03-24 124123.png">
-                <p class="NewArrivalName">Nike</p>
-                <p class="NewArrivalPrice">RM 100</p>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="Newcolumn">
-                <img src="images/Screenshot 2025-03-24 124123.png">
-                <p class="NewArrivalName">Nike</p>
-                <p class="NewArrivalPrice">RM 100</p>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="Newcolumn">
-                <img src="images/Screenshot 2025-03-24 124204.png">
-                <p class="NewArrivalName">Nike</p>
-                <p class="NewArrivalPrice">RM 100</p>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="Newcolumn">
-                <img src="images/Screenshot 2025-03-24 124204.png">
-                <p class="NewArrivalName">Nike</p>
-                <p class="NewArrivalPrice">RM 100</p>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="Newcolumn">
-                <img src="images/Screenshot 2025-03-24 124204.png">
-                <p class="NewArrivalName">Nike</p>
-                <p class="NewArrivalPrice">RM 100</p>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-        </div>
+            <?php
+                $sql="SELECT* FROM product WHERE status='New' ORDER BY RAND() LIMIT 5";
+                $result= $conn->query($sql);
 
+                while($row=$result->fetch_assoc())
+                {
+                    echo '<div class="Newcolumn">
+                            <a href="../ProductPage/product.php?id='.$row['product_id'].'">
+                                <img src="../../upload/'.$row['product_img1'].'">
+                                <p class="product-name">'.$row['product_name'].'</p>
+                                <div class="price">
+                                    <p class="NewArrivalPrice">RM '.$row['price'].'</p>
+                                </div>
+                            </a>
+                            <input type="button" class="cartButton" value="Quick Add">
+                        </div>';
+                }
+            ?>
+        </div>
         <i class="fa fa-arrow-right" id="nextButton" aria-hidden="true"></i>
     </div>
 
 
     <div class="sub-billboard">
         <img src="images/Screenshot 2025-03-02 180412.png" alt="">
-        <input type="button" class="button" value="Shop Now">
+        <input type="button" class="button" value="Shop Now" onclick="window.location.href='../All_Product_Page/all_product.php?product_categories=Boot'">
     </div>
 
     <div class="promotionWrapper">
         <i class="fa fa-arrow-left" id="pButton" aria-hidden="true"></i>
         <div class="PromotionContainer">
-            <div class="promotion">
+            <div class="promotion" style="width: 300px; height: 350px;">
                 <img src="images/promotion-img (2).jpg">
-                <input type="button" class="button" value="Shop Now">
+                <p><input type="button" class="button" value="Shop Now" onclick="window.location.href='../Promotion_Page/promotion_product.php'"></p>
             </div>
-            <div class="promotion">
-                <div class="discount">30%</div>
-                <img src="images/Screenshot 2025-03-24 124204.png">
-                <p class="promotionName">Nike</p>
-                <span class="promotionPrice">RM 100</span>
-                <span class="discountPrice">RM200</span>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="promotion">
-                <div class="discount">30%</div>
-                <img src="images/Screenshot 2025-03-24 124204.png">
-                <p class="promotionName">Nike</p>
-                <span class="promotionPrice">RM 100</span>
-                <span class="discountPrice">RM200</span>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="promotion">
-                <div class="discount">30%</div>
-                <img src="images/Screenshot 2025-03-24 124204.png">
-                <p class="promotionName">Nike</p>
-                <span class="promotionPrice">RM 100</span>
-                <span class="discountPrice">RM200</span>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="promotion">
-                <div class="discount">30%</div>
-                <img src="images/Screenshot 2025-03-24 124204.png">
-                <p class="promotionName">Nike</p>
-                <span class="promotionPrice">RM 100</span>
-                <span class="discountPrice">RM200</span>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="promotion">
-                <div class="discount">30%</div>
-                <img src="images/Screenshot 2025-03-24 124204.png">
-                <p class="promotionName">Nike</p>
-                <span class="promotionPrice">RM 100</span>
-                <span class="discountPrice">RM200</span>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
+
+            <?php
+                $sql="SELECT* FROM product WHERE status='Promotion' ORDER BY RAND() LIMIT 5";
+                $result= $conn->query($sql);
+
+                while($row= $result->fetch_assoc()){
+                    $price = $row['price'];
+                    $discount_price = $row['discount_price'];
+
+                    $discountPercent = round((($price - $discount_price) / $price) * 100);
+
+                    echo '<div class="promotion">
+                            <a href="../ProductPage/product.php?id='.$row['product_id'].'">
+                                <div class="discount">'.$discountPercent.'% OFF</div>
+                                <img src="../../upload/'.$row['product_img1'].'">
+                                <p class="product-name">'.$row['product_name'].'</p>
+                                <div class="price">
+                                <span class="promotionPrice">RM '.$row['discount_price'].'</span>
+                                <span class="discountPrice">RM '.$row['price'].'</span>
+                                </div>  
+                                <input type="button" class="cartButton" value="Quick Add">
+                            </a>
+                           </div>';
+                }
+            ?>
         </div>
         <i class="fa fa-arrow-right" id="pnextButton" aria-hidden="true"></i>
     </div>
@@ -208,17 +154,17 @@
     <div class="footballAndGym">
         <div class="picture">
             <img src="images/football-training-equipment-7-1024x664.jpg">
-            <input type="button" class="button" value="Shop Now">
+            <input type="button" class="button" value="Shop Now" onclick="window.location.href='../All_Product_Page/all_product.php?product_categories=Football Accessories'">
         </div>
 
         <div class="picture">
             <img src="images/istockphoto-1287874606-612x612.jpg">
-            <input type="button" class="button" value="Shop Now">
+            <input type="button" class="button" value="Shop Now" onclick="window.location.href='../All_Product_Page/all_product.php?product_categories=Gym Accessories'">
         </div>
     </div>
     <div class="jerseyheader">
         <img src="images/jersey.png">
-        <input type="button" class="button" value="Shop Now">
+        <input type="button" class="button" value="Shop Now" onclick="window.location.href='../All_Product_Page/all_product.php?product_categories=Jersey'">
     </div>
     <div class="slogan-contain">
         <div class="slogan">
@@ -245,76 +191,29 @@
     </div>
     </div>
 
+    
+
 
     <div class="columnJersey">
         <i class="fa fa-arrow-left" id="jButton" aria-hidden="true"></i>
         <div class="JerseyContainer">
-            <div class="Jersey">
-                <img src="images/Screenshot 2025-02-27 162528.png">
-                <div class="jerseyname">Football Jersey</div>
-                <div class="jerseyPrice">RM 20</div>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="Jersey">
-                <img src="images/Screenshot 2025-02-27 162528.png">
-                <div class="jerseyname">Football Jersey</div>
-                <div class="jerseyPrice">RM 20</div>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="Jersey">
-                <img src="images/Screenshot 2025-02-27 162528.png">
-                <div class="jerseyname">Football Jersey</div>
-                <div class="jerseyPrice">RM 20</div>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="Jersey">
-                <img src="images/Screenshot 2025-02-27 162528.png">
-                <div class="jerseyname">Football Jersey</div>
-                <div class="jerseyPrice">RM 20</div>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="Jersey">
-                <img src="images/Screenshot 2025-02-27 162528.png">
-                <div class="jerseyname">Football Jersey</div>
-                <div class="jerseyPrice">RM 20</div>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="Jersey">
-                <img src="images/Screenshot 2025-02-27 162528.png">
-                <div class="jerseyname">Football Jersey</div>
-                <div class="jerseyPrice">RM 20</div>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="Jersey">
-                <img src="images/Screenshot 2025-02-27 162528.png">
-                <div class="jerseyname">Football Jersey</div>
-                <div class="jerseyPrice">RM 20</div>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="Jersey">
-                <img src="images/Screenshot 2025-02-27 162528.png">
-                <div class="jerseyname">Football Jersey</div>
-                <div class="jerseyPrice">RM 20</div>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="Jersey">
-                <img src="images/Screenshot 2025-02-27 162528.png">
-                <div class="jerseyname">Football Jersey</div>
-                <div class="jerseyPrice">RM 20</div>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="Jersey">
-                <img src="images/Screenshot 2025-02-27 162528.png">
-                <div class="jerseyname">Football Jersey</div>
-                <div class="jerseyPrice">RM 20</div>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
-            <div class="Jersey">
-                <img src="images/Screenshot 2025-02-27 162528.png">
-                <div class="jerseyname">Football Jersey</div>
-                <div class="jerseyPrice">RM 20</div>
-                <input type="button" class="cartButton" value="Quick Add">
-            </div>
+            <?php
+                $sql="SELECT* FROM product WHERE product_categories='Jersey' && status='Normal' ORDER BY RAND() LIMIT 5";
+                $result= $conn->query($sql);
+
+                while($row= $result->fetch_assoc()){
+                    echo '<div class="Jersey">
+                        <a href="../ProductPage/product.php?id='.$row['product_id'].'">
+                            <img src="../../upload/'.$row['product_img1'].'">
+                            <div class="product-name">'.$row['product_name'].'</div>
+                            <div class="price">
+                                <div class="jerseyPrice">RM '.$row['price'].'</div>
+                            </div>
+                            <input type="button" class="cartButton" value="Quick Add">
+                        </a>
+                    </div>';
+                }
+            ?> 
         </div>
         <i class="fa fa-arrow-right" id="jnextButton" aria-hidden="true"></i>
     </div>
@@ -323,28 +222,28 @@
         <h2>TOP OF BRANDS</h2>
         <div class="brandContainer">
             <div class="brand">
-                <a id="nike" href="#"><img src="images/nike.png"></a>
+                <a id="nike" href="../All_Product_Page/all_product.php?brand=Nike"><img src="images/nike.png"></a>
             </div>
             <div class="brand">
-                <img src="images/adidas.png">
+                <a id="nike" href="../All_Product_Page/all_product.php?brand=Adidas"><img src="images/adidas.png"></a>
             </div>
             <div class="brand">
-                <img src="images/puma.png">
+                <a id="nike" href="../All_Product_Page/all_product.php?brand=Puma"><img src="images/puma.png"></a>
             </div>
             <div class="brand">
-                <img src="images/asics.png">
+                <a id="nike" href="../All_Product_Page/all_product.php?brand=Asics"><img src="images/asics.png"></a>
             </div>
             <div class="brand">
-                <img src="images/underAmour.png">
+                <a id="nike" href="../All_Product_Page/all_product.php?brand=Under Amour"><img src="images/underAmour.png"></a>
             </div>
             <div class="brand">
-                <img src="images/skechers.png">
+                <a id="nike" href="../All_Product_Page/all_product.php?brand=New Balance"><img src="images/newbalance.jpg"></a>
             </div>
             <div class="brand">
-                <img src="images/umbro.png">
+                <a id="nike" href="../All_Product_Page/all_product.php?brand=Umbro"><img src="images/umbro.png"></a>
             </div>
             <div class="brand">
-                <img src="images/Lotto.png">
+                <a id="nike" href="../All_Product_Page/all_product.php?brand=Lotto"><img src="images/Lotto.png"></a>
             </div>
         </div>
 
@@ -353,18 +252,18 @@
             <div class="column" style="width: 400px; height: 600px;">
                 <img src="images/man.jpg">
                 <p>Men</p>
-                <input type="button" class="button" value="Shop Now">
+                <input type="button" class="button" value="Shop Now" onclick="window.location.href='../All_Product_Page/all_product.php?gender=Men'">
             </div>
 
             <div class="column" style="width: 400px; height: 600px;">
                 <img src="images/women.jpg">
                 <p>Women</p>
-                <input type="button" class="button" value="Shop Now">
+                <input type="button" class="button" value="Shop Now" onclick="window.location.href='../All_Product_Page/all_product.php?gender=Women'">
             </div>
             <div class="column" style="width: 400px; height: 600px;">
                 <img src="images/kids.jpg">
                 <p>Kid</p>
-                <input type="button" class="button" value="Shop Now">
+                <input type="button" class="button" value="Shop Now" onclick="window.location.href='../All_Product_Page/all_product.php?gender=Kid'">
             </div>
         </div>
 

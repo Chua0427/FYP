@@ -96,55 +96,27 @@
             </div>
         </div>
 
+        
         <div class="product-wrapper">
             <div class="product-container">
-                <div class="product-column">
-                    <a href="../ProductPage/product.php">
-                        <img src="images/nike_image.png" alt="">
-                        <p>Nike</p>
-                        <p>RM <span class="price">199.99</span></p>
-                    </a>
-                </div>
-                <div class="product-column">
-                    <img src="images/nike_image.png" alt="">
-                    <p>Nike</p>
-                    <p>RM <span class="price">199.99</span></p>
-                </div>
-                <div class="product-column">
-                    <img src="images/nike_image.png" alt="">
-                    <p>Nike</p>
-                    <p>RM <span class="price">199.99</span></p>
-                </div>
-                <div class="product-column">
-                    <img src="images/nike_image.png" alt="">
-                    <p>Nike</p>
-                    <p>RM <span class="price">199.99</span></p>
-                </div>
-                <div class="product-column">
-                    <img src="images/nike_image.png" alt="">
-                    <p>Nike</p>
-                    <p>RM <span class="price">199.99</span></p>
-                </div>
-                <div class="product-column">
-                    <img src="images/nike_image.png" alt="">
-                    <p>Nike</p>
-                    <p>RM <span class="price">199.99</span></p>
-                </div>
-                <div class="product-column">
-                    <img src="images/nike_image.png" alt="">
-                    <p>Nike</p>
-                    <p>RM <span class="price">199.99</span></p>
-                </div>
-                <div class="product-column">
-                    <img src="images/nike_image.png" alt="">
-                    <p>Nike</p>
-                    <p>RM <span class="price">199.99</span></p>
-                </div>
-                <div class="product-column">
-                    <img src="images/nike_image.png" alt="">
-                    <p>Nike</p>
-                    <p>RM <span class="price">199.99</span></p>
-                </div>
+
+                <?php
+                    include __DIR__ . '/../../connect_db/config.php';
+
+                    $sql= "SELECT* FROM product WHERE status='New'";
+                    $result= $conn->query($sql);
+
+                    while($row= $result->fetch_assoc()){
+                        echo '<div class="product-column">
+                                <a href="../ProductPage/product.php?id='.$row['product_id'].'">
+                                    <img src="../../upload/'.$row['product_img1'].'" alt="">
+                                    <p class="product-name">'.$row['product_name'].'</p>
+                                    <div class="price">RM '.$row['price'].'</div>
+                                </a>
+                            </div>';
+                    }
+                ?>
+                
             </div>
         </div>
     </div>

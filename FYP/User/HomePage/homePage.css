@@ -137,7 +137,7 @@ body {
     justify-items: center;
     position: relative;
     text-align: center;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: bold;
     color: #222222;
 }
@@ -145,6 +145,13 @@ body {
 .Newcolumn a{
     text-decoration: none;
     color: #222222;
+}
+
+.Newcolumn .price{
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 18px;
+    color: red;
 }
 
 .cartButton {
@@ -175,15 +182,19 @@ body {
 }
 
 .Newcolumn img {
-    width: 300px;
-    height: 350px;
+    width: 350px;
+    height: 320px;
+}
+
+.product-name {
+    height: 40px; 
 }
 
 .Newcolumn .button {
     width: 100px;
     height: 40px;
     top: -58px;
-    left: -80px;
+    left: -100px;
     border: 0;
     background-color: rgba(0, 0, 0, 0.692);
     color: white;
@@ -297,32 +308,44 @@ body {
 
 .PromotionContainer {
     display: flex;
-    gap: 50px;
+    gap: 100px;
     margin-left: 50px;
     transition: transform 0.4s ease-in-out;
 }
 
 .promotion {
     position: relative;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: bold;
     color: #222222;
 }
 
+.promotion a{
+    text-decoration: none;
+    color: #222222;
+}
+
 .promotion img {
-    width: 300px;
-    height: 350px;
+    width: 350px;
+    height: 320px;
+}
+
+.promotion .price{
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 18px;
 }
 
 .promotion .discount {
     background-color: rgb(255, 0, 0);
     position: relative;
-    width: 50px;
+    width: 100px;
     height: 30px;
     padding: 5px 5px;
     font-weight: bold;
     font-size: 20px;
     color: white;
+    margin-bottom: -35px;
 }
 
 .promotion .button {
@@ -345,6 +368,7 @@ body {
 
 .promotionPrice {
     margin-right: 60px;
+    color: rgb(255, 0, 0);
 }
 
 .discountPrice {
@@ -377,15 +401,27 @@ body {
     transition: transform 0.4s ease-in-out;
 }
 
+.Jersey a{
+    text-decoration: none;
+    color: #222222;
+}
+
 .Jersey img {
     width: 300px;
     height: 350px;
 }
 
+.Jersey .price{
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 18px;
+    color: red;
+}
+
 .Jersey {
     text-align: center;
     position: relative;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: bold;
     color: #222222;
 }
