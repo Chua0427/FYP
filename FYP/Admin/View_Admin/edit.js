@@ -45,42 +45,40 @@ document.getElementById("password").addEventListener("input", function(){
     const password=this.value;
     const strength= document.getElementById("strength");
     const submitBtn= document.getElementById("submit");
-    const confirmPasswordField = document.getElementById("confirm_password");
 
-    if (password !== "") {
-        confirmPasswordField.setAttribute("required", "true");
-    } else {
-        confirmPasswordField.removeAttribute("required");
-    }
+    const hasLowercase = /[a-z]/.test(password);
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasDigit = /\d/.test(password);
+    const hasSymbol = /[@$!%*?&.,]/.test(password);
 
-    const weakPattern = /^[a-zA-Z0-9]{1,7}$/; 
-    const mediumPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d){8,12}$/; 
-    const strongPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.,]).{8,}$/;
-    
-    if (password === "") {
-        strength.innerText = ""; 
-        strength.style.color = ""; 
-        submitBtn.disabled = false; 
-        return; 
-    }
+    let matchCount = 0;
+    if (hasLowercase) matchCount++;
+    if (hasUppercase) matchCount++;
+    if (hasDigit) matchCount++;
+    if (hasSymbol) matchCount++;
 
-    if (strongPattern.test(password)) {
-        strength.innerText = "🟢🟢🟢 Strong Password";
-        strength.style.color = "green";
-        submitBtn.disabled = false; 
-    } else if (mediumPattern.test(password)) {
-        strength.innerText = "🟠🟠🟠 Medium Password";
-        strength.style.color = "orange";
+    if (password.length < 8) {
+        strength.innerText = "❗ At Least 8 Characters";
+        strength.style.color = "gray";
         submitBtn.disabled = true;
-    } else if (weakPattern.test(password)) {
+    } else if (matchCount === 1) {
         strength.innerText = "🔴🔴🔴 Weak Password";
         strength.style.color = "red";
         submitBtn.disabled = true;
-    } else {
-        strength.innerText = "At least 8 words, 1 lowercase, 1 uppercase, number, and symbol";
-        strength.style.color = "red";
+    } else if (matchCount === 2) {
+        strength.innerText = "🟠🟠🟠 Medium Password";
+        strength.style.color = "orange";
         submitBtn.disabled = true;
+    } else if (matchCount === 3) {
+        strength.innerText = "🟢🟢🟢 Strong Password";
+        strength.style.color = "green";
+        submitBtn.disabled = true;
+    } else if (matchCount === 4) {
+        strength.innerText = "🟢🟢🟢 Very Strong Password";
+        strength.style.color = "darkgreen";
+        submitBtn.disabled = false;
     }
+    
 });
 
 document.getElementById("confirm_password").addEventListener("input", function(){

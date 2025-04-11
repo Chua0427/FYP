@@ -42,9 +42,9 @@
                         include __DIR__ . '/../../connect_db/config.php';
 
                         $sql= "SELECT * FROM product";
-                        $resul= $conn->query($sql);
+                        $result= $conn->query($sql);
 
-                        while($row= $resul->fetch_assoc()){
+                        while($row= $result->fetch_assoc()){
                             echo '<tr>
                                     <td>'. $row["product_id"].'</td>
                                     <td><img src="../../upload/'. $row["product_img1"].'"</td>
