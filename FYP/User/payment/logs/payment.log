@@ -17,3 +17,7 @@
 [2025-03-27 15:26:02] [ERROR] Webhook Error: Unable to extract timestamp and signatures from header
 [2025-04-07 10:04:25] [ERROR] Webhook Error: Unable to extract timestamp and signatures from header
 [2025-04-07 11:28:04] [ERROR] Charge error: User is not logged in
+[2025-04-10 05:50:29] [ERROR] Payment failed: No connection could be made because the target machine actively refused it
+[2025-04-10 07:13:03] [ERROR] Payment error: Missing order ID
+[2025-04-10 07:19:40] [ERROR] Payment failed: Missing order ID
+[2025-04-10 07:58:33] [ERROR] Payment error: Missing order ID
