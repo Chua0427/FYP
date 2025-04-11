@@ -17,10 +17,44 @@
     <?php include __DIR__ . '/../Header_and_Footer/header.html'; ?>
 
     <?php
-        $category = isset($_GET['category']) ? $_GET['category'] : '';
+        $category = isset($_GET['product_categories']) ? $_GET['product_categories'] : '';
         $gender = isset($_GET['gender']) ? $_GET['gender'] : '';
         $brand = isset($_GET['brand']) ? $_GET['brand']:'';
-        $title = $gender ? "$gender $category" : ($category ? "$category $brand" : ($brand ? $brand : "All Product"));
+        
+        $title = '';
+
+        if (!empty($gender)) {
+            $title .= $gender . ' ';
+        }
+        if (!empty($category)) {
+            $title .= $category . ' ';
+        }
+        if (!empty($brand)) {
+            $title .= $brand;
+        }
+
+        $title = trim($title);
+
+if (empty($title)) {
+    $title = "All Product";
+}
+
+
+        include __DIR__ . '/../../connect_db/config.php';
+
+        $sql = "SELECT * FROM product WHERE 1=1";
+
+        if (!empty($gender)) {
+            $sql .= " AND gender = '$gender'";
+        }
+        if (!empty($category)) {
+            $sql .= " AND product_categories = '$category'";
+        }
+        if (!empty($brand)) {
+            $sql .= " AND brand = '$brand'";
+        }
+
+        $result= $conn->query($sql);
     ?>
 
 
@@ -83,53 +117,39 @@
 
         <div class="product-wrapper">
             <div class="product-container">
-                <div class="product-column">
-                    <a href="../ProductPage/product.php">
-                        <img src="images/nike_image.png" alt="">
-                        <p>Nike</p>
-                        <p>RM <span class="price">199.99</span></p>
-                    </a>
-                </div>
-                <div class="product-column">
-                    <img src="images/nike_image.png" alt="">
-                    <p>Nike</p>
-                    <p>RM <span class="price">199.99</span></p>
-                </div>
-                <div class="product-column">
-                    <img src="images/nike_image.png" alt="">
-                    <p>Nike</p>
-                    <p>RM <span class="price">199.99</span></p>
-                </div>
-                <div class="product-column">
-                    <img src="images/nike_image.png" alt="">
-                    <p>Nike</p>
-                    <p>RM <span class="price">199.99</span></p>
-                </div>
-                <div class="product-column">
-                    <img src="images/nike_image.png" alt="">
-                    <p>Nike</p>
-                    <p>RM <span class="price">199.99</span></p>
-                </div>
-                <div class="product-column">
-                    <img src="images/nike_image.png" alt="">
-                    <p>Nike</p>
-                    <p>RM <span class="price">199.99</span></p>
-                </div>
-                <div class="product-column">
-                    <img src="images/nike_image.png" alt="">
-                    <p>Nike</p>
-                    <p>RM <span class="price">199.99</span></p>
-                </div>
-                <div class="product-column">
-                    <img src="images/nike_image.png" alt="">
-                    <p>Nike</p>
-                    <p>RM <span class="price">199.99</span></p>
-                </div>
-                <div class="product-column">
-                    <img src="images/nike_image.png" alt="">
-                    <p>Nike</p>
-                    <p>RM <span class="price">199.99</span></p>
-                </div>
+
+            <?php
+                while($row=$result->fetch_assoc()){
+                    if($row['status']==='Promotion'){
+                        $price = $row['price'];
+                        $discount_price = $row['discount_price'];
+
+                        $discountPercent = round((($price - $discount_price) / $price) * 100);
+                        echo '<div class="product-column">
+                            <a href="../ProductPage/product.php?id='.$row['product_id'].'">
+                            <div class="discount">'.$discountPercent.'% OFF</div>
+                                <img src="../../upload/'.$row['product_img1'].'" alt="">
+                                <p class="product-name">'.$row['product_name'].'</p>
+                                <div class="price">
+                                    <span class="price">RM '.$row['discount_price'].'</span>
+                                    <span class="discountPrice">RM '.$row['price'].'</span>
+                                </div>
+                            </a>
+                        </div>';
+                    }
+                    else{
+                        echo '<div class="product-column">
+                            <a href="../ProductPage/product.php?id='.$row['product_id'].'">
+                                <img src="../../upload/'.$row['product_img1'].'" alt="">
+                                <p class="product-name">'.$row['product_name'].'</p>
+                                <div class="price">RM'.$row['price'].'</div>
+                            </a>
+                        </div>';
+                    }
+                    
+                }
+            ?>
+                
             </div>
         </div>
     </div>

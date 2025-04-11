@@ -101,30 +101,59 @@ h2{
     flex: 1;
     height: 100%;
     margin-bottom: 40px;
+    margin-right: 20px;
+    margin-top: 20px;
 }
 
 .product-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 60px;
     width: 100%;
 }
 
 .product-column {
     text-align: center;
-    font-size: 20px;
-    font-weight: bold;
-    color: #222222;
 }
 
 .product-column a{
     text-decoration: none;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: bold;
     color: #222222;
 }
 
 .product-column img{
-    width: 350px;
+    width: 330px;
     height: 300px;
 }
+
+.product-column .price{
+    font-size: 20px;
+    font-weight: bold;
+    padding-top: 20px;
+    color: red;
+}
+
+.product-column .discountPrice{
+    text-decoration: line-through;
+    color: gray;
+    margin-left: 30px;
+}
+
+.product-column .discount{
+    background-color: rgb(255, 0, 0);
+    position: relative;
+    width: 100px;
+    height: 30px;
+    padding: 5px 5px;
+    font-weight: bold;
+    font-size: 18px;
+    color: white;
+    margin-bottom: -30px;
+}
+
+.product-column .product-name {
+    height: 30px; 
+}
+

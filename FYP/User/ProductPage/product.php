@@ -13,6 +13,19 @@
 
 </head>
 
+<?php
+    include __DIR__ . '/../../connect_db/config.php';
+
+    if(isset($_GET['id'])){
+        $product_id=$_GET['id'];
+
+        $sql="SELECT* FROM product WHERE product_id=$product_id";
+        $result= $conn->query($sql);
+        $row= $result->fetch_assoc();
+
+        if($row){
+?>
+
 <body>
         <?php include __DIR__ . '/../Header_and_Footer/header.html'; ?>
 
@@ -20,39 +33,70 @@
         
             <div class="imgContainer">
                 <i class="fa fa-arrow-left" id="productButton"></i>
-                <img id="main_image" src="images/nike_image.png">
+                <img id="main_image" src="../../upload/<?php echo $row['product_img1']?>">
                 <i class="fa fa-arrow-right" id="productnextButton"></i>
 
                 <div class="small-img-group">
                     <div class="small-column">
-                        <img class="small-img" src="images/nike2.png">
+                        <img class="small-img" src="../../upload/<?php echo $row['product_img1']?>">
                     </div>
                     <div class="small-column">
-                        <img class="small-img" src="images/nike3.png">
+                        <img class="small-img" src="../../upload/<?php echo $row['product_img2']?>">
                     </div>
                     <div class="small-column">
-                        <img class="small-img" src="images/nike4.png">
+                        <img class="small-img" src="../../upload/<?php echo $row['product_img3']?>">
                     </div>
                     <div class="small-column">
-                        <img class="small-img" src="images/nike_image.png">
+                        <img class="small-img" src="../../upload/<?php echo $row['product_img4']?>">
                     </div>
                 </div>
             </div>
             
             <div class="productDetails">
-                <h1 id="brand">Nike</h1>
-                <h3 id="name">Nike Phantom GX 2</h3>
-                <span>SKU :</span><span id="sku">12345678</span><p style="padding-top: 20px;"></p>
-                <span style="color: #e60000; font-size: 20px; font-weight: bold;">RM </span><span id="price">99.99</span> 
-                <span class="size-chart-icon" onclick="openModal()"><i class="fa-solid fa-ruler-combined"></i></span>
+                
+                <h1 id="brand"><?php echo $row['brand']?>
+                    <?php if ($row['status'] === 'Promotion') {
+                         $price = $row['price'];
+                         $discount_price = $row['discount_price'];
+     
+                         $discountPercent = round((($price - $discount_price) / $price) * 100);
+                        echo '<span style="color: white; background-color:red; padding:10px; border-radius:10px; font-size: 18px; margin-left: 10px;">'.$discountPercent.'% OFF</span>';
+                    } ?></h1>
+                    
+                <h3 id="name"><?php echo $row['product_name']?></h3>
+                <span>SKU :</span><span id="skuDisplay"></span><p style="padding-top: 20px;"></p>
 
+                <div class="column">
+                <?php if ($row['status'] === 'Promotion') { ?>
+                    <p style="margin: 5px 0 10px 0;">
+                        <span style="color: #e60000; font-size: 20px; font-weight: bold;">RM </span>
+                        <span id="price" style="margin-right: -200px;"><?php echo $row['discount_price']; ?>
+                        </span><span style="text-decoration: line-through; color: gray; font-size: 18px;">RM <?php echo $row['price']; ?></span>
+                    </p>
+                <?php } 
+                    else { ?>
+                        <span style="color: #e60000; font-size: 20px; font-weight: bold;">RM </span>
+                        <span id="price"><?php echo $row['price']; ?></span>
+                    <?php } ?>
+                
+                <span class="size-chart-icon" onclick="openModal()"><i class="fa-solid fa-ruler-combined"></i></span>
+                </div>
+                
                 <div class="sizeContainer">
                     <label style="margin-top: 8px;">Size:</label>
                     <select id="size">
-                        <option>US 7</option>
-                        <option>US 8</option>
-                        <option>US 9</option>
-                        <option>US 10</option>
+                    <?php
+                        $stock_sql = "SELECT product_size, product_sku, stock FROM stock WHERE product_id = $product_id AND stock>0";
+                        $stock_result = $conn->query($stock_sql);
+
+                        while($stock_row = $stock_result->fetch_assoc()) {
+                            $size = $stock_row['product_size'];
+                            $sku = $stock_row['product_sku'];
+                            $stock = $stock_row['stock'];
+                            $display_text = str_pad("$size", 10) . " ($stock)";
+                            echo "<option value='$size' data-sku='$sku'>$display_text</option>";
+                        }
+                    ?>
                     </select>
                 
                     <input type="number" id="quantity" value="1" min="1">
@@ -70,7 +114,7 @@
                 </div>
                 
                 <div class="tab-content active" id="product-info">
-                    <p>Nike Phantom GX 2 Elite LV8 FG Low-Top Football Boots Obsessed with perfecting your craft? We made this for you. In the middle of the storm, with chaos swirling all around you, you’ve calmly found the final third of the field, thanks to your uncanny mix of on-ball guile and grace. Go finish the job in the Phantom GX 2 Elite. Revolutionary Nike Gripknit covers the striking area of the cleat while Nike Cyclone 360 traction helps guide your unscripted agility. We design Elite Boots for you and the world’s biggest stars to give you high-level quality, because you demand greatness from yourself and your footwear. </p>
+                    <p><?php echo $row['description']?></p>
                 </div>
 
                 <div class="tab-content" id="review">
@@ -120,46 +164,77 @@
             <div class="modal-content">
                 <span class="close-btn" onclick="closeModal()">&times;</span>
                 <h3>Size Chart</h3>
-                <img id="size-chart-img" src="images/size_chart.jpg" alt="Size Chart" class="size-chart-img">
+                <img id="size-chart-img" src="../../upload/<?php echo $row['size_chart']?>" alt="Size Chart" class="size-chart-img">
             </div>
         </div>
 
         <div class="recomend-container">
             <h1>Recomended</h1>
             <div class="recomend-column">
-                <div class="recomend-img">
-                    <img src="images/nike_image.png" alt="">
-                    <p class="Name">Nike</p>
-                    <p class="Price">RM 100</p>
-                    <input type="button" class="cartButton" value="Quick Add">
-                </div>
+            <?php
+                $sql="SELECT* FROM product ORDER BY RAND() LIMIT 4";
+                $result= $conn->query($sql);
                 
+                while($row= $result->fetch_assoc()){
+            ?>
+
                 <div class="recomend-img">
-                    <img src="images/nike_image.png" alt="">
-                    <p class="Name">Nike</p>
-                    <p class="Price">RM 100</p>
-                    <input type="button" class="cartButton" value="Quick Add">
+                <?php if ($row['status'] === 'Promotion'){
+                    $price = $row['price'];
+                    $discount_price = $row['discount_price'];
+
+                    $discountPercent = round((($price - $discount_price) / $price) * 100);
+                    echo '<div style="position: absolute; left:1px; background-color: red; color: white; font-size: 14px; font-weight: bold; padding: 5px 10px; border-radius: 5px; z-index: 1;">'.$discountPercent.' % OFF</div>';
+                    }
+                 ?>
+                 
+                    <a href="../ProductPage/product.php?id=<?php echo $row['product_id']?>">
+                    <img src="../../upload/<?php echo $row['product_img1'] ?>" alt="">
+                    <p class="Name"><?php echo $row['product_name'] ?></p>
+                    
+                        <?php
+                            if($row['status'] === 'Promotion'){
+                                echo '<p class="Price">RM '.$row['discount_price'].'</span>
+                                <span style="color: gray; text-decoration: line-through; margin-left:20px">RM '.$row['price'].'</span></p>';
+                            }
+                            else{
+                                echo '<p class="Price">RM '.$row['price'].'</p>';
+                            }
+                        ?>
+                    
+                    
+                    </a>
                 </div>
-                
-                <div class="recomend-img">
-                    <img src="images/nike_image.png" alt="">
-                    <p class="Name">Nike</p>
-                    <p class="Price">RM 100</p>
-                    <input type="button" class="cartButton" value="Quick Add">
-                </div>
-                
-                <div class="recomend-img">
-                    <img src="images/nike_image.png" alt="">
-                    <p class="Name">Nike</p>
-                    <p class="Price">RM 100</p>
-                    <input type="button" class="cartButton" value="Quick Add">
-                </div>
-                
+        <?php
+                }
+        ?>
             </div>
         </div>
-    
         <?php include __DIR__ . '/../Header_and_Footer/footer.html'; ?> 
         <script src="product.js"></script>
 </body>
+
+<?php
+    }
+}
+?>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const sizeSelect = document.getElementById("size");
+    const skuDisplay = document.getElementById("skuDisplay");
+
+    function updateSKU() {
+        const selectedOption = sizeSelect.options[sizeSelect.selectedIndex];
+        const sku = selectedOption.getAttribute("data-sku") || "N/A";
+        skuDisplay.textContent = sku;
+    }
+
+    updateSKU(); 
+    sizeSelect.addEventListener("change", updateSKU); 
+});
+</script>
+
+
 
 </html>

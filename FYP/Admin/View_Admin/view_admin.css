@@ -74,23 +74,31 @@ table {
 
 #edit, #delete{
     padding: 5px;
-    border-radius: 10px;
+    border-radius: 5px;
+    font-size: 16px;
     font-weight: bold;
-    margin: 1px;
+    margin: 5px;
+    text-decoration: none;
+    color: rgb(255, 255, 255);
 }
 
 #edit{
-    background-color: rgba(0, 255, 0, 0.596);
+    background-color: rgb(0, 172, 0);
 }
 
 #edit:hover{
-    background-color: rgb(0, 189, 0);
+    background-color: rgba(0, 100, 0, 0.863);
 }
 
 #delete{
-    background-color: rgba(255, 0, 0, 0.473);
+    background-color: rgb(255, 0, 0);
 }
 
 #delete:hover{
-    background-color: rgba(160, 0, 0, 0.473);
+    background-color: rgba(134, 0, 0, 0.877);
+}
+
+.button{
+    display: flex;
+    justify-content: space-evenly;
 }

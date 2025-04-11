@@ -13,11 +13,14 @@
 
 </head>
 
+    <?php include __DIR__ . '/../../connect_db/config.php'; ?>
+
+
 <body>
-    <?php include __DIR__ . '/../Header_And_Footer/header.html'; ?>
+    <?php include __DIR__ . '/../Header_And_Footer/header.php'; ?>
 
     <div class="contain">
-        <?php include __DIR__ . '/../sidebar/sidebar.html'; ?>
+        <?php include __DIR__ . '/../sidebar/sidebar.php'; ?>
 
         <div class="dashboard">
             <div class="column">
@@ -89,26 +92,12 @@
 
 
     <?php
-        session_start();
+        /*session_start();
 
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $dbname = "verosports";
+        $user_id = $_SESSION['user_id'];*/
 
-        $conn = new mysqli($servername, $username, $password, $dbname);
-
-        if ($conn->connect_error) {
-            die("Fail Connect: " . $conn->connect_error);
-        }
-
-        $user_id = $_SESSION['user_id'];
-
-        $sql= "SELECT * FROM users WHERE user_id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $user_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $sql= "SELECT * FROM users WHERE user_id = 26";
+        $result = $conn->query($sql);
 
         while ($row = $result->fetch_assoc()) {
             echo '<div class="admin">
