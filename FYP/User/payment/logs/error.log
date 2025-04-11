@@ -3,3 +3,90 @@
 Stack trace:
 #0 {main}
   thrown in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 83
+[09-Apr-2025 05:45:30 Europe/Berlin] PHP Warning:  Undefined variable $pdo in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 80
+[09-Apr-2025 05:45:30 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function inTransaction() on null in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php:80
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 80
+[10-Apr-2025 02:34:25 Europe/Berlin] PHP Warning:  Undefined variable $pdo in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 89
+[10-Apr-2025 02:34:25 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function inTransaction() on null in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php:89
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 89
+[10-Apr-2025 02:34:28 Europe/Berlin] PHP Warning:  Undefined variable $pdo in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 89
+[10-Apr-2025 02:34:28 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function inTransaction() on null in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php:89
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 89
+[10-Apr-2025 02:34:31 Europe/Berlin] PHP Warning:  Undefined variable $pdo in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 89
+[10-Apr-2025 02:34:31 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function inTransaction() on null in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php:89
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 89
+[10-Apr-2025 02:34:32 Europe/Berlin] PHP Warning:  Undefined variable $pdo in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 89
+[10-Apr-2025 02:34:32 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function inTransaction() on null in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php:89
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 89
+[10-Apr-2025 02:34:33 Europe/Berlin] PHP Warning:  Undefined variable $pdo in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 89
+[10-Apr-2025 02:34:33 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function inTransaction() on null in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php:89
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 89
+[10-Apr-2025 02:34:33 Europe/Berlin] PHP Warning:  Undefined variable $pdo in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 89
+[10-Apr-2025 02:34:33 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function inTransaction() on null in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php:89
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 89
+[10-Apr-2025 02:34:33 Europe/Berlin] PHP Warning:  Undefined variable $pdo in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 89
+[10-Apr-2025 02:34:33 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function inTransaction() on null in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php:89
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 89
+[10-Apr-2025 02:38:49 Europe/Berlin] PHP Warning:  Undefined variable $pdo in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 106
+[10-Apr-2025 02:38:49 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function inTransaction() on null in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php:106
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 106
+[10-Apr-2025 02:38:51 Europe/Berlin] PHP Warning:  Undefined variable $pdo in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 106
+[10-Apr-2025 02:38:51 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function inTransaction() on null in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php:106
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 106
+[10-Apr-2025 02:38:55 Europe/Berlin] PHP Warning:  Undefined variable $pdo in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 106
+[10-Apr-2025 02:38:55 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function inTransaction() on null in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php:106
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 106
+[10-Apr-2025 02:38:55 Europe/Berlin] PHP Warning:  Undefined variable $pdo in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 106
+[10-Apr-2025 02:38:55 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function inTransaction() on null in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php:106
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 106
+[10-Apr-2025 02:38:55 Europe/Berlin] PHP Warning:  Undefined variable $pdo in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 106
+[10-Apr-2025 02:38:55 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function inTransaction() on null in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php:106
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 106
+[10-Apr-2025 02:38:57 Europe/Berlin] PHP Warning:  Undefined variable $pdo in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 106
+[10-Apr-2025 02:38:57 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function inTransaction() on null in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php:106
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 106
+[10-Apr-2025 02:40:07 Europe/Berlin] PHP Warning:  Undefined variable $pdo in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 106
+[10-Apr-2025 02:40:07 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function inTransaction() on null in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php:106
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 106
+[10-Apr-2025 02:40:07 Europe/Berlin] PHP Warning:  Undefined variable $pdo in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 106
+[10-Apr-2025 02:40:07 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function inTransaction() on null in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php:106
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\FYP\FYP\User\payment\charge.php on line 106
+[10-Apr-2025 07:19:40 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli object is already closed in C:\xampp\htdocs\FYP\FYP\User\payment\db.php:260
+Stack trace:
+#0 C:\xampp\htdocs\FYP\FYP\User\payment\db.php(260): mysqli->close()
+#1 C:\xampp\htdocs\FYP\FYP\User\payment\db.php(268): Database->close()
+#2 [internal function]: Database->__destruct()
+#3 {main}
+  thrown in C:\xampp\htdocs\FYP\FYP\User\payment\db.php on line 260
