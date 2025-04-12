@@ -1,231 +1,136 @@
-
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VEROSPORT 付款页面</title>
+    <title>VEROSPORT Checkout</title>
+    <link rel="stylesheet" href="checkout.css">
     <script src="https://js.stripe.com/v3/"></script>
-    <style>
-        * {
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f8f8f8;
-        }
-
-        .container {
-            display: flex;
-            background: #fff;
-            width: 800px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-
-        .left-panel {
-            width: 40%;
-            padding: 20px;
-            border-right: 1px solid #ddd;
-        }
-
-        .left-panel img {
-            width: 100%;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-
-        .product-title {
-            font-size: 14px;
-            color: #0066c0;
-            text-decoration: none;
-        }
-
-        .price {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 5px 0;
-        }
-
-        .brand {
-            font-size: 14px;
-            color: #555;
-        }
-
-        .right-panel {
-            width: 60%;
-            padding: 20px;
-        }
-
-        .payment-option {
-            display: flex;
-            align-items: center;
-            background: #00b400;
-            color: white;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 5px;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .payment-option img {
-            margin-left: 8px;
-            width: 20px;
-        }
-
-        .divider {
-            text-align: center;
-            margin: 15px 0;
-            color: #888;
-            font-size: 14px;
-        }
-
-        form input, select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        .card-info {
-            display: flex;
-            gap: 10px;
-        }
-
-        .save-info {
-            display: flex;
-            align-items: center;
-            font-size: 14px;
-            color: #666;
-        }
-
-        .save-info input {
-            margin-right: 5px;
-        }
-
-        .pay-button {
-            width: 100%;
-            background: #007bff;
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .pay-button:hover {
-            background: #0056b3;
-        }
-
-
-    </style>
+    <script src="checkout.js"></script>
 </head>
 <body>
-
     <div class="container">
-
-        <div class="left-panel">
-            <img src="https://static.nike.com/a/images/t_default/ed5a6018-2cf1-4c58-930a-8553cd574514/air-force-1-07-shoes-JWL0B9.png" alt="Nike Shoes">
-            <p class="product-title">shoes</p>
-            <p class="price">MYR 100.00</p>
-            <p class="brand">nike</p>
+        <div class="left-panel" id="product-panel">
+            <!-- Product details will be loaded dynamically -->
+            <div id="loading-product">
+                <div class="spinner"></div>
+                <p>Loading product details...</p>
+            </div>
         </div>
 
-
         <div class="right-panel">
-            <div class="payment-option">Payment Methods➤ Link</div>
+            <div class="payment-option">Payment Methods ➤ Link</div>
             <p class="divider">Or pay by bank card</p>
             
             <form id="payment-form">
+                <input type="hidden" id="order-id" name="order_id">
                 <input type="email" placeholder="Email" required>
-                <input type="text" placeholder="Card (1234 1234 1234 1234)" required>
                 
-                <div class="card-info">
-                    <input type="text" placeholder="Month/Year" required>
-                    <input type="text" placeholder="CVC" required>
-                </div>
-
+                <!-- Stripe Card Element will be inserted here -->
+                <div id="card-element" class="card-element"></div>
+                
                 <input type="text" placeholder="Cardholder Name" required>
                 
                 <select>
                     <option>Malaysia</option>
                 </select>
 
-
-
                 <button class="pay-button" id="submit">Pay</button>
+                
+                <div id="error-message" class="error-message"></div>
+                <div id="success-message" class="success-message"></div>
+                
+                <div id="loading">
+                    <div class="spinner"></div>
+                    <p>Processing your payment...</p>
+                </div>
             </form>
-
         </div>
     </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", async function () {
-    const stripe = Stripe("pk_test_51R3yBQQZPLk7FzRY3uO9YLeLKEbmLgOWzlD43uf0xHYeHdVC13kMzpCw5zhRPnp215QEwdZz7F9qmeMT6dv2ZmC600HNBheJIT");
-    const elements = stripe.elements();
-
-    const cardElement = elements.create("card", {
-        style: {
-            base: {
-                fontSize: "16px",
-                color: "#32325d",
-                "::placeholder": { color: "#aab7c4" },
-            },
-        },
-    });
-    cardElement.mount("#card-element");
-
-    const form = document.getElementById("payment-form");
-    const payButton = document.getElementById("submit");
-
-    form.addEventListener("submit", async function (event) {
-        event.preventDefault();
-        payButton.disabled = true;
-        payButton.innerText = "Process...";
-
-        const { paymentMethod, error } = await stripe.createPaymentMethod({
-            type: "card",
-            card: cardElement,
+    <script>
+        // Get order ID from URL and load product details
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('order_id');
+            
+            if (orderId) {
+                document.getElementById('order-id').value = orderId;
+                // Load product details from order
+                loadOrderDetails(orderId);
+            } else {
+                document.getElementById('error-message').textContent = 'No order ID found. Please return to cart and try again.';
+                document.getElementById('error-message').style.display = 'block';
+                document.getElementById('submit').disabled = true;
+            }
         });
-
-        if (error) {
-            alert(error.message);
-            payButton.disabled = false;
-            payButton.innerText = "PAY";
-            return;
+        
+        // Function to load order details
+        async function loadOrderDetails(orderId) {
+            try {
+                const response = await fetch(`get_order_items.php?order_id=${orderId}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load order details');
+                }
+                
+                const data = await response.json();
+                
+                if (data.success && data.items && data.items.length > 0) {
+                    displayProductInfo(data.items[0]); // Display first item for now
+                    
+                    // If there are multiple items, you can add a note
+                    if (data.items.length > 1) {
+                        const productPanel = document.getElementById('product-panel');
+                        const multipleItemsNote = document.createElement('p');
+                        multipleItemsNote.className = 'multiple-items-note';
+                        multipleItemsNote.textContent = `+ ${data.items.length - 1} more items`;
+                        productPanel.appendChild(multipleItemsNote);
+                    }
+                } else {
+                    throw new Error('No items found in this order');
+                }
+            } catch (error) {
+                document.getElementById('error-message').textContent = error.message || 'Failed to load order details';
+                document.getElementById('error-message').style.display = 'block';
+            } finally {
+                // Hide loading indicator
+                document.getElementById('loading-product').style.display = 'none';
+            }
         }
-
-        const response = await fetch("charge.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({
-                payment_method_id: paymentMethod.id,
-            }),
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            alert("支付成功，订单 ID：" + result.order_id);
-            window.location.href = "order_success.php?order_id=" + result.order_id;
-        } else {
-            alert("支付失败：" + result.error);
-            payButton.disabled = false;
-            payButton.innerText = "支付";
+        
+        // Function to display product information
+        function displayProductInfo(item) {
+            const productPanel = document.getElementById('product-panel');
+            
+            // Create elements for product details
+            const productImage = document.createElement('img');
+            productImage.src = item.product_img || 'placeholder.jpg';
+            productImage.alt = item.product_name;
+            
+            const productTitle = document.createElement('p');
+            productTitle.className = 'product-title';
+            productTitle.textContent = item.product_name;
+            
+            const productPrice = document.createElement('p');
+            productPrice.className = 'price';
+            productPrice.textContent = `MYR ${parseFloat(item.price).toFixed(2)}`;
+            
+            const productBrand = document.createElement('p');
+            productBrand.className = 'brand';
+            productBrand.textContent = item.brand || 'Verosports';
+            
+            const productSize = document.createElement('p');
+            productSize.className = 'size';
+            productSize.textContent = `Size: ${item.product_size}`;
+            
+            // Append elements to panel
+            productPanel.appendChild(productImage);
+            productPanel.appendChild(productTitle);
+            productPanel.appendChild(productPrice);
+            productPanel.appendChild(productBrand);
+            productPanel.appendChild(productSize);
         }
-    });
-});
-  </script>
+    </script>
 </body>
 </html>
