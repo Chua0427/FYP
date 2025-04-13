@@ -6,3 +6,4 @@
 [2025-04-13T06:45:13.691862+02:00] auth.INFO: User logout {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
 [2025-04-13T06:46:02.206962+02:00] auth.INFO: User login {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
 [2025-04-13T06:46:31.405522+02:00] auth.INFO: User login {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
+[2025-04-13T09:01:34.431778+02:00] auth.INFO: User logout {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
