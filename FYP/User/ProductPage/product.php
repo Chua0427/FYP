@@ -18,6 +18,7 @@
 
     if(isset($_GET['id'])){
         $product_id=$_GET['id'];
+        $current_product_id = $_GET['id'];
 
         $sql="SELECT* FROM product WHERE product_id=$product_id";
         $result= $conn->query($sql);
@@ -179,38 +180,46 @@
             <h1>Recomended</h1>
             <div class="recomend-column">
             <?php
-                $sql="SELECT* FROM product ORDER BY RAND() LIMIT 4";
+                $sql="SELECT p.*, SUM(s.stock) as total_stock
+                    FROM product p
+                    JOIN stock s ON p.product_id = s.product_id
+                    WHERE p.product_id!='$current_product_id'
+                    GROUP BY p.product_id
+                    HAVING total_stock > 0
+                    ORDER BY RAND()
+                    LIMIT 4";
+
                 $result= $conn->query($sql);
-                
+
                 while($row= $result->fetch_assoc()){
             ?>
 
                 <div class="recomend-img">
-                <?php if ($row['status'] === 'Promotion'){
-                    $price = $row['price'];
-                    $discount_price = $row['discount_price'];
+                    <?php if ($row['status'] === 'Promotion'){
+                        $price = $row['price'];
+                        $discount_price = $row['discount_price'];
 
-                    $discountPercent = round((($price - $discount_price) / $price) * 100);
-                    echo '<div style="position: absolute; left:1px; background-color: red; color: white; font-size: 14px; font-weight: bold; padding: 5px 10px; border-radius: 5px; z-index: 1;">'.$discountPercent.' % OFF</div>';
-                    }
-                 ?>
-                 
-                    <a href="../ProductPage/product.php?id=<?php echo $row['product_id']?>">
-                    <img src="../../upload/<?php echo $row['product_img1'] ?>" alt="">
-                    <p class="Name"><?php echo $row['product_name'] ?></p>
+                        $discountPercent = round((($price - $discount_price) / $price) * 100);
+                        echo '<div style="position: absolute; left:1px; background-color: red; color: white; font-size: 14px; font-weight: bold; padding: 5px 10px; border-radius: 5px; z-index: 1;">'.$discountPercent.' % OFF</div>';
+                        }
+                    ?>
                     
-                        <?php
-                            if($row['status'] === 'Promotion'){
-                                echo '<p class="Price">RM '.$row['discount_price'].'</span>
-                                <span style="color: gray; text-decoration: line-through; margin-left:20px">RM '.$row['price'].'</span></p>';
-                            }
-                            else{
-                                echo '<p class="Price">RM '.$row['price'].'</p>';
-                            }
-                        ?>
-                    
-                    
-                    </a>
+                        <a href="../ProductPage/product.php?id=<?php echo $row['product_id']?>">
+                        <img src="../../upload/<?php echo $row['product_img1'] ?>" alt="">
+                        <p class="Name"><?php echo $row['product_name'] ?></p>
+                        
+                            <?php
+                                if($row['status'] === 'Promotion'){
+                                    echo '<p class="Price">RM '.$row['discount_price'].'</span>
+                                    <span style="color: gray; text-decoration: line-through; margin-left:20px">RM '.$row['price'].'</span></p>';
+                                }
+                                else{
+                                    echo '<p class="Price">RM '.$row['price'].'</p>';
+                                }
+                            ?>
+                        
+                        
+                        </a>
                 </div>
         <?php
                 }
@@ -222,8 +231,8 @@
 </body>
 
 <?php
+        }
     }
-}
 ?>
 
 <script>

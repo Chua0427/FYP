@@ -113,24 +113,45 @@
                 $sql= "SELECT* FROM product WHERE status='Promotion'";
                 $result= $conn->query($sql);
 
+                $sql1 = "
+                    SELECT p.*, s.stock
+                    FROM product p
+                    LEFT JOIN stock s ON p.product_id = s.product_id
+                    ";
+
+                $result1 = $conn->query($sql1);
+
                 while($row = $result->fetch_assoc())
                 {
                     $price = $row['price'];
                     $discount_price = $row['discount_price'];
 
                     $discountPercent = round((($price - $discount_price) / $price) * 100);
+                        
+                    $product_id = $row['product_id'];
+                    $stock = 0;
+                            
+                    while ($row1 = $result1->fetch_assoc()) {
+                        if ($row1['product_id'] == $product_id) {
+                            $stock = $row1['stock'];
+                            break;
+                        }
+                    }
 
-                    echo'<div class="product-column">
-                            <div class="discount">'.$discountPercent.'% OFF</div>
-                            <a href="../ProductPage/product.php?id='.$row['product_id'].'">
-                                <img src="../../upload/'.$row['product_img1'].'" alt="">
-                                <p class="product-name">'.$row['product_name'].'</p>
-                                <div class="price">
-                                    <span class="promotionPrice">RM '.$row['discount_price'].'</span>
-                                    <span class="discountPrice">RM '.$row['price'].'</span>
-                                </div>
-                            </a>
-                        </div>';
+                    if ($stock >0) {
+
+                        echo'<div class="product-column">
+                                <div class="discount">'.$discountPercent.'% OFF</div>
+                                <a href="../ProductPage/product.php?id='.$row['product_id'].'">
+                                    <img src="../../upload/'.$row['product_img1'].'" alt="">
+                                    <p class="product-name">'.$row['product_name'].'</p>
+                                    <div class="price">
+                                        <span class="promotionPrice">RM '.$row['discount_price'].'</span>
+                                        <span class="discountPrice">RM '.$row['price'].'</span>
+                                    </div>
+                                </a>
+                            </div>';
+                    }
                 }
             ?>
             
