@@ -27,7 +27,14 @@
 ?>
 
 <body>
-        <?php include __DIR__ . '/../Header_and_Footer/header.html'; ?>
+        <?php
+        // Start session if not already started
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        include __DIR__ . '/../Header_and_Footer/header.php'; 
+        ?>
 
         <div class="productContainer">
         

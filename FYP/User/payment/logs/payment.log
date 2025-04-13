@@ -21,3 +21,5 @@
 [2025-04-10 07:13:03] [ERROR] Payment error: Missing order ID
 [2025-04-10 07:19:40] [ERROR] Payment failed: Missing order ID
 [2025-04-10 07:58:33] [ERROR] Payment error: Missing order ID
+[2025-04-11 12:48:45] [ERROR] Payment cancellation error: Missing order ID
+[2025-04-11 12:48:52] [ERROR] Payment failed: Missing order ID

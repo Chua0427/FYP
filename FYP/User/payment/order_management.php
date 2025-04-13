@@ -5,7 +5,8 @@ require_once '/xampp/htdocs/FYP/FYP/User/payment/secrets.php';
 require_once __DIR__ . '/db.php';
 require __DIR__ . '/../app/init.php';
 
-use Ramsey\Uuid\Uuid;
+// Remove UUID import since we're now using auto-increment IDs
+// use Ramsey\Uuid\Uuid;
 
 session_start();
 
@@ -49,7 +50,7 @@ try {
         case 'get_order_details':
             getOrderDetails($db);
             break;
-            
+
         case 'update_order_status':
             updateOrderStatus($db);
             break;
@@ -57,11 +58,11 @@ try {
         case 'get_user_orders':
             getUserOrders($db, $user_id);
             break;
-            
+
         case 'get_all_orders':
             getAllOrders($db);
             break;
-            
+
         default:
             throw new Exception("Invalid action: $action");
     }
@@ -114,15 +115,16 @@ function createOrder(Database $db, $user_id) {
             $total_price += $item['final_price'] * $item['quantity'];
         }
         
-        // Generate unique order ID
-        $order_id = Uuid::uuid4()->toString();
-        
+        // No longer generate UUID - database will auto-increment the ID
         // Create order record
         $db->execute(
-            "INSERT INTO orders (order_id, user_id, total_price, shipping_address, delivery_status) 
-             VALUES (?, ?, ?, ?, 'prepare')",
-            [$order_id, $user_id, $total_price, $shipping_address]
+            "INSERT INTO orders (user_id, total_price, shipping_address, delivery_status) 
+             VALUES (?, ?, ?, 'prepare')",
+            [$user_id, $total_price, $shipping_address]
         );
+        
+        // Get the auto-generated order ID
+        $order_id = $db->fetchOne("SELECT LAST_INSERT_ID() as id")['id'];
         
         // Create order items from cart
         foreach ($cart_items as $item) {

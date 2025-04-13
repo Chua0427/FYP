@@ -1,0 +1,8 @@
+[2025-04-13T06:19:47.366904+02:00] auth.INFO: User login {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
+[2025-04-13T06:23:17.308156+02:00] auth.INFO: User logout {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
+[2025-04-13T06:23:27.382240+02:00] auth.INFO: User login {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
+[2025-04-13T06:44:16.570351+02:00] auth.INFO: User logout {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
+[2025-04-13T06:44:23.041553+02:00] auth.INFO: User login {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
+[2025-04-13T06:45:13.691862+02:00] auth.INFO: User logout {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
+[2025-04-13T06:46:02.206962+02:00] auth.INFO: User login {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
+[2025-04-13T06:46:31.405522+02:00] auth.INFO: User login {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []

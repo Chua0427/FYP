@@ -14,7 +14,14 @@
 </head>
 
 <body>
-    <?php include __DIR__ . '/../Header_and_Footer/header.html'; ?>
+    <?php 
+    // Start session if not already started
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    include __DIR__ . '/../Header_and_Footer/header.php'; 
+    ?>
 
     <?php
         $category = isset($_GET['product_categories']) ? $_GET['product_categories'] : '';

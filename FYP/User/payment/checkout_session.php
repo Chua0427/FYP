@@ -101,16 +101,19 @@ try {
         ];
     }
     
+    // Convert order_id to string for metadata and URLs
+    $order_id_str = (string)$order_id;
+    
     // Create a Checkout Session
     $checkout_session = \Stripe\Checkout\Session::create([
         'payment_method_types' => ['card'],
         'line_items' => $line_items,
         'mode' => 'payment',
         'customer_email' => $user['email'] ?? null,
-        'success_url' => "http://{$_SERVER['HTTP_HOST']}/FYP/User/payment/success.php?session_id={CHECKOUT_SESSION_ID}&order_id=$order_id",
-        'cancel_url' => "http://{$_SERVER['HTTP_HOST']}/FYP/User/payment/cancel.php?order_id=$order_id",
+        'success_url' => "http://{$_SERVER['HTTP_HOST']}/FYP/User/payment/success.php?session_id={CHECKOUT_SESSION_ID}&order_id=$order_id_str",
+        'cancel_url' => "http://{$_SERVER['HTTP_HOST']}/FYP/User/payment/cancel.php?order_id=$order_id_str",
         'metadata' => [
-            'order_id' => $order_id,
+            'order_id' => $order_id_str,
             'user_id' => $user_id
         ],
     ]);
@@ -123,7 +126,7 @@ try {
         "INSERT INTO payment 
          (payment_id, order_id, total_amount, payment_status, payment_method, stripe_id, currency) 
          VALUES (?, ?, ?, 'pending', 'stripe_checkout', ?, 'MYR')",
-        [$payment_id, $order_id, $total_price, $checkout_session->id]
+        [$payment_id, $order_id_str, $total_price, $checkout_session->id]
     );
     
     // Add log entry
