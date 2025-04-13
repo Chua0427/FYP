@@ -3,10 +3,7 @@ require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once '/xampp/htdocs/FYP/FYP/User/payment/db.php';
 require __DIR__ . '/../app/init.php';
 
-// Make sure the session is started
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+session_start();
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -90,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Redirect to checkout page
                     if (!empty($cartItems)) {
                         // Redirect to create order first
-                        header('Location: /FYP/User/payment/checkout.php');
+                        header('Location: /FYP/FYP/User/payment/checkout.php');
                     } else {
                         $error = "Your cart is empty.";
                     }
@@ -120,11 +117,10 @@ $pageTitle = "Shopping Cart - VeroSports";
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../Header_and_Footer/header.css">
     <link rel="stylesheet" href="../Header_and_Footer/footer.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="cart.css">
 </head>
 <body>
-    <?php include __DIR__ . '/../Header_and_Footer/header.php'; ?>
+    <?php include_once '../Header_and_Footer/header.html'; ?>
     
     <main>
         <div class="container">
