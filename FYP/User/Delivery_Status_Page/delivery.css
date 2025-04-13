@@ -79,7 +79,11 @@ h1{
 }
 
 .step.completed::before{
-    background-color: rgb(60, 255, 0);
+    background-color: rgb(33, 196, 0);
+}
+
+.step.completed .circle{
+    background-color: rgb(33, 196, 0);
 }
 
 .invoice {
@@ -96,11 +100,11 @@ h1{
 }
 
 .invoice h3{
-    margin-top: 30px;
+    margin-top: 60px;
 }
 
 .invoice p{
-    margin-top: 10px;
+    margin-top: 30px;
 }
 
 .invoice table {
@@ -110,9 +114,17 @@ h1{
     margin-bottom: 20px;
 }
 .invoice table th, .invoice table td {
-    border: 1px solid #ccc;
     padding: 8px;
     text-align: center;
+}
+
+.invoice table th{
+    background: rgb(0, 110, 255);
+    color: white;
+}
+
+.invoice table tr:hover{
+    background-color: rgba(0, 153, 255, 0.397);
 }
 
 
