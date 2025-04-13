@@ -45,8 +45,8 @@ table {
 }
 
 .user-table table th {
-    background: #e9e9e9;
-    color: #333;
+    background: #0066ff;
+    color: white;
     padding: 5px 15px;
     font-size: 16px;
 }

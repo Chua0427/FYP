@@ -105,16 +105,36 @@
 
                     $sql= "SELECT* FROM product WHERE status='New'";
                     $result= $conn->query($sql);
+                    
+                    $sql1 = "
+                        SELECT p.*, s.stock
+                        FROM product p
+                        LEFT JOIN stock s ON p.product_id = s.product_id
+                        ";
 
-                    while($row= $result->fetch_assoc()){
-                        echo '<div class="product-column">
-                                <a href="../ProductPage/product.php?id='.$row['product_id'].'">
-                                    <img src="../../upload/'.$row['product_img1'].'" alt="">
-                                    <p class="product-name">'.$row['product_name'].'</p>
-                                    <div class="price">RM '.$row['price'].'</div>
-                                </a>
-                            </div>';
-                    }
+                    $result1 = $conn->query($sql1);
+
+                        while($row= $result->fetch_assoc()){
+                            $product_id = $row['product_id'];
+                            $stock = 0;
+                                
+                            while ($row1 = $result1->fetch_assoc()) {
+                                if ($row1['product_id'] == $product_id) {
+                                    $stock = $row1['stock'];
+                                    break;
+                                }
+                            }
+
+                            if ($stock >0) {
+                                echo '<div class="product-column">
+                                        <a href="../ProductPage/product.php?id='.$row['product_id'].'">
+                                            <img src="../../upload/'.$row['product_img1'].'" alt="">
+                                            <p class="product-name">'.$row['product_name'].'</p>
+                                            <div class="price">RM '.$row['price'].'</div>
+                                        </a>
+                                    </div>';
+                            }
+                        }
                 ?>
                 
             </div>

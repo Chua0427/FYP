@@ -3,7 +3,7 @@
     left: 5px;
     width: 235px;
     height: 85%;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(8px);
     box-shadow: 4px 0 8px rgba(0, 0, 0, 0.2);
     margin-top: 100px;
@@ -38,6 +38,13 @@
 .sidebar ul li:hover {
     background: rgba(255, 255, 255, 0.2); 
     border-left: 4px solid #ff6600;
+    border-radius: 10px;
+}
+
+.sidebar ul li.active {
+    background: rgba(255, 255, 255, 0.2); 
+    border-left: 4px solid #ff6600;
+    border-radius: 10px;
 }
 
 .sidebar ul li i {

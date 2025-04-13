@@ -20,7 +20,7 @@ function openfilter() {
 
 document.addEventListener("DOMContentLoaded", function () {
     const urlParams = new URLSearchParams(window.location.search); 
-    const category = urlParams.get("category"); 
+    const category = urlParams.get("product_categories"); 
     const brand = urlParams.get("brand");     
     const gender = urlParams.get("gender");   
 
