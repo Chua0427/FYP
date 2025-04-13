@@ -1,16 +1,22 @@
 {
     "$schema": "schema.json",
-    "name": "elvistann/verosports",
-    "description": "VEROSPORTS - An online sports shop web-based system.",
+    "name": "verosports/fyp",
+    "description": "VeroSports E-commerce Platform",
+    "type": "project",
     "license": "MIT",
     "require": {
-        "php": ">=7.4",
-        "stripe/stripe-php": "^10.0",
-        "ramsey/uuid": "^4.0"
+        "php": ">=8.0",
+        "monolog/monolog": "^3.0",
+        "stripe/stripe-php": "^10.0"
     },
     "autoload": {
-        "psr-4": {
-            "App\\": "src/"
+        "classmap": [
+            "FYP/User/app/"
+        ]
+    },
+    "config": {
+        "platform": {
+            "php": "8.0"
         }
     }
 }

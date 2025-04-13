@@ -14,7 +14,14 @@
 </head>
 
 <body>
-    <?php include __DIR__ . '/../Header_and_Footer/header.html'; ?>
+    <?php 
+    // Start session if not already started
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    include __DIR__ . '/../Header_and_Footer/header.php'; 
+    ?>
     <div class="new-billboard">
         <img src="images/new-arrival-banner-template-yellow-blue-colors-vector-44784986.jpg" alt="">
         <div class="slogan-contain">

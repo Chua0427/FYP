@@ -1,0 +1,338 @@
+<?php
+declare(strict_types=1);
+
+// Initialize session if not already started
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Include authentication functions
+require_once __DIR__ . '/../app/auth.php';
+
+// Generate CSRF token if it doesn't exist
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// Check token-based authentication
+$is_authenticated = Auth::check();
+$user_data = null;
+
+if ($is_authenticated) {
+    $user_data = Auth::user();
+    
+    // Update session for backward compatibility
+    if (!isset($_SESSION['user_id']) && isset($user_data['user_id'])) {
+        $_SESSION['user_id'] = $user_data['user_id'];
+        $_SESSION['first_name'] = $user_data['first_name'] ?? '';
+        $_SESSION['last_name'] = $user_data['last_name'] ?? '';
+        $_SESSION['email'] = $user_data['email'] ?? '';
+        $_SESSION['user_type'] = $user_data['user_type'] ?? 0;
+    }
+} elseif (isset($_SESSION['user_id'])) {
+    // Legacy session-based auth, convert to token
+    try {
+        $pdo = new PDO('mysql:host=localhost;dbname=verosports', 'root', '');
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE user_id = :user_id");
+        $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($user) {
+            // Generate token for this user
+            Auth::login((int)$user['user_id'], $user);
+            $is_authenticated = true;
+            $user_data = $user;
+        }
+    } catch (Exception $e) {
+        // Error getting user data, log error
+        error_log("Header authentication error: " . $e->getMessage());
+    }
+}
+
+// Get cart count if user is authenticated
+$cartCount = 0;
+if ($is_authenticated) {
+    require_once '/xampp/htdocs/FYP/FYP/User/payment/db.php';
+    
+    try {
+        $db = new Database();
+        $result = $db->fetchOne(
+            "SELECT COUNT(*) as count FROM cart WHERE user_id = :user_id",
+            [':user_id' => $_SESSION['user_id']]
+        );
+        
+        if ($result) {
+            $cartCount = (int)$result['count'];
+        }
+        
+        $db->close();
+    } catch (Exception $e) {
+        // Silently fail
+        error_log("Cart count error: " . $e->getMessage());
+    }
+}
+?>
+
+<header>
+    <img src="../Header_and_Footer/img/VeroSports.jpeg" class="logo">
+
+    <div class="subtitleContainer">
+        <div class="subTitle">
+            <ul>
+                <li id="home">
+                    <a href="../HomePage/homePage.php">Home</a>
+                </li>
+                <li id="newArrival">
+                    <a href="../New_Arrival_Page/new_product.php">New Arrivals</a>
+                </li>
+                <div class="dropdown">
+                    <li id="men"><a href="../All_Product_Page/all_product.php?gender=Men">Men</a></li>
+                    <div class="dropdownmenu">
+                        <div class="category">
+                            <h3>Footwear</h3>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&product_categories=Boot">Boot</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&product_categories=Futsal">Futsal</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&product_categories=Running">Running</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&product_categories=Court">Court</a>
+                        </div>
+                        <div class="category">
+                            <h3>Apparel</h3>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&product_categories=Jersey">Jerseys</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&product_categories=Jacket">Jackets</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&product_categories=Pant">Pants</a>
+                        </div>
+                        <div class="category">
+                            <h3>Equipment</h3>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&product_categories=Bag">Bags</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&product_categories=Cap">Caps</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&product_categories=Football Accessories">Football Accessories</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&product_categories=Sock">Socks</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&product_categories=Gym Accessories">Gym Accessories</a>
+                        </div>
+                        <div class="category">
+                            <h3>Shop By Brand</h3>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&brand=Nike">Nike</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&brand=Adidas">Adidas</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&brand=Puma">Puma</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&brand=Umbro">Umbro</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&brand=Lotto">Lotto</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&brand=Asics">Asics</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&brand=New Balance">New Balance</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Men&brand=Under Amour">Under Amour</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <li id="women"><a href="../All_Product_Page/all_product.php?gender=Women">Women</a></li>
+                    <div class="dropdownmenu">
+                        <div class="category">
+                            <h3>Footwear</h3>
+                            <a href="../All_Product_Page/all_product.php?gender=Women&product_categories=Training">Training</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Women&product_categories=Running">Running</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Women&product_categories=Court">Court</a>
+                        </div>
+                        <div class="category">
+                            <h3>Apparel</h3>
+                            <a href="../All_Product_Page/all_product.php?gender=Women&product_categories=Jersey">Jerseys</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Women&product_categories=Jacket">Jackets</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Women&product_categories=Legging">Leggings</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Women&product_categories=Pant">Pants</a>
+                        </div>
+                        <div class="category">
+                            <h3>Equipment</h3>
+                            <a href="../All_Product_Page/all_product.php?gender=Women&product_categories=Bag">Bags</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Women&product_categories=Cap">Caps</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Women&product_categories=Sock">Socks</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Women&product_categories=Gym Accessories">Gym Accessories</a>
+                        </div>
+                        <div class="category">
+                            <h3>Shop By Brand</h3>
+                            <a href="../All_Product_Page/all_product.php?gender=Women&brand=Nike">Nike</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Women&brand=Adidas">Adidas</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Women&brand=Puma">Puma</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Women&brand=Lotto">Lotto</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Women&brand=Asics">Asics</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Women&brand=New Balance">New Balance</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Women&brand=Umbro">Umbro</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <li id="kids"><a href="../All_Product_Page/all_product.php?gender=Kid">Kids</a></li>
+                    <div class="dropdownmenu">
+                        <div class="category">
+                            <h3>Footwear</h3>
+                            <a href="../All_Product_Page/all_product.php?gender=Kid&product_categories=Football Shoes">Football Shoes</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Kid&product_categories=Kid Shoes">Kids Shoes</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Kid&product_categories=School Shoes">School Shoes</a>
+                        </div>
+                        <div class="category">
+                            <h3>Apparel</h3>
+                            <a href="../All_Product_Page/all_product.php?gender=Kid&product_categories=Jacket">Jackets</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Kid&product_categories=Jersey">Jerseys</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Kid&product_categories=Paint">Paints</a>
+                        </div>
+                        <div class="category">
+                            <h3>Equipment</h3>
+                            <a href="../All_Product_Page/all_product.php?gender=Kid&product_categories=Bag">Bag</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Kid&product_categories=Cap">Caps</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Kid&product_categories=Football Accessories">Football Accessories</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Kid&product_categories=Sock">Socks</a>
+                        </div>
+                        <div class="category">
+                            <h3>Shop By Brand</h3>
+                            <a href="../All_Product_Page/all_product.php?gender=Kid&brand=Nike">Nike</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Kid&brand=Adidas">Adidas</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Kid&brand=Puma">Puma</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Kid&brand=Umbro">Umbro</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Kid&brand=Under Amour">Under Amour</a>
+                        </div>
+                    </div>
+                </div>
+                <li id="promotion">
+                    <a href="../Promotion_Page/promotion_product.php">Promotion</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="iconContainer">
+        <div class="icon">
+            <div class="search">
+                <i class="fa-solid fa-search"></i>
+            </div>
+            <div class="user">
+                <?php if ($is_authenticated): ?>
+                    <div class="user-dropdown">
+                        <i class="fa-solid fa-user"></i>
+                        <div class="user-dropdown-content">
+                            <div class="user-info">
+                                <span>Hello, <?php echo htmlspecialchars($_SESSION['first_name'] ?? ''); ?></span>
+                            </div>
+                            <a href="../order/order_history.php">My Orders</a>
+                            <a href="../user_profile.php">My Profile</a>
+                            <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] == 2): ?>
+                                <a href="/FYP/FYP/Superadmin/dashboard.php">Admin Dashboard</a>
+                            <?php endif; ?>
+                            <a href="../login/logout.php">Logout</a>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <a href="../login/login.php"><i class="fa-solid fa-user"></i></a>
+                <?php endif; ?>
+            </div>
+            <div class="shoppingCart">
+                <a href="../order/cart.php">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <?php if ($cartCount > 0): ?>
+                        <span id="cartCount" class="cart-counter"><?php echo $cartCount; ?></span>
+                    <?php else: ?>
+                        <span id="cartCount" class="cart-counter" style="display:none;">0</span>
+                    <?php endif; ?>
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<style>
+/* Add these styles for the user dropdown */
+.user-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.user-dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    right: 0;
+    border-radius: 4px;
+}
+
+.user-dropdown:hover .user-dropdown-content {
+    display: block;
+}
+
+.user-dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 14px;
+}
+
+.user-info {
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.user-dropdown-content a:hover {
+    background-color: #f8f8f8;
+}
+
+.cart-counter {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.shoppingCart {
+    position: relative;
+}
+</style>
+
+<div id="search-popup" class="search-popup">
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Search products...">
+        <button id="search-button"><i class="fa-solid fa-search"></i></button>
+        <button id="close-search"><i class="fa-solid fa-times"></i></button>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchIcon = document.querySelector('.search i');
+    const searchPopup = document.getElementById('search-popup');
+    const closeSearch = document.getElementById('close-search');
+    const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-button');
+
+    searchIcon.addEventListener('click', function() {
+        searchPopup.style.display = 'flex';
+        searchInput.focus();
+    });
+
+    closeSearch.addEventListener('click', function() {
+        searchPopup.style.display = 'none';
+    });
+
+    searchButton.addEventListener('click', performSearch);
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+
+    function performSearch() {
+        const query = searchInput.value.trim();
+        if (query) {
+            window.location.href = '../All_Product_Page/all_product.php?search=' + encodeURIComponent(query);
+        }
+    }
+});
+</script> 
