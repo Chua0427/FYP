@@ -14,7 +14,14 @@
 </head>
 
 <body>
-    <?php include __DIR__ . '/../Header_and_Footer/header.html'; ?>
+    <?php 
+    // Start session if not already started
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    include __DIR__ . '/../Header_and_Footer/header.php'; 
+    ?>
 
     <div class="promotion-billboard">
         <img src="images/flash-sale-realistic-promotion-banner-online-shop-template_16148-1493.png" alt="">

@@ -116,11 +116,14 @@ try {
         $payment_status = 'failed';
     }
     
+    // Convert order_id to string for payment table
+    $order_id_str = (string)$order_id;
+    
     $db->execute(
         "INSERT INTO payment 
          (payment_id, order_id, total_amount, payment_status, payment_method, stripe_id, currency, stripe_created) 
          VALUES (?, ?, ?, ?, 'stripe', ?, 'MYR', ?)",
-        [$payment_id, $order_id, $total_price, $payment_status, $paymentIntent->id, $paymentIntent->created]
+        [$payment_id, $order_id_str, $total_price, $payment_status, $paymentIntent->id, $paymentIntent->created]
     );
     
     $db->execute(
