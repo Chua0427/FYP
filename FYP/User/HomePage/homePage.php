@@ -14,7 +14,14 @@
 </head>
 
 <body>
-    <?php include __DIR__ . '/../Header_and_Footer/header.html'; ?>
+    <?php 
+    // Start session if not already started
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    include __DIR__ . '/../Header_and_Footer/header.php'; 
+    ?>
 
     <div class="slideshow-container">
         <i class="fa fa-arrow-left" id="BillboardButton" aria-hidden="true"></i>
@@ -56,6 +63,19 @@
             </div>
         </div>
     </div>
+
+    <?php if (isset($_SESSION['user_id']) && isset($_SESSION['first_name'])): ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const welcomeMessage = "Welcome back, <?php echo htmlspecialchars($_SESSION['first_name']); ?>!\n\nCheck out our latest products and exclusive deals just for you.<?php if (isset($_SESSION['last_visit'])): ?>\n\nYour last visit was on <?php echo date('F j, Y, g:i a', $_SESSION['last_visit']); ?><?php endif; ?>";
+            alert(welcomeMessage);
+        });
+    </script>
+    <?php 
+    // Update last visit timestamp
+    $_SESSION['last_visit'] = time();
+    endif; 
+    ?>
 
     <div class="column1">
         <div class="column">
@@ -109,7 +129,7 @@
                                     <p class="NewArrivalPrice">RM '.$row['price'].'</p>
                                 </div>
                             </a>
-                            <input type="button" class="cartButton" value="Quick Add">
+                            <input type="button" class="quick-add-button cartButton" value="Quick Add" data-product-id="'.$row['product_id'].'">
                         </div>';
                 }
             ?>
@@ -157,8 +177,8 @@
                                 <span class="promotionPrice">RM '.$row['discount_price'].'</span>
                                 <span class="discountPrice">RM '.$row['price'].'</span>
                                 </div>  
-                                <input type="button" class="cartButton" value="Quick Add">
                             </a>
+                            <input type="button" class="quick-add-button cartButton" value="Quick Add" data-product-id="'.$row['product_id'].'">
                            </div>';
                 }
             ?>
@@ -231,8 +251,8 @@
                             <div class="price">
                                 <div class="jerseyPrice">RM '.$row['price'].'</div>
                             </div>
-                            <input type="button" class="cartButton" value="Quick Add">
                         </a>
+                        <input type="button" class="quick-add-button cartButton" value="Quick Add" data-product-id="'.$row['product_id'].'">
                     </div>';
                 }
             ?> 
@@ -336,6 +356,156 @@
 
         <?php include __DIR__ . '/../Header_and_Footer/footer.html'; ?>
         <script src="homePage.js"></script>
+
+        <style>
+        .welcome-banner {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .welcome-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+        
+        .welcome-content h2 {
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        .welcome-content p {
+            margin-bottom: 0;
+            font-size: 16px;
+        }
+        
+        .last-visit {
+            font-size: 14px !important;
+            opacity: 0.8;
+            margin-top: 5px !important;
+        }
+        
+        .quick-add-button {
+            cursor: pointer;
+        }
+        </style>
+        
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle quick add buttons
+            const quickAddButtons = document.querySelectorAll('.quick-add-button');
+            
+            quickAddButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const productId = this.getAttribute('data-product-id');
+                    quickAddToCart(productId);
+                });
+            });
+            
+            function quickAddToCart(productId) {
+                // Check if user is logged in
+                <?php if(!isset($_SESSION['user_id'])): ?>
+                    window.location.href = '../login/login.php?redirect=' + encodeURIComponent(window.location.href);
+                    return;
+                <?php endif; ?>
+                
+                // Default size (first available)
+                const formData = new FormData();
+                formData.append('product_id', productId);
+                formData.append('product_size', 'M'); // Default size
+                formData.append('quantity', 1);
+                
+                // Show loading state
+                const button = event.target;
+                const originalText = button.value;
+                button.disabled = true;
+                button.value = 'Adding...';
+                
+                // Send AJAX request
+                fetch('/FYP/User/api/add_to_cart.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showMessage(data.message, 'success');
+                        
+                        // Update cart counter
+                        const cartCounter = document.getElementById('cartCount');
+                        if (cartCounter && data.cart_count) {
+                            cartCounter.textContent = data.cart_count;
+                            cartCounter.style.display = 'block';
+                        }
+                    } else {
+                        showMessage(data.error || 'Failed to add item to cart', 'error');
+                    }
+                })
+                .catch(error => {
+                    showMessage('Error adding to cart. Please try again.', 'error');
+                })
+                .finally(() => {
+                    // Reset button state
+                    button.disabled = false;
+                    button.value = originalText;
+                });
+            }
+            
+            function showMessage(message, type) {
+                // Check if a message container already exists
+                let messageContainer = document.querySelector('.message-container');
+                
+                // If not, create one
+                if (!messageContainer) {
+                    messageContainer = document.createElement('div');
+                    messageContainer.className = 'message-container';
+                    document.body.appendChild(messageContainer);
+                    
+                    // Style the container
+                    messageContainer.style.position = 'fixed';
+                    messageContainer.style.top = '20px';
+                    messageContainer.style.right = '20px';
+                    messageContainer.style.zIndex = '1000';
+                }
+                
+                // Create message element
+                const messageElement = document.createElement('div');
+                messageElement.className = `message ${type}`;
+                messageElement.innerHTML = message;
+                
+                // Style the message
+                messageElement.style.padding = '12px 20px';
+                messageElement.style.marginBottom = '10px';
+                messageElement.style.borderRadius = '4px';
+                messageElement.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+                
+                if (type === 'success') {
+                    messageElement.style.backgroundColor = '#28a745';
+                    messageElement.style.color = 'white';
+                } else if (type === 'error') {
+                    messageElement.style.backgroundColor = '#dc3545';
+                    messageElement.style.color = 'white';
+                }
+                
+                // Add to container
+                messageContainer.appendChild(messageElement);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    messageElement.style.opacity = '0';
+                    messageElement.style.transition = 'opacity 0.3s ease-out';
+                    setTimeout(() => {
+                        messageElement.remove();
+                    }, 300);
+                }, 3000);
+            }
+        });
+        </script>
 </body>
 
 </html>

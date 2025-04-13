@@ -5,7 +5,13 @@ require __DIR__ . '/../app/init.php';
 
 session_start();
 
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: /FYP/User/login/login.php?redirect=' . urlencode($_SERVER['REQUEST_URI']));
+    exit;
+}
 
+$user_id = $_SESSION['user_id'];
 
 try {
     // Initialize Database
@@ -19,7 +25,7 @@ try {
          JOIN product p ON c.product_id = p.product_id 
          WHERE c.user_id = ? 
          ORDER BY p.brand, c.added_at DESC", 
-
+        [$user_id]
     );
     
     // Group items by brand/store
@@ -79,7 +85,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     
                 case 'checkout':
                     // Redirect to checkout page
-                    header('Location: /FYP/User/payment/checkout.php');
+                    if (!empty($cartItems)) {
+                        // Redirect to create order first
+                        header('Location: /FYP/FYP/User/payment/checkout.php');
+                    } else {
+                        $error = "Your cart is empty.";
+                    }
                     exit;
             }
         } catch (Exception $e) {
@@ -124,7 +135,7 @@ $pageTitle = "Shopping Cart - VeroSports";
             <?php if (empty($cartItems)): ?>
                 <div class="empty-cart">
                     <p>Your cart is empty</p>
-                    <a href="/FYP/User/product.php" class="continue-shopping">Continue Shopping</a>
+                    <a href="/FYP/User/index.php" class="continue-shopping">Continue Shopping</a>
                 </div>
             <?php else: ?>
                 <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
@@ -136,7 +147,7 @@ $pageTitle = "Shopping Cart - VeroSports";
                             
                             <?php foreach ($items as $item): ?>
                                 <div class="product">
-                                    <img src="<?php echo !empty($item['product_img1']) ? htmlspecialchars($item['product_img1']) : 'https://via.placeholder.com/100'; ?>" alt="<?php echo htmlspecialchars($item['product_name']); ?>">
+                                    <img src="<?php echo !empty($item['product_img1']) ? htmlspecialchars('/FYP' . $item['product_img1']) : 'https://via.placeholder.com/100'; ?>" alt="<?php echo htmlspecialchars($item['product_name']); ?>">
                                     <div class="product-details">
                                         <p class="product-name"><?php echo htmlspecialchars($item['product_name']); ?></p>
                                         <p class="product-variant">Size: <?php echo htmlspecialchars($item['product_size']); ?></p>
@@ -152,7 +163,7 @@ $pageTitle = "Shopping Cart - VeroSports";
                                                 <input type="number" name="quantity[<?php echo $item['cart_id']; ?>]" value="<?php echo $item['quantity']; ?>" min="1" class="quantity-input">
                                                 <button type="button" class="quantity-btn plus" data-cart-id="<?php echo $item['cart_id']; ?>">+</button>
                                             </div>
-                                            <button type="submit" name="remove_item" class="remove-btn" data-cart-id="<?php echo $item['cart_id']; ?>">Remove</button>
+                                            <button type="button" class="remove-btn" data-cart-id="<?php echo $item['cart_id']; ?>">Remove</button>
                                         </div>
                                     </div>
                                 </div>
@@ -198,6 +209,70 @@ $pageTitle = "Shopping Cart - VeroSports";
     
     <?php include_once '../Header_and_Footer/footer.html'; ?>
     
-    <script src="cart.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle quantity change
+        const minusButtons = document.querySelectorAll('.quantity-btn.minus');
+        const plusButtons = document.querySelectorAll('.quantity-btn.plus');
+        const quantityInputs = document.querySelectorAll('.quantity-input');
+        const removeButtons = document.querySelectorAll('.remove-btn');
+        
+        minusButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const cartId = this.getAttribute('data-cart-id');
+                const input = document.querySelector(`input[name="quantity[${cartId}]"]`);
+                let value = parseInt(input.value, 10);
+                value = Math.max(1, value - 1);
+                input.value = value;
+                
+                // Update quantity via AJAX
+                updateQuantity(cartId, value);
+            });
+        });
+        
+        plusButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const cartId = this.getAttribute('data-cart-id');
+                const input = document.querySelector(`input[name="quantity[${cartId}]"]`);
+                let value = parseInt(input.value, 10);
+                value += 1;
+                input.value = value;
+                
+                // Update quantity via AJAX
+                updateQuantity(cartId, value);
+            });
+        });
+        
+        quantityInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                const cartId = this.name.match(/\[(\d+)\]/)[1];
+                let value = parseInt(this.value, 10);
+                value = Math.max(1, value); // Ensure minimum value is 1
+                this.value = value;
+                
+                // Update quantity via AJAX
+                updateQuantity(cartId, value);
+            });
+        });
+        
+        removeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                if (confirm('Are you sure you want to remove this item?')) {
+                    const cartId = this.getAttribute('data-cart-id');
+                    
+                    // Set the cart ID in the hidden form and submit
+                    document.getElementById('remove-cart-id').value = cartId;
+                    document.getElementById('remove-form').submit();
+                }
+            });
+        });
+        
+        function updateQuantity(cartId, quantity) {
+            document.getElementById('update-cart-id').value = cartId;
+            document.getElementById('update-quantity').value = quantity;
+            document.getElementById('update-form').submit();
+        }
+    });
+    </script>
 </body>
 </html>

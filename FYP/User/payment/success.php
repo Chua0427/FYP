@@ -12,19 +12,8 @@ try {
     $session_id = $_GET['session_id'] ?? '';
     $order_id = $_GET['order_id'] ?? '';
 
-    if (empty($session_id) || empty($order_id)) {
+    if (empty($order_id)) {
         throw new Exception('Missing required parameters');
-    }
-
-    // Initialize Stripe
-    \Stripe\Stripe::setApiKey($stripeSecretKey);
-
-    // Retrieve the checkout session
-    $session = \Stripe\Checkout\Session::retrieve($session_id);
-
-    // Verify the session belongs to this order
-    if ($session->metadata->order_id !== $order_id) {
-        throw new Exception('Invalid session');
     }
 
     // Get order details
@@ -33,11 +22,31 @@ try {
         throw new Exception('Order not found');
     }
 
-    // Get payment details
-    $payment = $db->fetchOne(
-        "SELECT * FROM payment WHERE order_id = ? AND stripe_id = ?",
-        [$order_id, $session_id]
-    );
+    // Initialize Stripe
+    \Stripe\Stripe::setApiKey($stripeSecretKey);
+
+    // If session_id is provided, verify the session
+    if (!empty($session_id)) {
+        // Retrieve the checkout session
+        $session = \Stripe\Checkout\Session::retrieve($session_id);
+
+        // Verify the session belongs to this order
+        if ((string)$session->metadata->order_id !== (string)$order_id) {
+            throw new Exception('Invalid session');
+        }
+
+        // Get payment details by session ID
+        $payment = $db->fetchOne(
+            "SELECT * FROM payment WHERE stripe_id = ?",
+            [$session_id]
+        );
+    } else {
+        // Get payment details by order ID
+        $payment = $db->fetchOne(
+            "SELECT * FROM payment WHERE order_id = ? ORDER BY payment_at DESC LIMIT 1",
+            [$order_id]
+        );
+    }
 
     if (!$payment) {
         throw new Exception('Payment record not found');
@@ -48,6 +57,18 @@ try {
         $db->execute(
             "UPDATE payment SET payment_status = 'completed' WHERE payment_id = ?",
             [$payment['payment_id']]
+        );
+        
+        // Update order status to packing
+        $db->execute(
+            "UPDATE orders SET delivery_status = 'packing' WHERE order_id = ?",
+            [$order_id]
+        );
+        
+        // Add log entry
+        $db->execute(
+            "INSERT INTO payment_log (payment_id, log_level, log_message) VALUES (?, 'info', ?)",
+            [$payment['payment_id'], "Payment marked as completed via success page"]
         );
     }
 
@@ -63,7 +84,7 @@ try {
 } catch (Exception $e) {
     // Log error and redirect to error page
     error_log("Payment success error: " . $e->getMessage());
-    header("Location: error.php?message=" . urlencode($e->getMessage()));
+    header("Location: ../index.php?error=" . urlencode($e->getMessage()));
     exit;
 }
 ?>
@@ -75,6 +96,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Successful</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
         .success-icon {
             color: #28a745;
@@ -103,7 +125,7 @@ try {
         <div class="order-details">
             <h3>Order Details</h3>
             <p><strong>Order ID:</strong> <?php echo htmlspecialchars($order_id); ?></p>
-            <p><strong>Order Date:</strong> <?php echo date('F j, Y', strtotime($order['created_at'])); ?></p>
+            <p><strong>Order Date:</strong> <?php echo date('F j, Y', strtotime($order['order_at'])); ?></p>
             <p><strong>Total Amount:</strong> MYR <?php echo number_format($order['total_price'], 2); ?></p>
 
             <h4 class="mt-4">Items Purchased</h4>
@@ -122,7 +144,7 @@ try {
                         <tr>
                             <td>
                                 <?php if (!empty($item['product_img1'])): ?>
-                                    <img src="<?php echo htmlspecialchars($item['product_img1']); ?>" 
+                                    <img src="<?php echo htmlspecialchars('/FYP' . $item['product_img1']); ?>" 
                                          alt="<?php echo htmlspecialchars($item['product_name']); ?>"
                                          class="product-image">
                                 <?php endif; ?>
