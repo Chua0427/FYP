@@ -166,7 +166,7 @@
 
 <script>
     const sizeOptions = {
-        Footwear: ["UK13.5C", "UK1Y", "UK1.5Y", "UK2Y", "UK2.5Y", "UK3Y","UK3.5Y","UK4Y","UK4.5Y","UK5Y","UK5.5Y","UK6Y","UK6.5Y","UK3.5","UK4","UK4.5","UK5","UK5.5","UK6","UK6.5","UK7","UK7.5","UK8","UK8.5","UK9","UK9.5","UK10","UK10.5","UK11","UK11.5","UK12"],
+        Footwear: ["UK13.5C", "UK1Y", "UK1.5Y", "UK2Y", "UK2.5Y", "UK3Y","UK3.5Y","UK4Y","UK4.5Y","UK5Y","UK5.5Y","UK6Y","UK6.5Y","UK3","UK3.5","UK4","UK4.5","UK5","UK5.5","UK6","UK6.5","UK7","UK7.5","UK8","UK8.5","UK9","UK9.5","UK10","UK10.5","UK11","UK11.5","UK12"],
         Apparel: ["XXS","XS","S", "M", "L","XL","2XL","3XL","4XL"],
         Equipment: ["One Size"]
     };
