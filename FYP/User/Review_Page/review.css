@@ -21,7 +21,7 @@ body {
 }
 
 .formContainer {
-    background: rgba(255, 255, 255, 0.938); /* 半透明背景 */
+    background: rgba(255, 255, 255, 0.938); 
     width: 600px;
     height: 530px;
     text-align: center;

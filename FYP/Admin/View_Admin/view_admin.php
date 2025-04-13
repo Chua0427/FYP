@@ -62,7 +62,7 @@
                                 if ($current_user_type == 3) {
                                     echo '<td>
                                             <div class="button">
-                                                <a href="edit.php?id= '.$row['user_id'].' "class="btn btn-edit" id="edit">Edit</a>
+                                                <a href="edit_admin.php?id= '.$row['user_id'].' "class="btn btn-edit" id="edit">Edit</a>
                                                 <a href="delete.php?id='. $row['user_id'].' "class="btn btn-delete" id="delete" onclick="return confirm(\'Are you sure?\')">Delete</a>
                                             </div>
                                             

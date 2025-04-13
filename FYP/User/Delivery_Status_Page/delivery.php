@@ -23,22 +23,18 @@
             <div class="step" id="preparing">
                 <div class="circle"><i class="fa-solid fa-store"></i></div>
                 <p>Preparing Your Order</p>
-                <div class="line"></div>
             </div>
             <div class="step" id="packing">
                 <div class="circle"><i class="fa-solid fa-box"></i></div>
                 <p>Packing Your Order</p>
-                <div class="line"></div>
             </div>
             <div class="step" id="assign">
                 <div class="circle"><i class="fa-solid fa-truck"></i></div>
                 <p>Assigning Our Driver</p>
-                <div class="line"></div>
             </div>
             <div class="step" id="shipping">
                 <div class="circle"><i class="fa-solid fa-truck-fast"></i></div>
                 <p>Order Is On The Way</p>
-                <div class="line"></div>
             </div>
             <div class="step" id="delivered">
                 <div class="circle"><i class="fa-solid fa-location-dot"></i></div>
@@ -63,7 +59,7 @@
                 <tr>
                     <td>Nike</td>
                     <td>2</td>
-                    <td>RM 100</td>
+                    <td style="color: red;">RM 100</td>
                 </tr>
             </table>
 

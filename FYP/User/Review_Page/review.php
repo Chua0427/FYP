@@ -30,13 +30,14 @@
                     <i class="fas fa-star star" data-value="2"></i>
                     <i class="fas fa-star star" data-value="1"></i>
                 </div>
-            </form>
             
-            <input type="hidden" id="ratingValue" name="ratingValue" value="0"> 
             
-            <h3>Share your review about recently purchased product !</h3>
-            <input type="text" id="review" placeholder="Please write your comment..."></input><p></p>
-            <button type="submit" class="submit-btn">Submit</button> 
+                <input type="hidden" id="ratingValue" name="ratingValue" value="0"> 
+                
+                <h3>Share your review about recently purchased product !</h3>
+                <input type="text" id="review" name="review" placeholder="Please write your comment..."></input><p></p>
+                <button type="submit" class="submit-btn">Submit</button>
+            </form> 
         </div>
     </div>
     

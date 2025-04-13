@@ -88,7 +88,15 @@
                 <p><input type="button" class="button" value="Shop Now" onclick="window.location.href='../New_Arrival_Page/new_product.php'"></p>
             </div>
             <?php
-                $sql="SELECT* FROM product WHERE status='New' ORDER BY RAND() LIMIT 5";
+                $sql="SELECT p.*, SUM(s.stock) as total_stock
+                    FROM product p
+                    JOIN stock s ON p.product_id = s.product_id
+                    WHERE p.status='New' 
+                    GROUP BY p.product_id
+                    HAVING total_stock > 0
+                    ORDER BY RAND()
+                    LIMIT 5";
+                    
                 $result= $conn->query($sql);
 
                 while($row=$result->fetch_assoc())
@@ -124,7 +132,14 @@
             </div>
 
             <?php
-                $sql="SELECT* FROM product WHERE status='Promotion' ORDER BY RAND() LIMIT 5";
+                $sql="SELECT p.*, SUM(s.stock) as total_stock
+                FROM product p
+                JOIN stock s ON p.product_id = s.product_id
+                WHERE p.status='Promotion'
+                GROUP BY p.product_id
+                HAVING total_stock > 0
+                ORDER BY RAND()
+                LIMIT 5";
                 $result= $conn->query($sql);
 
                 while($row= $result->fetch_assoc()){
@@ -198,7 +213,14 @@
         <i class="fa fa-arrow-left" id="jButton" aria-hidden="true"></i>
         <div class="JerseyContainer">
             <?php
-                $sql="SELECT* FROM product WHERE product_categories='Jersey' && status='Normal' ORDER BY RAND() LIMIT 5";
+                $sql="SELECT p.*, SUM(s.stock) as total_stock
+                    FROM product p
+                    JOIN stock s ON p.product_id = s.product_id
+                    WHERE p.status='Normal' && product_categories='Jersey'
+                    GROUP BY p.product_id
+                    HAVING total_stock > 0
+                    ORDER BY RAND()
+                    LIMIT 6";
                 $result= $conn->query($sql);
 
                 while($row= $result->fetch_assoc()){
