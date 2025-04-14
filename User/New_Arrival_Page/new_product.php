@@ -146,10 +146,10 @@
 
                                 $result2= $conn->query($sql2);
                                 $ratings = [];
-                                while ($row2 = $result2->fetch_assoc()) {
-                                    $ratings[$row2['product_id']] = is_null($row2['average_rating']) ? null : round($row2['average_rating']);
-                                }
-                                $user_rating = isset($ratings[$product_id]) ? $ratings[$product_id] : null;
+                                    while ($row2 = $result2->fetch_assoc()) {
+                                        $ratings[$row2['product_id']] = is_null($row2['average_rating']) ? null : round($row2['average_rating']);
+                                    }
+                                    $user_rating = isset($ratings[$product_id]) ? $ratings[$product_id] : null;
                                 
                                 echo '<div class="product-column">
                                         <a href="../ProductPage/product.php?id='.$row['product_id'].'">
