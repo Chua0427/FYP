@@ -296,43 +296,4 @@ if ($is_authenticated) {
 }
 </style>
 
-<div id="search-popup" class="search-popup">
-    <div class="search-container">
-        <input type="text" id="search-input" placeholder="Search products...">
-        <button id="search-button"><i class="fa-solid fa-search"></i></button>
-        <button id="close-search"><i class="fa-solid fa-times"></i></button>
-    </div>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchIcon = document.querySelector('.search i');
-    const searchPopup = document.getElementById('search-popup');
-    const closeSearch = document.getElementById('close-search');
-    const searchInput = document.getElementById('search-input');
-    const searchButton = document.getElementById('search-button');
-
-    searchIcon.addEventListener('click', function() {
-        searchPopup.style.display = 'flex';
-        searchInput.focus();
-    });
-
-    closeSearch.addEventListener('click', function() {
-        searchPopup.style.display = 'none';
-    });
-
-    searchButton.addEventListener('click', performSearch);
-    searchInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            performSearch();
-        }
-    });
-
-    function performSearch() {
-        const query = searchInput.value.trim();
-        if (query) {
-            window.location.href = '../All_Product_Page/all_product.php?search=' + encodeURIComponent(query);
-        }
-    }
-});
-</script> 
+<!-- Search popup and related JavaScript has been removed, but the search icon in the header is maintained --> 
