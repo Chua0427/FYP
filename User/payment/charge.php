@@ -1,11 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once '/xampp/htdocs/FYP/FYP/User/payment/secrets.php';
 require_once __DIR__ . '/db.php';
 require __DIR__ . '/../app/init.php';
-
-use Ramsey\Uuid\Uuid;
 
 $log_dir = __DIR__ . '/logs';
 if (!file_exists($log_dir)) {
@@ -105,7 +105,8 @@ try {
         'return_url' => "http://{$_SERVER['HTTP_HOST']}/FYP/User/payment/success.php?order_id=$order_id"
     ]);
     
-    $payment_id = Uuid::uuid4()->toString();
+    // Generate a unique payment ID without UUID
+    $payment_id = 'PAY-' . strtoupper(bin2hex(random_bytes(12)));
     
     $payment_status = 'pending';
     if ($paymentIntent->status === 'succeeded') {
@@ -162,7 +163,7 @@ try {
     http_response_code(400);
     echo json_encode([
         'success' => false, 
-        'error' => 'Card declined: ' . $error_message, 
+        'error' => 'Card declined: ' . htmlspecialchars($error_message), 
         'code' => $e->getStripeCode()
     ]);
 } catch (\Stripe\Exception\RateLimitException $e) {
@@ -178,7 +179,7 @@ try {
     }
     log_message('ERROR', "Invalid request: " . $e->getMessage());
     http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Invalid payment request: ' . $e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => 'Invalid payment request: ' . htmlspecialchars($e->getMessage())]);
 } catch (\Stripe\Exception\AuthenticationException $e) {
     if (isset($db) && $db->isTransactionActive()) {
         $db->rollback();
@@ -199,14 +200,14 @@ try {
     }
     log_message('STRIPE_ERROR', $e->getMessage());
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'Stripe API error: ' . $e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => 'Stripe API error: ' . htmlspecialchars($e->getMessage())]);
 } catch (Exception $e) {
     if (isset($db) && $db->isTransactionActive()) {
         $db->rollback();
     }
     log_message('ERROR', "Payment failed: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => htmlspecialchars($e->getMessage())]);
 } finally {
     if (isset($db)) {
         $db->close();
