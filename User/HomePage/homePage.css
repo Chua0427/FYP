@@ -15,7 +15,6 @@ body {
     height: 62vh;
     max-width: 100%;
     overflow: hidden;
-    top: 78px;
 }
 
 .slide {
@@ -68,7 +67,7 @@ body {
 
 .column1 {
     position: relative;
-    margin-top: 10%;
+    margin-top: 5%;
     display: flex;
     text-align: center;
     justify-content: space-around;
