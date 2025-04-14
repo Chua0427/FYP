@@ -1,10 +1,13 @@
 <?php
+
+declare(strict_types=1);
+
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once '/xampp/htdocs/FYP/FYP/User/payment/secrets.php';
 require_once __DIR__ . '/db.php';
 require __DIR__ . '/../app/init.php';
 
-use Ramsey\Uuid\Uuid;
+// Removed Ramsey\Uuid dependency
 
 // Ensure logs directory exists
 $log_dir = __DIR__ . '/logs';
@@ -119,7 +122,7 @@ try {
     ]);
     
     // Generate payment ID
-    $payment_id = Uuid::uuid4()->toString();
+    $payment_id = 'PAY-' . strtoupper(bin2hex(random_bytes(12)));
     
     // Insert payment record with Checkout Session ID
     $db->execute(
@@ -156,21 +159,21 @@ try {
     }
     log_message('ERROR', "Card error: " . $e->getMessage());
     http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Card declined: ' . $e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => 'Card declined: ' . htmlspecialchars($e->getMessage())]);
 } catch (\Stripe\Exception\ApiErrorException $e) {
     if (isset($db) && $db->isTransactionActive()) {
         $db->rollback();
     }
     log_message('ERROR', "Stripe API error: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'Stripe API error: ' . $e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => 'Stripe API error: ' . htmlspecialchars($e->getMessage())]);
 } catch (Exception $e) {
     if (isset($db) && $db->isTransactionActive()) {
         $db->rollback();
     }
     log_message('ERROR', "Checkout error: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => htmlspecialchars($e->getMessage())]);
 } finally {
     // Ensure database connection is closed
     if (isset($db)) {

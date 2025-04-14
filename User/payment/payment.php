@@ -1,8 +1,10 @@
 <?php
+
+declare(strict_types=1);
+
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once '/xampp/htdocs/FYP/FYP/User/payment/secrets.php';
 require_once __DIR__ . '/db.php';
-use Ramsey\Uuid\Uuid;
 
 // Ensure logs directory exists
 $log_dir = __DIR__ . '/logs';
@@ -53,7 +55,7 @@ try {
 } catch (Exception $e) {
     log_message('ERROR', "Payment error: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => htmlspecialchars($e->getMessage())]);
 } finally {
     // Ensure database connection is closed
     if (isset($db)) {
@@ -107,7 +109,7 @@ function processPayment(Database $db): void {
             $payment_id = $existing_payment['payment_id'];
         } else {
             // Generate new payment ID
-            $payment_id = Uuid::uuid4()->toString();
+            $payment_id = 'PAY-' . strtoupper(bin2hex(random_bytes(12)));
         }
         
         // Calculate total from order items
@@ -331,7 +333,7 @@ function verifyPayment(Database $db): void {
                 );
                 
                 $db->commit();
-} catch (Exception $e) {
+            } catch (Exception $e) {
                 $db->rollback();
                 throw $e;
             }
