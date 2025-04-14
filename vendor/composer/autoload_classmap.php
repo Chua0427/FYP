@@ -6,5 +6,8 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Auth' => $baseDir . '/FYP/User/app/auth.php',
+    'CSRF' => $baseDir . '/FYP/User/app/csrf.php',
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'TokenAuth' => $baseDir . '/FYP/User/app/token.php',
 );

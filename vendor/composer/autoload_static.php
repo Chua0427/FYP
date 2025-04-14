@@ -6,19 +6,10 @@ namespace Composer\Autoload;
 
 class ComposerStaticInit40aa654f2e66c20881ae0572fe987a10
 {
-    public static $files = array (
-        'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
-    );
-
     public static $prefixLengthsPsr4 = array (
         'S' => 
         array (
             'Stripe\\' => 7,
-        ),
-        'R' => 
-        array (
-            'Ramsey\\Uuid\\' => 12,
-            'Ramsey\\Collection\\' => 18,
         ),
         'P' => 
         array (
@@ -28,28 +19,12 @@ class ComposerStaticInit40aa654f2e66c20881ae0572fe987a10
         array (
             'Monolog\\' => 8,
         ),
-        'B' => 
-        array (
-            'Brick\\Math\\' => 11,
-        ),
-        'A' => 
-        array (
-            'App\\' => 4,
-        ),
     );
 
     public static $prefixDirsPsr4 = array (
         'Stripe\\' => 
         array (
             0 => __DIR__ . '/..' . '/stripe/stripe-php/lib',
-        ),
-        'Ramsey\\Uuid\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/ramsey/uuid/src',
-        ),
-        'Ramsey\\Collection\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/ramsey/collection/src',
         ),
         'Psr\\Log\\' => 
         array (
@@ -59,18 +34,13 @@ class ComposerStaticInit40aa654f2e66c20881ae0572fe987a10
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
-        'Brick\\Math\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/brick/math/src',
-        ),
-        'App\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src',
-        ),
     );
 
     public static $classMap = array (
+        'Auth' => __DIR__ . '/../..' . '/FYP/User/app/auth.php',
+        'CSRF' => __DIR__ . '/../..' . '/FYP/User/app/csrf.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'TokenAuth' => __DIR__ . '/../..' . '/FYP/User/app/token.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
