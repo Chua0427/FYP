@@ -1,0 +1,2 @@
+[2025-04-14T06:05:34.031893+02:00] auth.INFO: User login {"user_id":41,"email":"chiannchua05@gmail.com","ip":"::1"} []
+[2025-04-14T06:05:58.461296+02:00] auth.INFO: User logout {"user_id":41,"email":"chiannchua05@gmail.com","ip":"::1"} []
