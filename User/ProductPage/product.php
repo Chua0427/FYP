@@ -125,32 +125,56 @@
                     <p><?php echo $row['description']?></p>
                 </div>
 
+                <?php
+                    $product_id = $row['product_id'];
+
+                    $sql1 = "SELECT rating, COUNT(*) as count FROM review WHERE product_id = $product_id GROUP BY rating";
+                    $result1 = $conn->query($sql1);
+
+                    $ratings = [1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0];
+                    $total = 0;
+                    $sum = 0;
+
+                    while ($row1 = $result1->fetch_assoc()) {
+                        $ratings[$row1['rating']] = $row1['count'];
+                        $sum += $row1['rating'] * $row1['count'];
+                        $total += $row1['count'];
+                    }
+
+                    $average = $total ? round($sum / $total, 2) : 0;
+                    $percent5 = $total ? round(($ratings[5] / $total) * 100) : 0;
+                    $percent4 = $total ? round(($ratings[4] / $total) * 100) : 0;
+                    $percent3 = $total ? round(($ratings[3] / $total) * 100) : 0;
+                    $percent2 = $total ? round(($ratings[2] / $total) * 100) : 0;
+                    $percent1 = $total ? round(($ratings[1] / $total) * 100) : 0;
+                ?>
+
                 <div class="tab-content" id="review">
                     <div class="ratingWrapper">
                     <h2>Review</h2>
                         <div class="rating-summary">
-                            <div class="rating-averange">5.0</div>
+                            <div class="rating-averange"><?php echo number_format($average, 1);?></div>
                         </div>
                         <div class="ratingContainer">
                             <div class="ratingbar">
                                 <span>★★★★★</span>
-                                <div class="bar"><div class="fill" style="width: 100%;"></div></div>
+                                <div class="bar"><div class="fill" style="width: <?php echo $percent5; ?>%;"></div></div>
                             </div>
                             <div class="ratingbar">
                                 <span>★★★★☆</span>
-                                <div class="bar"><div class="fill" style="width: 50%;"></div></div>
+                                <div class="bar"><div class="fill" style="width: <?php echo $percent4; ?>%;"></div></div>
                             </div>
                             <div class="ratingbar">
                                 <span>★★★☆☆</span>
-                                <div class="bar"><div class="fill" style="width: 30%;"></div></div>
+                                <div class="bar"><div class="fill" style="width: <?php echo $percent3; ?>%;"></div></div>
                             </div>
                             <div class="ratingbar">
                                 <span>★★☆☆☆</span>
-                                <div class="bar"><div class="fill" style="width: 10%;"></div></div>
+                                <div class="bar"><div class="fill" style="width: <?php echo $percent2; ?>%;"></div></div>
                             </div>
                             <div class="ratingbar">
                                 <span>★☆☆☆☆</span>
-                                <div class="bar"><div class="fill" style="width: 5%;"></div></div>
+                                <div class="bar"><div class="fill" style="width: <?php echo $percent1; ?>%;"></div></div>
                             </div>
                         </div> 
                     </div>
@@ -226,7 +250,7 @@
         ?>
             </div>
         </div>
-        <?php include __DIR__ . '/../Header_and_Footer/footer.html'; ?> 
+        <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?> 
         <script src="product.js"></script>
 </body>
 

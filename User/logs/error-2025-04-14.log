@@ -1,0 +1,2 @@
+[2025-04-14T09:09:16.299087+02:00] app.ERROR: PHP Error {"message":"include_once(../Header_and_Footer/footer.html): Failed to open stream: No such file or directory","file":"C:\\xampp\\htdocs\\FYP\\FYP\\User\\order\\cart.php","line":211,"severity":2} []
+[2025-04-14T09:09:16.312732+02:00] app.ERROR: PHP Error {"message":"include_once(): Failed opening '../Header_and_Footer/footer.html' for inclusion (include_path='C:\\xampp\\php\\PEAR')","file":"C:\\xampp\\htdocs\\FYP\\FYP\\User\\order\\cart.php","line":211,"severity":2} []

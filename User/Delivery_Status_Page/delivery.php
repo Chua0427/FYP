@@ -76,7 +76,7 @@
             <p>If you have any problem about delivery, please email to our customer service (Email:support@verosports.com)</p>
         </div>
 
-    <?php include __DIR__ . '/../Header_and_Footer/footer.html'; ?>
+    <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
     <script src="delivery.js"></script>
     
 </body>

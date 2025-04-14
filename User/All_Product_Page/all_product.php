@@ -225,7 +225,7 @@
             </div>
         </div>
     </div>
-        <?php include __DIR__ . '/../Header_and_Footer/footer.html'; ?> 
+        <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?> 
         <script src="all_product.js"></script>
 </body>
 
