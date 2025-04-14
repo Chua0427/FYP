@@ -1,7 +1,4 @@
 <?php
-
-declare(strict_types=1);
-
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once '/xampp/htdocs/FYP/FYP/User/payment/secrets.php';
 require_once __DIR__ . '/db.php';
@@ -10,6 +7,11 @@ require_once __DIR__ . '/db.php';
 $log_dir = __DIR__ . '/logs';
 if (!file_exists($log_dir)) {
     mkdir($log_dir, 0777, true);
+}
+
+// Function to generate a unique payment ID
+function generatePaymentId(): string {
+    return uniqid('pay_', true) . bin2hex(random_bytes(8));
 }
 
 // Function to log messages
@@ -55,7 +57,7 @@ try {
 } catch (Exception $e) {
     log_message('ERROR', "Payment error: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => htmlspecialchars($e->getMessage())]);
+    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 } finally {
     // Ensure database connection is closed
     if (isset($db)) {
@@ -108,8 +110,8 @@ function processPayment(Database $db): void {
             // Use existing payment ID if available
             $payment_id = $existing_payment['payment_id'];
         } else {
-            // Generate new payment ID
-            $payment_id = 'PAY-' . strtoupper(bin2hex(random_bytes(12)));
+            // Generate new payment ID using our custom function instead of UUID
+            $payment_id = generatePaymentId();
         }
         
         // Calculate total from order items
