@@ -49,7 +49,7 @@
     </div>
     
     
-    <?php include __DIR__ . '/../Header_and_Footer/footer.html'; ?>
+    <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
     <script src="review.js"></script>
 </body>
 

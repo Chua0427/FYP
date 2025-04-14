@@ -1,9 +1,12 @@
 <?php
     include __DIR__ . '/../../connect_db/config.php';
 
-    if(isset($_GET['user_id'])  && isset($_GET['product_id']))
+    session_start();
+    $user = $_SESSION['user_id'];
+
+    if(isset($_GET['product_id']))
     {
-        $user_id= $_GET['user_id'];
+        $user_id= $user;
         $product_id= $_GET['product_id'];
 
         if($_SERVER["REQUEST_METHOD"] == "POST"){
