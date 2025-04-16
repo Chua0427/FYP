@@ -160,7 +160,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="remember-me">
                     <input type="checkbox" id="remember" name="remember">
                     <label for="remember">Remember me</label>
-                    <small>(Stay logged in across browser sessions)</small>
                 </div>
                 <button type="submit" class="login-btn">Login</button>
                 <a href="#" class="forgot-password">Forgot Password?</a>
