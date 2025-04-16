@@ -215,8 +215,6 @@ include __DIR__ . '/../Header_and_Footer/header.php';
         </div>
     </main>
     
-    <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?> 
-    
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Handle quantity change

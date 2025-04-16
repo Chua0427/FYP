@@ -41,7 +41,7 @@
             <li class="tab-button <?php if ($current_page == 'contact_us.php') echo 'active'; ?>">
                 <a href="../Contact_Us/contact_us.php"><i class="fas fa-headset"></i> Customer Support</a>
             </li>
-            <li class="tab-button <?php if ($current_page == 'review.php') echo 'active'; ?>">
+            <li class="tab-button <?php if ($current_page == 'review.php' || $current_page == 'view_review.php') echo 'active'; ?>">
                 <a href="#"><i class="fas fa-star"></i> Review</a>
             </li>
             <li class="tab-button <?php if ($current_page == 'generate_report.php') echo 'active'; ?>">
