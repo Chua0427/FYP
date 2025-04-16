@@ -56,9 +56,9 @@
                                     <td>'. $row["status"].'</td>
                                     <td>'. $row["price"].'</td>
                                     <td>'. $row["discount_price"].'</td>
-                                    <td><div class="button"><a href="view_stock.php?id='.$row["product_id"].'" class="stock-button">Stock</a>
-                                    <a href="edit.php?id='.$row["product_id"].'" id="edit">Edit</a>
-                                    <a href="delete.php?id='.$row["product_id"].'" id="delete" onclick="return confirm(\'Are you sure?\')">Delete</a></div></td>
+                                    <td><div class="button"><a href="view_stock.php?id='.$row["product_id"].'" class="stock-button"><i class="fa-solid fa-boxes-packing"></i></a>
+                                    <a href="edit.php?id='.$row["product_id"].'" id="edit"><i class="fa-solid fa-pen"></i></a>
+                                    <a href="delete.php?id='.$row["product_id"].'" id="delete" onclick="return confirm(\'Are you sure?\')"><i class="fa-solid fa-trash"></i></a></div></td>
                                 </tr>';
                         }
                     ?>
