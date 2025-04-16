@@ -6,7 +6,8 @@
     "require": {
         "php": ">=7.4",
         "stripe/stripe-php": "^10.0",
-        "ramsey/uuid": "^4.0"
+        "ramsey/uuid": "^4.0",
+        "phpmailer/phpmailer": "^6.9"
     },
     "autoload": {
         "psr-4": {

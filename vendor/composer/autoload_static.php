@@ -20,6 +20,10 @@ class ComposerStaticInit40aa654f2e66c20881ae0572fe987a10
             'Ramsey\\Uuid\\' => 12,
             'Ramsey\\Collection\\' => 18,
         ),
+        'P' => 
+        array (
+            'PHPMailer\\PHPMailer\\' => 20,
+        ),
         'B' => 
         array (
             'Brick\\Math\\' => 11,
@@ -42,6 +46,10 @@ class ComposerStaticInit40aa654f2e66c20881ae0572fe987a10
         'Ramsey\\Collection\\' => 
         array (
             0 => __DIR__ . '/..' . '/ramsey/collection/src',
+        ),
+        'PHPMailer\\PHPMailer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
         'Brick\\Math\\' => 
         array (
