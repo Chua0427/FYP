@@ -208,7 +208,7 @@ $pageTitle = "Shopping Cart - VeroSports";
         </div>
     </main>
     
-    <?php include_once '../Header_and_Footer/footer.html'; ?>
+    <?php include_once '../Header_and_Footer/footer.php'; ?>
     
     <script>
     document.addEventListener('DOMContentLoaded', function() {

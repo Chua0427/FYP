@@ -108,8 +108,8 @@
                                 <td>'.$row["stock"].'</td>
                                 <td>'.$row["last_update_at"].'</td>
                                 <td><div class="button">
-                                    <a href="#" class="edit" id="edit" data-stock-id="'.$row["stock_id"].'" data-stock="'.$row["stock"].'" size="'.$row["product_size"].'">Edit</a>
-                                    <a href="delete_stock.php?stock_id='.$row["stock_id"].'&product_id='.$row["product_id"].'" class="delete" id="delete" onclick="return confirm(\'Are you sure?\')">Delete</a>
+                                    <a href="#" class="edit" id="edit" data-stock-id="'.$row["stock_id"].'" data-stock="'.$row["stock"].'" size="'.$row["product_size"].'"><i class="fa-solid fa-pen"></i></a>
+                                    <a href="delete_stock.php?stock_id='.$row["stock_id"].'&product_id='.$row["product_id"].'" class="delete" id="delete" onclick="return confirm(\'Are you sure?\')"><i class="fa-solid fa-trash"></i></a>
                                 </div></td>
                                 </tr>';
                         }

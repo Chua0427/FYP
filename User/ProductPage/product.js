@@ -51,6 +51,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+function openModal()
+{
+    document.querySelector(".modal").style.display="flex"
+}
+
+function closeModal()
+{
+    document.querySelector(".modal").style.display="none"
+}
+
 function addToCart() {
     // Get product details from the page
     const productId = getProductIdFromUrl();
@@ -166,16 +176,6 @@ function showMessage(message, type) {
             messageElement.remove();
         }, 300);
     }, 3000);
-}
-
-function openModal()
-{
-    document.querySelector(".modal").style.display="flex"
-}
-
-function closeModal()
-{
-    document.querySelector(".modal").style.display="none"
 }
 
 // Add keyframe animations to document
