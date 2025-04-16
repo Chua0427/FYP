@@ -48,7 +48,7 @@
                 <p><?php echo $row['product_name'] ?></p>
             </div>
             <div class="avr-review">
-                <h2><?php echo round($row['avr_rating'],1) ?> / 5.0</h2>
+                <h2><?php echo round($row['avr_rating'],1) ?></h2>
                     <div class="rating">
                         <?php
                         $user_rating= $row['avr_rating'];

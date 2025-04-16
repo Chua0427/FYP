@@ -39,8 +39,8 @@ body {
     background: white;
     width: 500px;
     height: auto;
-    margin: 15px 15px;
-    padding: 10px;
+    margin: 10px;
+    padding: 1px;
     border-radius: 20px;
     text-align: center;
     gap: 20px;
@@ -69,10 +69,10 @@ body {
 
 .avr-review h2{
     padding: 15px 20px;
-    background-color: black;
-    color: white;
+    color: rgb(0, 0, 0);
     border-radius: 10px;
     font-weight: bold;
+    font-size: 100px;
 }
 
 .star {
@@ -99,13 +99,6 @@ table {
     border-collapse: collapse;
     background: white;
     overflow: hidden;
-}
-
-.review table th{
-    background: #9ed0ff96;
-    color: #303030;
-    padding: 5px 15px;
-    font-size: 16px;
 }
 
 .review table td {
@@ -136,5 +129,5 @@ table {
     text-align: center;
     padding: 10px;
     width: 100%;
-    background-color: lightblue;
+    background-color: rgb(53, 157, 255);
 }
