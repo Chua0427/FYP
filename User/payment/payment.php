@@ -2,12 +2,16 @@
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once '/xampp/htdocs/FYP/FYP/User/payment/secrets.php';
 require_once __DIR__ . '/db.php';
-use Ramsey\Uuid\Uuid;
 
 // Ensure logs directory exists
 $log_dir = __DIR__ . '/logs';
 if (!file_exists($log_dir)) {
     mkdir($log_dir, 0777, true);
+}
+
+// Function to generate a unique payment ID
+function generatePaymentId(): string {
+    return uniqid('pay_', true) . bin2hex(random_bytes(8));
 }
 
 // Function to log messages
@@ -106,8 +110,8 @@ function processPayment(Database $db): void {
             // Use existing payment ID if available
             $payment_id = $existing_payment['payment_id'];
         } else {
-            // Generate new payment ID
-            $payment_id = Uuid::uuid4()->toString();
+            // Generate new payment ID using our custom function instead of UUID
+            $payment_id = generatePaymentId();
         }
         
         // Calculate total from order items
@@ -331,7 +335,7 @@ function verifyPayment(Database $db): void {
                 );
                 
                 $db->commit();
-} catch (Exception $e) {
+            } catch (Exception $e) {
                 $db->rollback();
                 throw $e;
             }

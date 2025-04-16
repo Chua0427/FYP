@@ -14,41 +14,20 @@ if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Check token-based authentication
+// Check authentication - this will now check both token and session auth
 $is_authenticated = Auth::check();
 $user_data = null;
 
 if ($is_authenticated) {
     $user_data = Auth::user();
     
-    // Update session for backward compatibility
+    // Update session for backward compatibility if not already set
     if (!isset($_SESSION['user_id']) && isset($user_data['user_id'])) {
         $_SESSION['user_id'] = $user_data['user_id'];
         $_SESSION['first_name'] = $user_data['first_name'] ?? '';
         $_SESSION['last_name'] = $user_data['last_name'] ?? '';
         $_SESSION['email'] = $user_data['email'] ?? '';
         $_SESSION['user_type'] = $user_data['user_type'] ?? 0;
-    }
-} elseif (isset($_SESSION['user_id'])) {
-    // Legacy session-based auth, convert to token
-    try {
-        $pdo = new PDO('mysql:host=localhost;dbname=verosports', 'root', '');
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE user_id = :user_id");
-        $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
-        $stmt->execute();
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if ($user) {
-            // Generate token for this user
-            Auth::login((int)$user['user_id'], $user);
-            $is_authenticated = true;
-            $user_data = $user;
-        }
-    } catch (Exception $e) {
-        // Error getting user data, log error
-        error_log("Header authentication error: " . $e->getMessage());
     }
 }
 
@@ -214,6 +193,7 @@ if ($is_authenticated) {
                             </div>
                             <a href="../order/order_history.php">My Orders</a>
                             <a href="../user_profile.php">My Profile</a>
+                            <a href="../login/manage_sessions.php">Manage Devices</a>
                             <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] == 2): ?>
                                 <a href="/FYP/FYP/Superadmin/dashboard.php">Admin Dashboard</a>
                             <?php endif; ?>

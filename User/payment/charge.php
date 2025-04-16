@@ -5,8 +5,6 @@ require_once '/xampp/htdocs/FYP/FYP/User/payment/secrets.php';
 require_once __DIR__ . '/db.php';
 require __DIR__ . '/../app/init.php';
 
-use Ramsey\Uuid\Uuid;
-
 $log_dir = __DIR__ . '/logs';
 if (!file_exists($log_dir)) {
     mkdir($log_dir, 0777, true);
@@ -16,6 +14,10 @@ ini_set('error_log', __DIR__ . '/logs/error.log');
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 
+// Function to generate a unique payment ID
+function generatePaymentId(): string {
+    return uniqid('pay_', true) . bin2hex(random_bytes(8));
+}
 
 function log_message($level, $message): void {
     $log = date("[Y-m-d H:i:s]") . " [$level] $message" . PHP_EOL;
@@ -105,7 +107,8 @@ try {
         'return_url' => "http://{$_SERVER['HTTP_HOST']}/FYP/User/payment/success.php?order_id=$order_id"
     ]);
     
-    $payment_id = Uuid::uuid4()->toString();
+    // Generate payment ID using our custom function instead of UUID
+    $payment_id = generatePaymentId();
     
     $payment_status = 'pending';
     if ($paymentIntent->status === 'succeeded') {

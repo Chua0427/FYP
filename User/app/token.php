@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 class TokenAuth {
     private $db;
-    private $token_expiry = 86400; // 24 hours in seconds
+    private $token_expiry = 2592000; // 30 days in seconds
 
     /**
      * Constructor
@@ -33,17 +33,24 @@ class TokenAuth {
      */
     public function generateToken(int $user_id): string {
         try {
-            // Generate a random token
+            // Generate a random token with better entropy
             $token = bin2hex(random_bytes(32));
             $expires_at = date('Y-m-d H:i:s', time() + $this->token_expiry);
             
-            // Store token in database with prepared statement
-            $stmt = $this->db->prepare("INSERT INTO user_tokens (user_id, token, expires_at, created_at) 
-                                        VALUES (:user_id, :token, :expires_at, NOW())");
+            // Get browser and device info for logging
+            $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
+            $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+            
+            // Store token in database with prepared statement and user agent info
+            $stmt = $this->db->prepare("INSERT INTO user_tokens 
+                                        (user_id, token, expires_at, created_at, user_agent, ip_address) 
+                                        VALUES (:user_id, :token, :expires_at, NOW(), :user_agent, :ip_address)");
             
             $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
             $stmt->bindParam(':token', $token, PDO::PARAM_STR);
             $stmt->bindParam(':expires_at', $expires_at, PDO::PARAM_STR);
+            $stmt->bindParam(':user_agent', $user_agent, PDO::PARAM_STR);
+            $stmt->bindParam(':ip_address', $ip_address, PDO::PARAM_STR);
             $stmt->execute();
             
             return $token;
@@ -63,7 +70,7 @@ class TokenAuth {
         try {
             // Check if token exists and is not expired
             $stmt = $this->db->prepare("
-                SELECT u.*, t.token, t.expires_at 
+                SELECT u.*, t.token, t.expires_at, t.user_agent 
                 FROM user_tokens t
                 JOIN users u ON t.user_id = u.user_id
                 WHERE t.token = :token AND t.expires_at > NOW() AND t.is_revoked = 0
@@ -75,12 +82,32 @@ class TokenAuth {
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if ($result) {
+                // Update last access time for this token
+                $this->updateTokenLastAccess($token);
                 return $result;
             }
             
             return false;
         } catch (Exception $e) {
             error_log("Token Validation Error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Update token's last access timestamp
+     * 
+     * @param string $token Token to update
+     * @return bool Success status
+     */
+    private function updateTokenLastAccess(string $token): bool {
+        try {
+            $stmt = $this->db->prepare("UPDATE user_tokens SET last_used_at = NOW() WHERE token = :token");
+            $stmt->bindParam(':token', $token, PDO::PARAM_STR);
+            $stmt->execute();
+            return true;
+        } catch (Exception $e) {
+            error_log("Token Update Error: " . $e->getMessage());
             return false;
         }
     }
@@ -109,6 +136,32 @@ class TokenAuth {
     }
 
     /**
+     * Get all active tokens for a user (useful for showing logged-in devices)
+     * 
+     * @param int $user_id User ID
+     * @return array List of active tokens with metadata
+     */
+    public function getUserTokens(int $user_id): array {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT token_id, created_at, expires_at, last_used_at, user_agent, ip_address
+                FROM user_tokens 
+                WHERE user_id = :user_id 
+                AND expires_at > NOW() 
+                AND is_revoked = 0
+                ORDER BY last_used_at DESC
+            ");
+            
+            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log("Get User Tokens Error: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
      * Revoke a specific token
      * 
      * @param string $token Token to revoke
@@ -118,6 +171,27 @@ class TokenAuth {
         try {
             $stmt = $this->db->prepare("UPDATE user_tokens SET is_revoked = 1 WHERE token = :token");
             $stmt->bindParam(':token', $token, PDO::PARAM_STR);
+            $stmt->execute();
+            return $stmt->rowCount() > 0;
+        } catch (Exception $e) {
+            error_log("Token Revocation Error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Revoke a token by its ID
+     * 
+     * @param int $token_id Token ID to revoke
+     * @param int $user_id User ID for verification
+     * @return bool Success status
+     */
+    public function revokeTokenById(int $token_id, int $user_id): bool {
+        try {
+            $stmt = $this->db->prepare("UPDATE user_tokens SET is_revoked = 1 
+                                       WHERE token_id = :token_id AND user_id = :user_id");
+            $stmt->bindParam(':token_id', $token_id, PDO::PARAM_INT);
+            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
             $stmt->execute();
             return $stmt->rowCount() > 0;
         } catch (Exception $e) {
@@ -140,6 +214,30 @@ class TokenAuth {
             return true;
         } catch (Exception $e) {
             error_log("User Token Revocation Error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Revoke all tokens for a user except the current one
+     * 
+     * @param int $user_id User ID
+     * @param string $current_token Current token to keep
+     * @return bool Success status
+     */
+    public function revokeOtherUserTokens(int $user_id, string $current_token): bool {
+        try {
+            $stmt = $this->db->prepare("UPDATE user_tokens 
+                                       SET is_revoked = 1 
+                                       WHERE user_id = :user_id 
+                                       AND token != :current_token");
+                                       
+            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+            $stmt->bindParam(':current_token', $current_token, PDO::PARAM_STR);
+            $stmt->execute();
+            return true;
+        } catch (Exception $e) {
+            error_log("Token Revocation Error: " . $e->getMessage());
             return false;
         }
     }
