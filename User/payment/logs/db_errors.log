@@ -1,3 +1,18 @@
+<<<<<<< HEAD
+[2025-04-16 12:26:41] [DB_ERROR] FetchOne Exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':user_id' at line 1
+[2025-04-16 12:26:42] [DB_ERROR] FetchOne Exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':user_id' at line 1
+[2025-04-16 12:26:42] [DB_ERROR] FetchOne Exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':user_id' at line 1
+[2025-04-16 12:26:42] [DB_ERROR] FetchOne Exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':user_id' at line 1
+[2025-04-16 12:26:42] [DB_ERROR] FetchOne Exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':user_id' at line 1
+[2025-04-16 12:26:46] [DB_ERROR] FetchOne Exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':user_id' at line 1
+[2025-04-16 12:26:48] [DB_ERROR] FetchOne Exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':user_id' at line 1
+[2025-04-16 12:26:49] [DB_ERROR] FetchOne Exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':user_id' at line 1
+[2025-04-16 12:26:49] [DB_ERROR] FetchOne Exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':user_id' at line 1
+[2025-04-16 12:26:50] [DB_ERROR] FetchOne Exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':user_id' at line 1
+[2025-04-16 12:28:04] [DB_ERROR] FetchOne Exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':user_id' at line 1
+[2025-04-16 12:28:04] [DB_ERROR] FetchOne Exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':user_id' at line 1
+[2025-04-16 12:28:20] [DB_ERROR] FetchOne Exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':user_id' at line 1
+=======
 [2025-04-10 05:40:04] [DB_ERROR] Database Connection Exception: No connection could be made because the target machine actively refused it
 [2025-04-10 05:40:08] [DB_ERROR] Database Connection Exception: No connection could be made because the target machine actively refused it
 [2025-04-10 05:40:09] [DB_ERROR] Database Connection Exception: No connection could be made because the target machine actively refused it
@@ -1395,3 +1410,4 @@
 [2025-04-16 10:35:02] [DB_ERROR] FetchOne Exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':user_id' at line 1
 [2025-04-16 10:35:17] [DB_ERROR] FetchOne Exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':user_id' at line 1
 [2025-04-16 10:35:35] [DB_ERROR] FetchOne Exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':user_id' at line 1
+>>>>>>> 272bb1147f92e6db470c1ad6cb0f00400b3c63ce
