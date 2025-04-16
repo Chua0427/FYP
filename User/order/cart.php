@@ -121,7 +121,14 @@ $pageTitle = "Shopping Cart - VeroSports";
     <link rel="stylesheet" href="cart.css">
 </head>
 <body>
-    <?php include_once '../Header_and_Footer/header.html'; ?>
+<?php 
+// Start session if not already started
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+    
+include __DIR__ . '/../Header_and_Footer/header.php'; 
+?>
     
     <main>
         <div class="container">
@@ -208,7 +215,7 @@ $pageTitle = "Shopping Cart - VeroSports";
         </div>
     </main>
     
-    <?php include_once '../Header_and_Footer/footer.html'; ?>
+    <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?> 
     
     <script>
     document.addEventListener('DOMContentLoaded', function() {
