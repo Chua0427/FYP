@@ -52,8 +52,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user && password_verify($password, $user['password'])) {
-            // Password is correct, generate token
-            $token = Auth::login($user['user_id'], $user, $remember);
+            // Create a token only if remember me is checked
+            if ($remember) {
+                // Password is correct, generate and store token for long-term use
+                $token = Auth::login($user['user_id'], $user, true);
+                
+                // Log remember me usage
+                $GLOBALS['authLogger']->info('User enabled Remember Me', [
+                    'user_id' => $user['user_id'],
+                    'email' => $user['email'],
+                    'ip' => $_SERVER['REMOTE_ADDR'],
+                    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown'
+                ]);
+            } else {
+                // No persistent token, just use the session
+                Auth::loginWithoutToken($user);
+                
+                $GLOBALS['authLogger']->info('User login without Remember Me', [
+                    'user_id' => $user['user_id'],
+                    'email' => $user['email'],
+                    'ip' => $_SERVER['REMOTE_ADDR'],
+                    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown'
+                ]);
+            }
             
             // For backward compatibility, also set session variables
             $_SESSION['user_id'] = $user['user_id'];
@@ -71,6 +92,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Regenerate session ID after login for security
             session_regenerate_id(true);
+            
+            // For enhanced security, store a fingerprint of this session 
+            // This helps prevent session hijacking when using session-only auth
+            $_SESSION['auth_fingerprint'] = hash('sha256', 
+                $_SERVER['HTTP_USER_AGENT'] . 
+                ($_SERVER['REMOTE_ADDR'] ?? 'localhost') . 
+                $user['user_id']
+            );
             
             // Redirect to the requested page or homepage
             header('Location: ' . $redirect);

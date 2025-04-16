@@ -64,7 +64,7 @@
         </div>
     </div>
 
-    <?php if (isset($_SESSION['user_id']) && isset($_SESSION['first_name'])): ?>
+    <?php if (isset($_SESSION['user_id']) && isset($_SESSION['first_name']) && !isset($_SESSION['welcome_shown'])): ?>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const welcomeMessage = "Welcome back, <?php echo htmlspecialchars($_SESSION['first_name']); ?>!\n\nCheck out our latest products and exclusive deals just for you.<?php if (isset($_SESSION['last_visit'])): ?>\n\nYour last visit was on <?php echo date('F j, Y, g:i a', $_SESSION['last_visit']); ?><?php endif; ?>";
@@ -72,6 +72,9 @@
         });
     </script>
     <?php 
+    // Set flag that welcome message has been shown
+    $_SESSION['welcome_shown'] = true;
+    
     // Update last visit timestamp
     $_SESSION['last_visit'] = time();
     endif; 

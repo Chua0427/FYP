@@ -4,7 +4,8 @@ require_once '/xampp/htdocs/FYP/FYP/User/payment/secrets.php';
 require_once __DIR__ . '/db.php';
 require __DIR__ . '/../app/init.php';
 
-use Ramsey\Uuid\Uuid;
+// Remove UUID import
+// use Ramsey\Uuid\Uuid;
 
 // Ensure logs directory exists
 $log_dir = __DIR__ . '/logs';
@@ -16,6 +17,11 @@ if (!file_exists($log_dir)) {
 function log_message($level, $message): void {
     $log = date("[Y-m-d H:i:s]") . " [$level] $message" . PHP_EOL;
     error_log($log, 3, __DIR__ . '/logs/checkout.log');
+}
+
+// Function to generate a unique payment ID
+function generatePaymentId(): string {
+    return uniqid('pay_', true) . bin2hex(random_bytes(8));
 }
 
 // Set content type
@@ -118,8 +124,8 @@ try {
         ],
     ]);
     
-    // Generate payment ID
-    $payment_id = Uuid::uuid4()->toString();
+    // Generate payment ID using our custom function instead of UUID
+    $payment_id = generatePaymentId();
     
     // Insert payment record with Checkout Session ID
     $db->execute(

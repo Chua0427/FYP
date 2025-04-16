@@ -1,2 +1,0 @@
-[2025-04-12T17:25:05.931970+02:00] auth.INFO: User login {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
-[2025-04-12T17:26:43.020942+02:00] auth.INFO: User logout {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
