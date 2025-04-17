@@ -133,45 +133,13 @@
                             }
 
                             if ($stock >0) {
-                                //sql review
-                                $sql2 = "SELECT 
-                                            p.product_id, 
-                                            AVG(r.rating) as average_rating 
-                                        FROM 
-                                            product p
-                                        LEFT JOIN 
-                                            review r ON p.product_id = r.product_id
-                                        GROUP BY 
-                                            p.product_id";
-
-                                $result2= $conn->query($sql2);
-                                $ratings = [];
-                                    while ($row2 = $result2->fetch_assoc()) {
-                                        $ratings[$row2['product_id']] = is_null($row2['average_rating']) ? null : round($row2['average_rating']);
-                                    }
-                                    $user_rating = isset($ratings[$product_id]) ? $ratings[$product_id] : null;
-                                
                                 echo '<div class="product-column">
                                         <a href="../ProductPage/product.php?id='.$row['product_id'].'">
                                             <img src="../../upload/'.$row['product_img1'].'" alt="">
                                             <p class="product-name">'.$row['product_name'].'</p>
                                             <div class="price">RM '.$row['price'].'</div>
-
-                                    <div class="rating">';
-                                    
-                                    for ($i = 1; $i <= 5; $i++) {
-                                        if ($i <= $user_rating) {
-                                            echo '<span class="star filled">&#9733;</span>';
-                                        } else {
-                                            echo '<span class="star">&#9733;</span>';
-                                        }
-                                    }
-                                
-                                    
-                                    
-                        echo '  </div>
-                                </a>
-                            </div>';
+                                        </a>
+                                    </div>';
                             }
                         }
                 ?>

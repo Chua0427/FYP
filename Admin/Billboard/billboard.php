@@ -39,7 +39,7 @@
                                         <img src="../../upload/'. $row['image'] .'" alt="">
                                     </td>
                                     <td>
-                                        <a href="delete.php?id='. $row['billboard_id'].' "class="btn btn-delete" id="delete" onclick="return confirm(\'Are you sure?\')">Delete</a>
+                                        <a href="delete.php?id='. $row['billboard_id'].' "class="btn btn-delete" id="delete" onclick="return confirm(\'Are you sure?\')"><i class="fa-solid fa-trash"></i></a>
                                     </td>
                                 </tr>';
                     }

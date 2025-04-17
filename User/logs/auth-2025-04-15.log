@@ -1,0 +1,5 @@
+[2025-04-15T02:44:48.419767+02:00] auth.INFO: User login {"user_id":41,"email":"chiannchua05@gmail.com","ip":"::1"} []
+[2025-04-15T02:54:07.355289+02:00] auth.INFO: User logout {"user_id":41,"email":"chiannchua05@gmail.com","ip":"::1"} []
+[2025-04-15T02:59:33.923080+02:00] auth.INFO: User login {"user_id":41,"email":"chiannchua05@gmail.com","ip":"::1"} []
+[2025-04-15T04:49:59.796357+02:00] auth.INFO: User logout {"user_id":41,"email":"chiannchua05@gmail.com","ip":"::1"} []
+[2025-04-15T04:53:47.028678+02:00] auth.INFO: User login {"user_id":41,"email":"chiannchua05@gmail.com","ip":"::1"} []
