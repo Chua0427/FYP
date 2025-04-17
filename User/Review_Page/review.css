@@ -1,0 +1,92 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    color: #333;
+    background-image: url('images/DALL·E\ 2025-03-09\ 16.09.59\ -\ A\ modern\ VeroSports\ retail\ store\ selling\ sports\ equipment\ and\ apparel\,\ designed\ with\ an\ orange\ and\ white\ color\ scheme.\ The\ store\ branding\ prominently\ .webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.formWrapper{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.formContainer {
+    background: rgba(255, 255, 255, 0.938); 
+    width: 600px;
+    height: 530px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    position: relative;
+    top: 80px;
+    margin-bottom: 250px;
+}
+
+.formContainer h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    background-color: #363636;
+    width: 100%;
+    color: white;
+    padding: 20px;
+}
+
+.formContainer h3{
+    margin-top: 30px;
+}
+
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.star {
+    font-size: 2.5rem;
+    color: #d3d3d3;
+    cursor: pointer;
+    transition: color 0.3s, transform 0.2s;
+}
+
+.star:hover, 
+.star.active {
+    color: gold;
+    transform: scale(1.1); 
+}
+
+.submit-btn {
+    display: block;
+    margin: 10px auto 0;
+    padding: 10px 20px;
+    border: none;
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    color: white;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.submit-btn:hover {
+    background: linear-gradient(to right, #ff6a5f, #fe9063);
+    transform: scale(1.05);
+}
+
+#review{
+    margin: 20px 0px;
+    width: 450px;
+    height: 200px;
+    text-align: center;
+    border-radius: 20px;
+}

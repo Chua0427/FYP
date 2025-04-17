@@ -1,0 +1,189 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    color: #333;
+}
+
+.promotion-billboard{
+    position: relative;
+}
+
+.promotion-billboard img{
+    width: 100%;
+    height: 600px;
+}
+
+.slogan-contain {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    position: absolute;
+    background-color: black;
+    color: orangered;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 1px;
+    margin-top: -5px;
+}
+
+.slogan {
+    transform: translateX(100%);
+    animation: scrollRight 30s linear infinite;
+}
+
+@keyframes scrollRight {
+    0% {
+        transform: translateX(100%);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+#filterbtn{
+    margin-top: 100px;
+    background-color: #ff5100d8;
+    border:none;
+    padding: 10px;
+    border-radius: 10px;
+    margin-left: 30px;
+    width:10%;
+}
+
+#filterbtn:hover{
+    background-color: #ff5100;
+}
+
+#filterbtn i, #filterbtn span {
+    color: white;
+    margin-right: 15px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.container{
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.sidebar {
+    margin-top: 20px;
+    left: 0;
+    width: 0;
+    padding: 0; 
+    opacity: 0;
+    visibility: hidden;
+    border: 0.5px solid rgb(228, 228, 228);
+}
+
+.sidebar-container{
+    padding: 20px;
+}
+
+.filter{
+    margin: 30px 0;
+}
+
+.filter h3, .filter1 h3{
+    font-weight: bold;
+    font-size: 18px;
+    color:#000000;
+    margin-bottom: 10px;
+}
+
+.filter1 input[type="number"]{
+    width: 45px;
+}
+
+.filter h4{
+    margin-top: 10px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.filter label {
+    font-size: 14px;
+    color: #666;
+    display: block;
+    margin: 1px 0;
+}
+
+.filter input[type="checkbox"]{
+    margin-right: 5px;
+}
+
+.product-wrapper {
+    flex: 1;
+    height: 100%;
+    margin-bottom: 40px;
+    margin-right: 20px;
+    margin-top: 20px;
+}
+
+.product-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 60px;
+    width: 100%;
+}
+
+.product-column {
+    text-align: center;
+}
+
+.product-column a{
+    text-decoration: none;
+    color: #222222;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.product-column .product-name {
+    height: 30px; 
+}
+
+.product-column .price{
+    font-size: 20px;
+    font-weight: bold;
+    padding-top: 20px;
+    color: red;
+}
+
+.product-column .promotionPrice{
+    font-size: 20px;
+    font-weight: bold;
+    padding-top: 20px;
+    color: red;
+}
+
+.product-column .discountPrice {
+    text-decoration: line-through;
+    color: gray;
+    margin-left: 30px;
+}
+
+.product-column img{
+    width: 330px;
+    height: 300px;
+}
+
+.product-column .discount {
+    background-color: rgb(255, 0, 0);
+    position: relative;
+    width: 100px;
+    height: 30px;
+    padding: 5px 5px;
+    font-weight: bold;
+    font-size: 18px;
+    color: white;
+    margin-bottom: -30px;
+}
