@@ -1,0 +1,3 @@
+[2025-04-16 13:02:05] [DB_ERROR] FetchOne Exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':user_id' at line 1
+[2025-04-16 13:02:10] [DB_ERROR] FetchOne Exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':user_id' at line 1
+[2025-04-16 13:02:11] [DB_ERROR] FetchOne Exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':user_id' at line 1
