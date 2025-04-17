@@ -60,8 +60,13 @@
             </div>
             
             <div class="btn-container">
+<<<<<<< HEAD
                 <button type="submit" class="btn"><b>Change Password</b></button>
                 <a href="../HomePage/homePage.php" class="btn btn-cancel"><b>Cancel</b></a>
+=======
+                <button type="submit" class="btn">Change Password</button>
+                <a href="../HomePage/homePage.php" class="btn btn-cancel">Cancel</a>
+>>>>>>> a95b9eca4863135b0f7a7228aaf3e3a942d6a4d0
             </div>
         </form>
     </div>
