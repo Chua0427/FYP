@@ -10,7 +10,13 @@
     <link rel="stylesheet" href="../Header_and_Footer/footer.css">
     <link rel="stylesheet" href="../Header_and_Footer/header.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+    <?php
+    // Include CSRF protection
+    require_once __DIR__ . '/../app/csrf.php';
+    // Generate CSRF token and add it to meta tag
+    $csrf_token = generateCsrfToken();
+    ?>
+    <meta name="csrf-token" content="<?php echo htmlspecialchars($csrf_token); ?>">
 </head>
 
 <?php
@@ -34,8 +40,14 @@
             session_start();
         }
         
+        // Check if user is logged in
+        $is_authenticated = isset($_SESSION['user_id']);
+        
         include __DIR__ . '/../Header_and_Footer/header.php'; 
         ?>
+
+        <!-- Cart notification container -->
+        <div class="message-container"></div>
 
         <div class="productContainer">
         
@@ -109,8 +121,10 @@
                 
                     <input type="number" id="quantity" value="1" min="1">
                 </div>
-
-                <button class="add-to-cart">Add to Cart</button>
+                
+                <!-- Add hidden CSRF token -->
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                <button class="add-to-cart" <?php if (!$is_authenticated) echo 'data-requires-auth="true"'; ?>>Add to Cart</button>
                 
                 <div class="tabContainer">
                     <div class="tab">
@@ -258,11 +272,43 @@
         }
     }
 ?>
-
+<style>
+    /* Add styles for the cart notification */
+    .message-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+    .message {
+        padding: 12px 20px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        animation: fadeIn 0.3s ease-out;
+    }
+    .message.success {
+        background-color: #28a745;
+        color: white;
+    }
+    .message.error {
+        background-color: #dc3545;
+        color: white;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeOut {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(-10px); }
+    }
+</style>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const sizeSelect = document.getElementById("size");
     const skuDisplay = document.getElementById("skuDisplay");
+    const addToCartBtn = document.querySelector('.add-to-cart');
 
     function updateSKU() {
         const selectedOption = sizeSelect.options[sizeSelect.selectedIndex];
@@ -271,7 +317,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     updateSKU(); 
-    sizeSelect.addEventListener("change", updateSKU); 
+    sizeSelect.addEventListener("change", updateSKU);
+    
+    // Handle authentication for add to cart
+    if (addToCartBtn && addToCartBtn.getAttribute('data-requires-auth')) {
+        addToCartBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Redirect to login page with return URL
+            window.location.href = '/FYP/User/login/login.php?redirect=' + encodeURIComponent(window.location.href);
+        });
+    }
 });
 </script>
 
