@@ -161,13 +161,3 @@ body {
 .product-column .product-name {
     height: 30px; 
 }
-
-.star {
-    font-size: 20px;
-    color: #ccc; 
-    cursor: pointer;
-}
-
-.star.filled {
-    color: gold; 
-}

@@ -406,8 +406,8 @@ body {
 }
 
 .Jersey img {
-    width: 300px;
-    height: 350px;
+    width: 350px;
+    height: 320px;
 }
 
 .Jersey .price{
@@ -615,4 +615,11 @@ body {
 .informContainer a {
     text-decoration: none;
     font-weight: bold;
+}
+
+.star {
+    color: lightgray;
+}
+.star.filled {
+    color: gold;
 }

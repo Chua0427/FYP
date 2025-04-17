@@ -1,0 +1,95 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-color: #f5f5f5; 
+    color: #333;
+}
+
+.contain {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    width: 100%;
+    padding-left: 250px;
+}
+
+.user-table {
+    background: #fff; 
+    padding: 10px;
+    border-radius: 1px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 98%;
+    height: 100%;
+    position: relative;
+    top: 100px;
+}
+
+.user-table h3 {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    padding: 10px;
+    border-bottom: 1px solid black;
+    background-color: #0077ff69;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    overflow: hidden;
+}
+
+.user-table table td {
+    padding: 1px;
+    text-align: center;
+}
+
+.user-table img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-left: 10px;
+}
+
+.user-table table tr{
+    border-bottom:1px solid lightgray;
+}
+
+.user-table table tr:hover {
+    background-color: #dfdfdf3a;
+}
+
+.rating{
+    margin-left: -100px;
+}
+
+.star {
+    font-size: 25px;
+    color: #ccc; 
+    cursor: pointer;
+}
+
+.star.filled {
+    color: gold; 
+}
+
+.name{
+    margin-left: -280px;
+    margin-right: -100px;
+    font-weight: bold;
+    color: gray;
+}
+
+.review-button{
+    background-color: blue;
+    padding: 6px 18px;
+    color: white;
+    border-radius: 10px;
+    margin-left: 30px;
+}

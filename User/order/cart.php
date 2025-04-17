@@ -284,7 +284,7 @@ include __DIR__ . '/../Header_and_Footer/header.php';
         </div>
     </main>
     
-    <!-- Hidden forms for cart actions -->
+
     <form id="update-form" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" style="display: none;">
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
         <input type="hidden" name="action" value="update_quantity">
@@ -300,6 +300,7 @@ include __DIR__ . '/../Header_and_Footer/header.php';
     
     <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
     
+
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Handle quantity change
