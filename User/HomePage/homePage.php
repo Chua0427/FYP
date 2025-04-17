@@ -10,7 +10,13 @@
     <link rel="stylesheet" href="../Header_and_Footer/header.css">
     <link rel="stylesheet" href="../Header_and_Footer/footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+    <?php
+    // Include CSRF protection
+    require_once __DIR__ . '/../app/csrf.php';
+    // Generate CSRF token and add it to meta tag
+    $csrf_token = generateCsrfToken();
+    ?>
+    <meta name="csrf-token" content="<?php echo htmlspecialchars($csrf_token); ?>">
 </head>
 
 <body>
@@ -423,6 +429,12 @@
                 formData.append('product_size', 'M'); // Default size
                 formData.append('quantity', 1);
                 
+                // Add CSRF token
+                const csrfToken = getCsrfToken();
+                if (csrfToken) {
+                    formData.append('csrf_token', csrfToken);
+                }
+                
                 // Show loading state
                 const button = event.target;
                 const originalText = button.value;
@@ -432,9 +444,23 @@
                 // Send AJAX request
                 fetch('/FYP/User/api/add_to_cart.php', {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    credentials: 'same-origin'
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            // Redirect to login if unauthorized
+                            window.location.href = '../login/login.php?redirect=' + encodeURIComponent(window.location.href);
+                            throw new Error('Please login to add items to your cart');
+                        } else if (response.status === 403) {
+                            // Handle CSRF token errors by refreshing the page
+                            window.location.reload();
+                            throw new Error('Session expired. Please try again.');
+                        }
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
                         showMessage(data.message, 'success');
@@ -451,12 +477,43 @@
                 })
                 .catch(error => {
                     showMessage('Error adding to cart. Please try again.', 'error');
+                    console.error('Add to cart error:', error);
                 })
                 .finally(() => {
                     // Reset button state
                     button.disabled = false;
                     button.value = originalText;
+                    
+                    // Retry in case of network errors
+                    if (navigator.onLine === false) {
+                        // Wait for online status and retry
+                        window.addEventListener('online', function onlineHandler() {
+                            window.removeEventListener('online', onlineHandler);
+                            showMessage('Connection restored. Retrying...', 'info');
+                            setTimeout(() => quickAddToCart(productId), 1000);
+                        });
+                    }
                 });
+            }
+            
+            /**
+             * Get CSRF token from the page or meta tag
+             * @returns {string|null} CSRF token or null if not available
+             */
+            function getCsrfToken() {
+                // Try to get token from hidden input
+                const tokenInput = document.querySelector('input[name="csrf_token"]');
+                if (tokenInput) {
+                    return tokenInput.value;
+                }
+                
+                // Try to get from meta tag
+                const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+                if (tokenMeta) {
+                    return tokenMeta.getAttribute('content');
+                }
+                
+                return null;
             }
             
             function showMessage(message, type) {

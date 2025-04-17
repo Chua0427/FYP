@@ -16,28 +16,19 @@ document.addEventListener("DOMContentLoaded", function () {
     let smallImages = document.querySelectorAll(".small-img");
     let currentIndex=0;
 
-    smallImages[0].onclick = function(){
-        mainImage.src=smallImages[0].src
-    }
-
-    smallImages[1].onclick = function(){
-        mainImage.src=smallImages[1].src
-    }
-
-    smallImages[2].onclick = function(){
-        mainImage.src=smallImages[2].src
-    }
+    // Handle small image clicks
+    smallImages.forEach((img, index) => {
+        img.onclick = function() {
+            mainImage.src = img.src;
+            currentIndex = index;
+        }
+    });
     
-    smallImages[3].onclick = function(){
-        mainImage.src=smallImages[3].src
-    }
-
-    
+    // Handle navigation buttons
     document.getElementById("productButton").addEventListener("click", function () {
         currentIndex = (currentIndex - 1 + smallImages.length) % smallImages.length;
         mainImage.src = smallImages[currentIndex].src;
     });
-
     
     document.getElementById("productnextButton").addEventListener("click", function () {
         currentIndex = (currentIndex + 1) % smallImages.length;
@@ -46,8 +37,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Add to Cart Button functionality
     const addToCartBtn = document.querySelector('.add-to-cart');
-    if (addToCartBtn) {
+    if (addToCartBtn && !addToCartBtn.getAttribute('data-requires-auth')) {
         addToCartBtn.addEventListener('click', addToCart);
+    }
+    
+    // Add quantity validation
+    const quantityInput = document.getElementById('quantity');
+    if (quantityInput) {
+        quantityInput.addEventListener('change', function() {
+            const value = parseInt(this.value, 10);
+            if (isNaN(value) || value < 1) {
+                this.value = 1;
+            }
+        });
     }
 });
 
@@ -87,6 +89,12 @@ function addToCart() {
     formData.append('product_size', size);
     formData.append('quantity', quantity);
     
+    // Add CSRF token if available
+    const csrfToken = getCsrfToken();
+    if (csrfToken) {
+        formData.append('csrf_token', csrfToken);
+    }
+    
     // Disable button and show loading state
     const button = document.querySelector('.add-to-cart');
     const originalText = button.textContent;
@@ -94,11 +102,28 @@ function addToCart() {
     button.textContent = 'Adding...';
     
     // Send AJAX request
-    fetch('/FYP/User/api/add_to_cart.php', {
+    fetch('/FYP/FYP/User/api/add_to_cart.php', {
         method: 'POST',
-        body: formData
+        body: formData,
+        credentials: 'same-origin' // Include cookies for authentication
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            if (response.status === 401) {
+                // Redirect to login if unauthorized
+                window.location.href = '/FYP/User/login/login.php?redirect=' + encodeURIComponent(window.location.href);
+                throw new Error('Please login to add items to your cart');
+            } else if (response.status === 403) {
+                // Handle CSRF token errors by refreshing the page
+                window.location.reload();
+                throw new Error('Session expired. Please try again.');
+            }
+            return response.json().then(err => {
+                throw new Error(err.error || 'Error processing request');
+            });
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             showMessage(data.message, 'success');
@@ -109,24 +134,59 @@ function addToCart() {
                 cartCounter.textContent = data.cart_count;
                 cartCounter.style.display = 'block';
             }
+            
+            // Reset quantity to 1 after successful add
+            if (quantityInput) {
+                quantityInput.value = 1;
+            }
         } else {
-            showMessage(data.error, 'error');
+            showMessage(data.error || 'Unknown error occurred', 'error');
         }
     })
     .catch(error => {
-        showMessage('Error adding to cart. Please try again.', 'error');
+        showMessage(error.message || 'Error adding to cart. Please try again.', 'error');
         console.error('Add to cart error:', error);
     })
     .finally(() => {
         // Reset button state
         button.disabled = false;
         button.textContent = originalText;
+        
+        // Retry in case of network errors
+        if (navigator.onLine === false) {
+            // Wait for online status and retry
+            window.addEventListener('online', function onlineHandler() {
+                window.removeEventListener('online', onlineHandler);
+                showMessage('Connection restored. Retrying...', 'info');
+                setTimeout(addToCart, 1000);
+            });
+        }
     });
 }
 
 function getProductIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('id');
+}
+
+/**
+ * Get CSRF token from the page or meta tag
+ * @returns {string|null} CSRF token or null if not available
+ */
+function getCsrfToken() {
+    // Try to get token from hidden input
+    const tokenInput = document.querySelector('input[name="csrf_token"]');
+    if (tokenInput) {
+        return tokenInput.value;
+    }
+    
+    // Try to get from meta tag
+    const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+    if (tokenMeta) {
+        return tokenMeta.getAttribute('content');
+    }
+    
+    return null;
 }
 
 function showMessage(message, type) {
@@ -163,6 +223,9 @@ function showMessage(message, type) {
         messageElement.style.color = 'white';
     } else if (type === 'error') {
         messageElement.style.backgroundColor = '#dc3545';
+        messageElement.style.color = 'white';
+    } else if (type === 'info') {
+        messageElement.style.backgroundColor = '#17a2b8';
         messageElement.style.color = 'white';
     }
     
