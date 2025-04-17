@@ -4,9 +4,10 @@ require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once '/xampp/htdocs/FYP/FYP/User/payment/secrets.php';
 require_once __DIR__ . '/db.php';
 require __DIR__ . '/../app/init.php';
+require_once __DIR__ . '/../app/services/OrderService.php';
 
 // Remove UUID import since we're now using auto-increment IDs
-// use Ramsey\Uuid\Uuid;
+
 
 session_start();
 
@@ -85,88 +86,35 @@ try {
  * @return void
  */
 function createOrder(Database $db, $user_id) {
-    $db->beginTransaction();
-    
     try {
         // Validate required parameters
         $shipping_address = trim($_POST['shipping_address'] ?? '');
         
-        if (empty($shipping_address)) {
-            throw new Exception('Shipping address is required');
-        }
+        // Create OrderService instance and use it to create the order
+        $orderService = new OrderService($db);
         
-        // Check if the user has items in cart
-        $cart_items = $db->fetchAll(
-            "SELECT c.*, p.product_name, p.price, 
-             CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price 
-             FROM cart c 
-             JOIN product p ON c.product_id = p.product_id 
-             WHERE c.user_id = ?", 
-            [$user_id]
-        );
-        
-        if (empty($cart_items)) {
-            throw new Exception('Your cart is empty');
-        }
-        
-        // Calculate order total
-        $total_price = 0;
-        foreach ($cart_items as $item) {
-            $total_price += $item['final_price'] * $item['quantity'];
-        }
-        
-        // No longer generate UUID - database will auto-increment the ID
-        // Create order record
-        $db->execute(
-            "INSERT INTO orders (user_id, total_price, shipping_address, delivery_status) 
-             VALUES (?, ?, ?, 'prepare')",
-            [$user_id, $total_price, $shipping_address]
-        );
-        
-        // Get the auto-generated order ID
-        $order_id = $db->fetchOne("SELECT LAST_INSERT_ID() as id")['id'];
-        
-        // Create order items from cart
-        foreach ($cart_items as $item) {
-            $db->execute(
-                "INSERT INTO order_items (order_id, product_id, product_size, quantity, price) 
-                 VALUES (?, ?, ?, ?, ?)",
-                [
-                    $order_id, 
-                    $item['product_id'], 
-                    $item['product_size'], 
-                    $item['quantity'], 
-                    $item['final_price']
-                ]
-            );
+        // For older code compatibility, we use a custom logger function
+        $orderService->setLogger(new class {
+            public function info($message, $context = []) {
+                log_message('INFO', $message . ' | ' . json_encode($context));
+            }
             
-            // Update stock (optional, based on your business logic)
-            $db->execute(
-                "UPDATE stock SET stock = stock - ? 
-                 WHERE product_id = ? AND product_size = ?",
-                [$item['quantity'], $item['product_id'], $item['product_size']]
-            );
-        }
+            public function error($message, $context = []) {
+                log_message('ERROR', $message . ' | ' . json_encode($context));
+            }
+        });
         
-        // Clear the user's cart
-        $db->execute("DELETE FROM cart WHERE user_id = ?", [$user_id]);
-        
-        // Commit transaction
-        $db->commit();
-        
-        // Log order creation
-        log_message('INFO', "Order created: $order_id for user $user_id with total $total_price");
+        // Create order without strict stock validation (simpler cart query)
+        $result = $orderService->createOrderFromCart(
+            $user_id,
+            $shipping_address,
+            false // Don't check stock in this implementation
+        );
         
         // Return success response with order details
-        echo json_encode([
-            'success' => true,
-            'order_id' => $order_id,
-            'total' => $total_price,
-            'message' => 'Order created successfully'
-        ]);
+        echo json_encode($result);
         
     } catch (Exception $e) {
-        $db->rollback();
         throw $e;
     }
 }
@@ -178,45 +126,31 @@ function createOrder(Database $db, $user_id) {
  * @return void
  */
 function getOrderDetails(Database $db) {
-    // Validate required parameters
-    $order_id = trim($_GET['order_id'] ?? '');
-    
-    if (empty($order_id)) {
-        throw new Exception('Order ID is required');
+    try {
+        // Validate required parameters
+        $order_id = trim($_GET['order_id'] ?? '');
+        
+        if (empty($order_id)) {
+            throw new Exception('Order ID is required');
+        }
+        
+        // Create OrderService instance
+        $orderService = new OrderService($db);
+        
+        // Get order details
+        $details = $orderService->getOrderDetails((int)$order_id);
+        
+        // Return order details
+        echo json_encode([
+            'success' => true,
+            'order' => $details['order'],
+            'items' => $details['items'],
+            'payment' => $details['payment']
+        ]);
+        
+    } catch (Exception $e) {
+        throw $e;
     }
-    
-    // Get order info
-    $order = $db->fetchOne(
-        "SELECT * FROM orders WHERE order_id = ?", 
-        [$order_id]
-    );
-    
-    if (!$order) {
-        throw new Exception("Order not found: $order_id");
-    }
-    
-    // Get order items
-    $items = $db->fetchAll(
-        "SELECT oi.*, p.product_name, p.product_img1 
-         FROM order_items oi 
-         JOIN product p ON oi.product_id = p.product_id 
-         WHERE oi.order_id = ?",
-        [$order_id]
-    );
-    
-    // Get payment information if exists
-    $payment = $db->fetchOne(
-        "SELECT * FROM payment WHERE order_id = ? ORDER BY payment_at DESC LIMIT 1", 
-        [$order_id]
-    );
-    
-    // Return order details
-    echo json_encode([
-        'success' => true,
-        'order' => $order,
-        'items' => $items,
-        'payment' => $payment
-    ]);
 }
 
 /**
@@ -226,8 +160,6 @@ function getOrderDetails(Database $db) {
  * @return void
  */
 function updateOrderStatus(Database $db) {
-    $db->beginTransaction();
-    
     try {
         // Validate required parameters
         $order_id = trim($_POST['order_id'] ?? '');
@@ -237,31 +169,22 @@ function updateOrderStatus(Database $db) {
             throw new Exception('Order ID is required');
         }
         
-        if (empty($status) || !in_array($status, ['prepare', 'packing', 'assign', 'shipped', 'delivered'])) {
-            throw new Exception('Invalid status value');
-        }
+        // Create OrderService instance
+        $orderService = new OrderService($db);
         
-        // Check if order exists
-        $order = $db->fetchOne(
-            "SELECT * FROM orders WHERE order_id = ?", 
-            [$order_id]
-        );
-        
-        if (!$order) {
-            throw new Exception("Order not found: $order_id");
-        }
+        // For older code compatibility, we use a custom logger function
+        $orderService->setLogger(new class {
+            public function info($message, $context = []) {
+                log_message('INFO', $message . ' | ' . json_encode($context));
+            }
+            
+            public function error($message, $context = []) {
+                log_message('ERROR', $message . ' | ' . json_encode($context));
+            }
+        });
         
         // Update order status
-        $db->execute(
-            "UPDATE orders SET delivery_status = ? WHERE order_id = ?", 
-            [$status, $order_id]
-        );
-        
-        // Commit transaction
-        $db->commit();
-        
-        // Log status update
-        log_message('INFO', "Order $order_id status updated to $status");
+        $orderService->updateOrderStatus((int)$order_id, $status);
         
         // Return success
         echo json_encode([
@@ -270,7 +193,6 @@ function updateOrderStatus(Database $db) {
         ]);
         
     } catch (Exception $e) {
-        $db->rollback();
         throw $e;
     }
 }
