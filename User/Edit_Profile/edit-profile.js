@@ -1,8 +1,12 @@
+<<<<<<< HEAD
 document.addEventListener('DOMContentLoaded', function() {   
 
         const userData = {
             profile_image: 'default-profile.jpg',
         };
+=======
+document.addEventListener('DOMContentLoaded', function() {
+>>>>>>> a95b9eca4863135b0f7a7228aaf3e3a942d6a4d0
   
     document.getElementById('firstName').value = userData.first_name;
     document.getElementById('lastName').value = userData.last_name;
@@ -32,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         alert('Profile updated successfully!');
     });
+<<<<<<< HEAD
 });
 document.addEventListener("DOMContentLoaded", function(){
     const cityByState = {
@@ -80,3 +85,6 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 });
 
+=======
+});
+>>>>>>> a95b9eca4863135b0f7a7228aaf3e3a942d6a4d0

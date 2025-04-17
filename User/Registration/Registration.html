@@ -20,7 +20,7 @@
     <main class="container">
         <div class="form-wrapper"></div>
         <h1>Create New Account</h1>
-    <form action="config.php" method="POST" enctype="multipart/form-data" id="registrationForm" class="registration-form">
+    <form action="Registration.php" method="POST" enctype="multipart/form-data" id="registrationForm" class="registration-form">
             <div class="form-grid">
 
                 <div class="form-group">
@@ -102,11 +102,13 @@
                     <label for="profile_image">Profile Picture</label>
                     <input type="file" id="profile_image" name="profile_image" accept="image/*">
                 </div>
-            </div>
 
-            <button type="submit" class="submit-btn">Register Now</button>
+    
+            </div>
+            <button type="submit" class="submit-btn">Register Now  <i class="fas fa-arrow-right"></i></button>
     </form>
     </main>
+
 
     <script>
         // Password validation

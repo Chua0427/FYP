@@ -89,6 +89,22 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+<<<<<<< HEAD
+=======
+        // Here you would send the data to your backend
+        // const formData = new FormData(this);
+        // fetch('/change-password', { method: 'POST', body: formData })
+        // .then(response => response.json())
+        // .then(data => {
+        //     if (data.success) {
+        //         alert('Password changed successfully!');
+        //         window.location.href = 'profile.html';
+        //     } else {
+        //         alert('Error: ' + data.message);
+        //     }
+        // });
+        
+>>>>>>> a95b9eca4863135b0f7a7228aaf3e3a942d6a4d0
         alert('Password changed successfully! (This is a demo)');
         window.location.href = 'profile.html';
     });
