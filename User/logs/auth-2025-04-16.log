@@ -45,3 +45,6 @@
 =======
 >>>>>>> a0a13caaa8f22e924510511504d4dd768873b705
 >>>>>>> 272bb1147f92e6db470c1ad6cb0f00400b3c63ce
+[2025-04-16T16:22:21.006704+02:00] auth.INFO: User login without Remember Me {"user_id":41,"email":"chiannchua05@gmail.com","ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"} []
+[2025-04-16T16:22:21.030135+02:00] auth.INFO: User login {"user_id":41,"email":"chiannchua05@gmail.com","ip":"::1"} []
+[2025-04-16T16:38:20.940185+02:00] auth.INFO: User logout {"user_id":41,"email":"chiannchua05@gmail.com","ip":"::1"} []
