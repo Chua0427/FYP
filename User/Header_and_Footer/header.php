@@ -39,8 +39,8 @@ if ($is_authenticated) {
     try {
         $db = new Database();
         $result = $db->fetchOne(
-            "SELECT COUNT(*) as count FROM cart WHERE user_id = :user_id",
-            [':user_id' => $_SESSION['user_id']]
+            "SELECT COUNT(*) as count FROM cart WHERE user_id = ?",
+            [$_SESSION['user_id']]
         );
         
         if ($result) {
