@@ -9,18 +9,76 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add event listeners to store checkboxes
     initStoreCheckboxes();
+
+    // Get CSRF token
+    const csrfToken = getCsrfToken();
+    
+    // Handle quantity change
+    const minusButtons = document.querySelectorAll('.quantity-btn.minus');
+    const plusButtons = document.querySelectorAll('.quantity-input.plus');
+    const quantityInputs = document.querySelectorAll('.quantity-input');
+    const removeButtons = document.querySelectorAll('.remove-btn');
+    
+    minusButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const cartId = this.getAttribute('data-cart-id');
+            const input = document.querySelector(`input[name="quantity[${cartId}]"]`);
+            let value = parseInt(input.value, 10);
+            value = Math.max(1, value - 1);
+            input.value = value;
+            
+            // Update quantity via AJAX
+            updateQuantity(cartId, value);
+        });
+    });
+    
+    plusButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const cartId = this.getAttribute('data-cart-id');
+            const input = document.querySelector(`input[name="quantity[${cartId}]"]`);
+            let value = parseInt(input.value, 10);
+            value += 1;
+            input.value = value;
+            
+            // Update quantity via AJAX
+            updateQuantity(cartId, value);
+        });
+    });
+    
+    quantityInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const cartId = this.name.match(/\[(\d+)\]/)[1];
+            let value = parseInt(this.value, 10);
+            value = Math.max(1, value); // Ensure minimum value is 1
+            this.value = value;
+            
+            // Update quantity via AJAX
+            updateQuantity(cartId, value);
+        });
+    });
+    
+    removeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            if (confirm('Are you sure you want to remove this item?')) {
+                const cartId = this.getAttribute('data-cart-id');
+                
+                // Set the cart ID in the hidden form and submit
+                document.getElementById('remove-cart-id').value = cartId;
+                
+                // Add CSRF token to the form if not already present
+                const removeForm = document.getElementById('remove-form');
+                ensureFormHasCsrfToken(removeForm, csrfToken);
+                
+                removeForm.submit();
+            }
+        });
+    });
 });
 
 /**
  * Initialize all cart functions
  */
 function initCartFunctions() {
-    // Handle quantity update buttons
-    initQuantityControls();
-    
-    // Handle remove item buttons
-    initRemoveButtons();
-    
     // Handle checkout button animation
     const checkoutBtn = document.querySelector('.checkout-btn');
     if (checkoutBtn) {
@@ -36,91 +94,6 @@ function initCartFunctions() {
             this.style.transform = 'scale(1)';
         });
     }
-}
-
-
-//Initialize quantity control buttons and input validation
- 
-function initQuantityControls() {
-    // Handle quantity buttons (plus and minus)
-    document.querySelectorAll('.quantity-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const cartId = this.dataset.cartId;
-            const input = document.querySelector(`input[name="quantity[${cartId}]"]`);
-            let value = parseInt(input.value);
-            
-            if (this.classList.contains('minus')) {
-                value = Math.max(1, value - 1);
-            } else {
-                value++;
-            }
-            
-            input.value = value;
-            
-            // Update quantity via form
-            document.getElementById('update-cart-id').value = cartId;
-            document.getElementById('update-quantity').value = value;
-            document.getElementById('update-form').submit();
-        });
-    });
-    
-    // Handle direct input on quantity fields
-    document.querySelectorAll('.quantity-input').forEach(input => {
-        input.addEventListener('change', function() {
-            const cartId = this.name.match(/quantity\[(\d+)\]/)[1];
-            let value = parseInt(this.value);
-            
-            // Ensure value is at least 1
-            if (isNaN(value) || value < 1) {
-                value = 1;
-                this.value = value;
-            }
-            
-            // Update quantity
-            updateQuantity(cartId, value);
-        });
-        
-        // Prevent non-numeric input
-        input.addEventListener('keypress', function(e) {
-            if (!/^\d$/.test(e.key)) {
-                e.preventDefault();
-            }
-        });
-    });
-}
-
-/**
- * Send quantity update to server
- * @param {string} cartId - The cart item ID
- * @param {number} quantity - The new quantity
- */
-function updateQuantity(cartId, quantity) {
-    // Get form element
-    const form = document.getElementById('update-form');
-    
-    // Set form values
-    document.getElementById('update-cart-id').value = cartId;
-    document.getElementById('update-quantity').value = quantity;
-    
-    // Submit the form
-    form.submit();
-}
-
-/**
- * Initialize remove item buttons
- */
-function initRemoveButtons() {
-    document.querySelectorAll('.remove-btn').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            const cartId = this.dataset.cartId;
-            
-            if (confirm('Are you sure you want to remove this item?')) {
-                document.getElementById('remove-cart-id').value = cartId;
-                document.getElementById('remove-form').submit();
-            }
-        });
-    });
 }
 
 /**
@@ -157,4 +130,62 @@ function animateButton(button, type) {
     setTimeout(() => {
         button.classList.remove('active');
     }, 200);
+}
+
+/**
+ * Send quantity update to server
+ * @param {string} cartId - The cart item ID
+ * @param {number} quantity - The new quantity
+ */
+function updateQuantity(cartId, quantity) {
+    // Get form element
+    const form = document.getElementById('update-form');
+    
+    // Set form values
+    document.getElementById('update-cart-id').value = cartId;
+    document.getElementById('update-quantity').value = quantity;
+    
+    // Add CSRF token to the form if not already present
+    ensureFormHasCsrfToken(form, csrfToken);
+    
+    // Submit the form
+    form.submit();
+}
+
+/**
+ * Get CSRF token from the page
+ * @returns {string|null} CSRF token or null if not found
+ */
+function getCsrfToken() {
+    // Try to get token from hidden input
+    const tokenInput = document.querySelector('input[name="csrf_token"]');
+    if (tokenInput) {
+        return tokenInput.value;
+    }
+    
+    // Try to get from meta tag
+    const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+    if (tokenMeta) {
+        return tokenMeta.getAttribute('content');
+    }
+    
+    return null;
+}
+
+/**
+ * Ensure a form has the CSRF token
+ * @param {HTMLFormElement} form - The form to check
+ * @param {string} token - The CSRF token value
+ */
+function ensureFormHasCsrfToken(form, token) {
+    if (!token) return;
+    
+    let tokenInput = form.querySelector('input[name="csrf_token"]');
+    if (!tokenInput) {
+        tokenInput = document.createElement('input');
+        tokenInput.type = 'hidden';
+        tokenInput.name = 'csrf_token';
+        form.appendChild(tokenInput);
+    }
+    tokenInput.value = token;
 }
