@@ -1,0 +1,135 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    color: #333;
+}
+
+.contain{
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    width: 100%;
+    padding-left: 250px;
+}
+
+.product-table h3 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+    padding: 10px;
+}
+
+.product-container {
+    background: #fff; 
+    padding: 10px;
+    border-radius: 1px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 98%;
+    height: 100%;
+    position: relative;
+    top: 100px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    overflow: hidden;
+}
+
+.product-table table th {
+    background: #6ecaff;
+    color: #333;
+    padding: 5px 15px;
+    font-size: 16px;
+}
+
+.product-table table td {
+    padding: 10px;
+    text-align: center;
+    font-size: 15px;
+}
+
+.product-table img {
+    width: 120px;
+    height: 120px;
+}
+
+.product-table table tr{
+    border-bottom:1px solid lightgray;
+}
+
+.product-table table tr:hover {
+    background-color: #00c3ff3a;
+}
+
+.stock-button{
+    text-decoration: none;
+    padding: 10px 15px;
+    background-color: rgba(25, 25, 255, 0.712);
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    margin: 5px;
+}
+
+.stock-button:hover{
+    background-color: rgb(0, 26, 255);
+}
+
+#edit, #delete{
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+    margin: 5px;
+}
+
+#edit{
+    background-color: rgb(37, 187, 0);
+}
+
+#edit:hover{
+    background-color: rgb(0, 122, 0);
+}
+
+#delete{
+    background-color: rgb(255, 0, 0);
+}
+
+#delete:hover{
+    background-color: rgb(133, 0, 0);
+}
+
+.add-btn{
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.add-btn #add{
+    background-color: rgba(0, 0, 0, 0.788);
+    padding: 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: white;
+    width: 100%;
+    text-align: center;
+}
+
+.add-btn:hover{
+    background-color: #333;
+    border-radius: 10px;
+}
+
+.button{
+    display: flex;
+    justify-content: space-evenly;
+}
