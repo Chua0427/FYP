@@ -17,116 +17,50 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 $error = null;
 $success = null;
-$order_id = null;
 $csrf_token = generateCsrfToken();
+
+// Ensure the order ID is provided
+if (!isset($_GET['order_id']) || empty($_GET['order_id'])) {
+    header('Location: ../order/cart.php');
+    exit;
+}
+
+$order_id = $_GET['order_id'];
 
 try {
     // Initialize Database
     $db = new Database();
     
-    // Check if order_id is provided (for returning to an existing order)
-    if (isset($_GET['order_id'])) {
-        $order_id = $_GET['order_id'];
-        
-        // Verify the order exists and belongs to this user
-        $order = $db->fetchOne(
-            "SELECT * FROM orders WHERE order_id = ? AND user_id = ?",
-            [$order_id, $user_id]
-        );
-        
-        if (!$order) {
-            throw new Exception("Invalid order or order not found");
-        }
-    } else {
-        // Check if cart is empty
-        $cartItems = $db->fetchAll(
-            "SELECT c.*, p.product_name, p.price, p.discount_price, p.product_img1, p.brand,
-             CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price
-             FROM cart c 
-             JOIN product p ON c.product_id = p.product_id 
-             WHERE c.user_id = ?",
-            [$user_id]
-        );
-        
-        if (empty($cartItems)) {
-            throw new Exception("Your cart is empty. Please add items before proceeding to checkout.");
-        }
-    }
-    
-    // Get user details for shipping
-    $user = $db->fetchOne(
-        "SELECT * FROM users WHERE user_id = ?",
-        [$user_id]
+    // Verify the order exists and belongs to this user
+    $order = $db->fetchOne(
+        "SELECT * FROM orders WHERE order_id = ? AND user_id = ?",
+        [$order_id, $user_id]
     );
     
-    if (!$user) {
-        throw new Exception("User information not found");
+    if (!$order) {
+        throw new Exception("Invalid order or order not found");
     }
     
-    // Process form submission - Create Order
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_order']) && isset($_POST['csrf_token'])) {
+    // Process form submission - payment method selection
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['payment_method']) && isset($_POST['csrf_token'])) {
         // Validate CSRF token
         if (!validateCsrfToken($_POST['csrf_token'])) {
             throw new Exception("Invalid form submission. Please try again.");
         }
 
-        // Validate shipping address
-        $shipping_address = isset($_POST['shipping_address']) ? trim($_POST['shipping_address']) : '';
-        if (empty($shipping_address)) {
-            throw new Exception("Shipping address is required");
-        }
-
-        // Handle order creation
-        if (!isset($_POST['order_id']) || empty($_POST['order_id'])) {
-            if (empty($cartItems)) {
-                throw new Exception("Your cart is empty. Please add items before proceeding to checkout.");
-            }
-            $db->beginTransaction();
-            $totalPrice = 0;
-            foreach ($cartItems as $item) {
-                $totalPrice += $item['final_price'] * $item['quantity'];
-            }
-            $db->execute("INSERT INTO orders (user_id, total_price, shipping_address) VALUES (?, ?, ?)", [$user_id, $totalPrice, $shipping_address]);
-            $order_id = $db->getInsertId();
-            foreach ($cartItems as $item) {
-                $db->execute(
-                    "INSERT INTO order_items (order_id, product_id, product_size, quantity, price) VALUES (?, ?, ?, ?, ?)",
-                    [$order_id, $item['product_id'], $item['product_size'], $item['quantity'], $item['final_price']]
-                );
-            }
-            // Clear cart after creating the order
-            $db->execute("DELETE FROM cart WHERE user_id = ?", [$user_id]);
-            $db->commit();
-
-            // Redirect to payment selection page
-            header("Location: payment_methods.php?order_id=" . urlencode((string)$order_id));
+        $payment_method = $_POST['payment_method'];
+        
+        // Currently only supporting credit card payment
+        if ($payment_method === 'card') {
+            // Redirect to the payment processing page
+            header("Location: process_payment.php?order_id=" . urlencode($order_id));
             exit;
         } else {
-            // Order exists, redirect to payment method selection
-            header("Location: payment_methods.php?order_id=" . urlencode($_POST['order_id']));
-            exit;
+            throw new Exception("Selected payment method is not supported");
         }
     }
     
-} catch (Exception $e) {
-    $error = $e->getMessage();
-    
-    if (isset($db) && $db->isTransactionActive()) {
-        $db->rollback();
-    }
-    
-    // Log error
-    error_log("Checkout error: " . $e->getMessage());
-}
-
-// Function to format price
-function formatPrice($price) {
-    return 'RM ' . number_format((float)$price, 2);
-}
-
-// Prepare cart or order data for display
-if (isset($order_id)) {
-    // Get order details if we have an order ID
+    // Get order items for display
     $orderItems = $db->fetchAll(
         "SELECT oi.*, p.product_name, p.product_img1, p.brand 
          FROM order_items oi 
@@ -135,24 +69,22 @@ if (isset($order_id)) {
         [$order_id]
     );
     
-    $items = $orderItems;
+    // Calculate totals
     $totalItems = 0;
-    $totalPrice = 0;
+    $totalPrice = $order['total_price'];
     
-    foreach ($items as $item) {
+    foreach ($orderItems as $item) {
         $totalItems += $item['quantity'];
-        $totalPrice += $item['price'] * $item['quantity'];
     }
-} else {
-    // Use cart items since we don't have an order yet
-    $items = $cartItems;
-    $totalItems = 0;
-    $totalPrice = 0;
     
-    foreach ($items as $item) {
-        $totalItems += $item['quantity'];
-        $totalPrice += $item['final_price'] * $item['quantity'];
-    }
+} catch (Exception $e) {
+    $error = $e->getMessage();
+    error_log("Payment method selection error: " . $e->getMessage());
+}
+
+// Function to format price
+function formatPrice($price) {
+    return 'RM ' . number_format((float)$price, 2);
 }
 ?>
 
@@ -161,10 +93,11 @@ if (isset($order_id)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - VeroSports</title>
+    <title>Select Payment Method - VeroSports</title>
     <link rel="stylesheet" href="../Header_and_Footer/header.css">
     <link rel="stylesheet" href="../Header_and_Footer/footer.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Reset and base styles */
         * {
@@ -191,7 +124,7 @@ if (isset($order_id)) {
             padding: 40px 0;
         }
         
-        .checkout-container {
+        .payment-container {
             max-width: 1140px;
             margin: 0 auto;
             padding: 0 15px;
@@ -231,14 +164,14 @@ if (isset($order_id)) {
             border: 1px solid #c3e6cb;
         }
         
-        /* Checkout Layout */
-        .checkout-grid {
+        /* Payment Layout */
+        .payment-grid {
             display: grid;
             grid-template-columns: 1fr 400px;
             gap: 30px;
         }
         
-        .checkout-details {
+        .payment-methods {
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -253,48 +186,122 @@ if (isset($order_id)) {
             height: fit-content;
         }
         
-        /* Form Styling */
-        .form-group {
-            margin-bottom: 20px;
+        /* Payment Method Options */
+        .payment-options {
+            margin-top: 20px;
         }
         
-        label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: #555;
-        }
-        
-        input, textarea {
-            width: 100%;
-            padding: 12px 15px;
+        .payment-option {
             border: 1px solid #ddd;
             border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            position: relative;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
         
-        input:focus, textarea:focus {
+        .payment-option:hover {
             border-color: #007bff;
-            outline: none;
             box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
         }
         
-        textarea {
-            min-height: 80px;
-            resize: vertical;
+        .payment-option.selected {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
         }
         
-        .help-text {
-            font-size: 13px;
-            color: #888;
-            margin-top: 6px;
+        .payment-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
         }
         
-        /* Sections */
-        .shipping-section, .payment-section {
-            margin-bottom: 30px;
+        .payment-option-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .payment-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            color: #555;
+        }
+        
+        .payment-option.selected .payment-icon {
+            color: #007bff;
+        }
+        
+        .payment-details {
+            flex: 1;
+        }
+        
+        .payment-title {
+            display: block;
+            font-weight: 500;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        
+        .payment-description {
+            font-size: 14px;
+            color: #777;
+        }
+        
+        /* Buttons */
+        .button-container {
+            margin-top: 25px;
+        }
+        
+        .btn {
+            display: inline-block;
+            font-weight: 500;
+            text-align: center;
+            vertical-align: middle;
+            cursor: pointer;
+            padding: 10px 20px;
+            font-size: 16px;
+            line-height: 1.5;
+            border-radius: 6px;
+            transition: all 0.15s ease-in-out;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            color: #fff;
+            background-color: #007bff;
+            border: 1px solid #007bff;
+            width: 100%;
+            padding: 12px;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0069d9;
+            border-color: #0062cc;
+        }
+        
+        .btn-secondary {
+            color: #fff;
+            background-color: #6c757d;
+            border: 1px solid #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+        
+        /* Return Link */
+        .return-link {
+            display: block;
+            margin-top: 10px;
+            text-align: center;
+            color: #6c757d;
+            text-decoration: none;
+        }
+        
+        .return-link:hover {
+            text-decoration: underline;
         }
         
         /* Order items */
@@ -344,65 +351,21 @@ if (isset($order_id)) {
             border-top: 1px solid #eee;
         }
         
-        /* Buttons */
-        .button-container {
-            margin-top: 25px;
-        }
-        
-        .btn {
-            display: inline-block;
-            font-weight: 500;
-            text-align: center;
-            vertical-align: middle;
-            cursor: pointer;
-            padding: 10px 20px;
-            font-size: 16px;
-            line-height: 1.5;
-            border-radius: 6px;
-            transition: all 0.15s ease-in-out;
-            text-decoration: none;
-        }
-        
-        .btn-primary {
-            color: #fff;
-            background-color: #007bff;
-            border: 1px solid #007bff;
-            width: 100%;
-            padding: 12px;
-        }
-        
-        .btn-primary:hover {
-            background-color: #0069d9;
-            border-color: #0062cc;
-        }
-        
-        .btn-secondary {
-            color: #fff;
-            background-color: #6c757d;
-            border: 1px solid #6c757d;
-        }
-        
-        .btn-secondary:hover {
-            background-color: #5a6268;
-            border-color: #545b62;
-        }
-        
-        /* Cart Link */
-        .return-link {
-            display: block;
+        /* Card icons */
+        .card-icons {
+            display: flex;
             margin-top: 10px;
-            text-align: center;
-            color: #6c757d;
-            text-decoration: none;
         }
         
-        .return-link:hover {
-            text-decoration: underline;
+        .card-icon {
+            font-size: 24px;
+            margin-right: 10px;
+            color: #555;
         }
         
         /* Responsive */
         @media (max-width: 992px) {
-            .checkout-grid {
+            .payment-grid {
                 grid-template-columns: 1fr;
             }
             
@@ -412,7 +375,7 @@ if (isset($order_id)) {
         }
         
         @media (max-width: 576px) {
-            .checkout-container {
+            .payment-container {
                 padding: 0 10px;
             }
             
@@ -425,7 +388,7 @@ if (isset($order_id)) {
                 font-size: 20px;
             }
             
-            .checkout-details, .order-summary {
+            .payment-methods, .order-summary {
                 padding: 15px;
             }
         }
@@ -437,8 +400,8 @@ if (isset($order_id)) {
         <?php include __DIR__ . '/../Header_and_Footer/header.php'; ?>
         
         <main>
-            <div class="checkout-container">
-                <h1>Checkout</h1>
+            <div class="payment-container">
+                <h1>Select Payment Method</h1>
                 
                 <?php if ($error): ?>
                     <div class="error-message">
@@ -452,53 +415,42 @@ if (isset($order_id)) {
                         <?php echo htmlspecialchars($success); ?>
                     </div>
                 <?php else: ?>
-                    <form method="post" id="checkout-form">
+                    <form method="post" id="payment-form">
                         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
-                        <?php if (isset($order_id)): ?>
-                            <input type="hidden" name="order_id" value="<?php echo htmlspecialchars((string)$order_id); ?>">
-                        <?php endif; ?>
+                        <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order_id); ?>">
                         
-                        <div class="checkout-grid">
-                            <div class="checkout-details">
-                                <section class="shipping-section">
-                                    <h2>Shipping Information</h2>
-                                    <div class="form-group">
-                                        <label for="full_name">Full Name</label>
-                                        <input type="text" id="full_name" name="full_name" value="<?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?>" readonly>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="email">Email</label>
-                                        <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" readonly>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="phone">Phone</label>
-                                        <input type="tel" id="phone" name="phone" value="<?php echo htmlspecialchars($user['mobile_number']); ?>" readonly>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="shipping_address">Shipping Address</label>
-                                        <textarea id="shipping_address" name="shipping_address" required><?php echo htmlspecialchars($user['address'] . ', ' . $user['city'] . ', ' . $user['postcode'] . ', ' . $user['state']); ?></textarea>
-                                        <p class="help-text">You can edit your shipping address if needed</p>
-                                    </div>
-                                </section>
+                        <div class="payment-grid">
+                            <div class="payment-methods">
+                                <h2>Choose Payment Method</h2>
                                 
-                                <section class="payment-section">
-                                    <h2>Next Step: Payment</h2>
-                                    <p>After confirming your order, you will be directed to select your payment method.</p>
-                                </section>
+                                <div class="payment-options">
+                                    <div class="payment-option selected">
+                                        <input type="radio" id="payment-card" name="payment_method" value="card" checked>
+                                        <label for="payment-card" class="payment-option-label">
+                                            <span class="payment-icon"><i class="fas fa-credit-card"></i></span>
+                                            <div class="payment-details">
+                                                <span class="payment-title">Credit/Debit Card</span>
+                                                <span class="payment-description">Pay securely using your credit or debit card.</span>
+                                                <div class="card-icons">
+                                                    <span class="card-icon"><i class="fab fa-cc-visa"></i></span>
+                                                    <span class="card-icon"><i class="fab fa-cc-mastercard"></i></span>
+                                                    <span class="card-icon"><i class="fab fa-cc-amex"></i></span>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
                                 
                                 <div class="button-container">
-                                    <button type="submit" name="create_order" class="btn btn-primary">Continue to Payment</button>
-                                    <a href="../order/cart.php" class="return-link">Return to Cart</a>
+                                    <button type="submit" class="btn btn-primary">Process Payment</button>
+                                    <a href="checkout.php?order_id=<?php echo htmlspecialchars($order_id); ?>" class="return-link">Back to Order Details</a>
                                 </div>
                             </div>
                             
                             <div class="order-summary">
                                 <h2>Order Summary</h2>
                                 
-                                <?php foreach ($items as $item): ?>
+                                <?php foreach ($orderItems as $item): ?>
                                     <div class="order-item">
                                         <div class="item-details">
                                             <p class="item-name"><?php echo htmlspecialchars($item['product_name']); ?></p>
@@ -506,9 +458,7 @@ if (isset($order_id)) {
                                         </div>
                                         <p class="item-price">
                                             <?php 
-                                            $itemPrice = isset($item['final_price']) ? 
-                                                $item['final_price'] * $item['quantity'] : 
-                                                $item['price'] * $item['quantity'];
+                                            $itemPrice = $item['price'] * $item['quantity'];
                                             echo formatPrice($itemPrice); 
                                             ?>
                                         </p>
@@ -538,5 +488,26 @@ if (isset($order_id)) {
         
         <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
     </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle payment option selection
+            const paymentOptions = document.querySelectorAll('.payment-option');
+            
+            paymentOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove selected class from all options
+                    paymentOptions.forEach(opt => opt.classList.remove('selected'));
+                    
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+                    
+                    // Check the radio button
+                    const radio = this.querySelector('input[type="radio"]');
+                    radio.checked = true;
+                });
+            });
+        });
+    </script>
 </body>
 </html> 
