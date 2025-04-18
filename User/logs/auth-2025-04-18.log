@@ -5,3 +5,8 @@
 [2025-04-18T08:49:50.697044+02:00] auth.INFO: User login {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
 [2025-04-18T11:03:14.187564+02:00] auth.INFO: User enabled Remember Me {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0"} []
 [2025-04-18T11:03:14.188925+02:00] auth.INFO: User login {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
+[2025-04-18T11:52:29.531296+02:00] auth.INFO: User logout {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
+[2025-04-18T12:02:58.024274+02:00] auth.INFO: User login without Remember Me {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0"} []
+[2025-04-18T12:02:58.025623+02:00] auth.INFO: User login {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
+[2025-04-18T12:03:57.097395+02:00] auth.INFO: Session revoked {"user_id":44,"token_id":9,"ip":"::1"} []
+[2025-04-18T12:03:58.275749+02:00] auth.INFO: Session revoked {"user_id":44,"token_id":4,"ip":"::1"} []
