@@ -60,10 +60,11 @@ try {
     );
     
     // Add redirect URL to the result
-    $result['redirect_url'] = '/FYP/User/payment/checkout.php?order_id=' . $result['order_id'];
+    $result['redirect_url'] = '/FYP/FYP/User/payment/checkout.php?order_id=' . $result['order_id'];
     
     // Return success response
     echo json_encode($result);
+    exit;
     
 } catch (Exception $e) {
     // Log the error if logger is available
@@ -82,10 +83,10 @@ try {
         'error' => $e->getMessage(),
         'request_id' => $request_id
     ]);
+    exit;
 } finally {
     // Ensure database connection is closed
     if (isset($db)) {
         $db->close();
     }
-}
-?> 
+} 
