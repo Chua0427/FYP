@@ -42,7 +42,7 @@ if (isset($_POST['send'])) {
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port = 465;
 
-            $mail->setFrom('DeadHunter0802@gmail.com', 'Elvis 喜欢口水鸡的大姐姐');
+            $mail->setFrom('DeadHunter0802@gmail.com', 'Change Password OTP Verification');
             $mail->addAddress($email);
             $mail->isHTML(true);
             $mail->Subject = $_POST['subject'];
