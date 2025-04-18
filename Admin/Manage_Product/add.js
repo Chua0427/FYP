@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", function(){
     const categoryByType = {
         "Footwear": ["Boot", "Futsal", "Running", "Court", "Training", "Football Shoes", "Kid Shoes", "School Shoes"],
-        "Apparel": ["Jersey", "Jacket", "Paint", "Legging"],
-        "Equipment": ["Bag", "Cap", "Football Accessories", "Socks", "Gym Accessories"]
+        "Apparel": ["Jersey", "Jacket", "Pant", "Legging"],
+        "Equipment": ["Bag", "Cap", "Football Accessories", "Sock", "Gym Accessories"]
     };
 
     const productType = document.getElementById("product_type");

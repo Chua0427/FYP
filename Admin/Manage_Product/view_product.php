@@ -25,7 +25,7 @@
                 <h3>View Product</h3>
                 <table>
                     <tr>
-                        <th>ID</th>
+                        <th>Product ID</th>
                         <th>Image</th>
                         <th>Name</th>
                         <th>Type</th>
