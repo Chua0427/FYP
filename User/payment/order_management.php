@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+ob_clean();
 
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once '/xampp/htdocs/FYP/FYP/User/payment/secrets.php';
@@ -71,6 +73,7 @@ try {
     log_message('ERROR', "Order management error: " . $e->getMessage());
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    exit;
 } finally {
     // Ensure database connection is closed
     if (isset($db)) {
@@ -113,6 +116,7 @@ function createOrder(Database $db, $user_id) {
         
         // Return success response with order details
         echo json_encode($result);
+        exit;
         
     } catch (Exception $e) {
         throw $e;
@@ -147,6 +151,7 @@ function getOrderDetails(Database $db) {
             'items' => $details['items'],
             'payment' => $details['payment']
         ]);
+        exit;
         
     } catch (Exception $e) {
         throw $e;
@@ -191,6 +196,7 @@ function updateOrderStatus(Database $db) {
             'success' => true,
             'message' => "Order status updated to $status"
         ]);
+        exit;
         
     } catch (Exception $e) {
         throw $e;
@@ -221,6 +227,7 @@ function getUserOrders(Database $db, $user_id) {
         'success' => true,
         'orders' => $orders
     ]);
+    exit;
 }
 
 /**
@@ -234,7 +241,7 @@ function getAllOrders(Database $db) {
     if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] != 2) {
         http_response_code(403);
         echo json_encode(['success' => false, 'error' => 'Access denied']);
-        return;
+        exit;
     }
     
     // Optional filters
@@ -264,5 +271,6 @@ function getAllOrders(Database $db) {
         'success' => true,
         'orders' => $orders
     ]);
+    exit;
 }
 ?>
