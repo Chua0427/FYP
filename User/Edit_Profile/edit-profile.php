@@ -79,7 +79,6 @@
                         <input type="text" id="postcode" name="postcode" required>
                     </div>
                 </div>
-<<<<<<< HEAD
                 <div class="form-group">
                         <label>State:</label>
                         <select id="state" name="state" required>
@@ -92,20 +91,6 @@
                             <option value="">Select City</option>
                         </select>
                     </div>
-=======
-                <div class="form-col">
-                    <div class="form-group">
-                        <label for="state">State</label>
-                        <input type="text" id="state" name="state" required>
-                    </div>
-                </div>
-                <div class="form-col">
-                    <div class="form-group">
-                        <label for="city">City</label>
-                        <input type="text" id="city" name="city" required>
-                    </div>
-                </div>
->>>>>>> a95b9eca4863135b0f7a7228aaf3e3a942d6a4d0
             </div>
             
             <div class="form-row">
