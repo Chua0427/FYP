@@ -1,0 +1,7 @@
+[2025-04-18T08:43:28.477654+02:00] auth.INFO: User logout {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
+[2025-04-18T08:43:36.008742+02:00] auth.INFO: User login without Remember Me {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0"} []
+[2025-04-18T08:43:36.009945+02:00] auth.INFO: User login {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
+[2025-04-18T08:49:50.695024+02:00] auth.INFO: User enabled Remember Me {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0"} []
+[2025-04-18T08:49:50.697044+02:00] auth.INFO: User login {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
+[2025-04-18T11:03:14.187564+02:00] auth.INFO: User enabled Remember Me {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0"} []
+[2025-04-18T11:03:14.188925+02:00] auth.INFO: User login {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1"} []
