@@ -177,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             
             <div class="signup-text">
-                Don't have an account? <a href="../Registration/add.php">Sign Up</a>
+                Don't have an account? <a href="../Registration/Register.php">Sign Up</a>
             </div>
         </div>
     </div>
