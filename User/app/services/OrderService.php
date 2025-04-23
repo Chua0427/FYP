@@ -65,6 +65,8 @@ class OrderService
      * @param string $shipping_address Shipping address
      * @param bool $check_stock Whether to check stock availability
      * @param array $additional_context Additional context data for logging
+     * @param array|null $selected_cart_ids Optional array of selected cart IDs (if null, all cart items are used)
+     * @param bool $clear_cart Whether to clear the cart after order creation
      * @return array Order data with id, total, etc.
      * @throws \Exception If order creation fails
      */
@@ -72,7 +74,9 @@ class OrderService
         int $user_id, 
         string $shipping_address, 
         bool $check_stock = true,
-        array $additional_context = []
+        array $additional_context = [],
+        ?array $selected_cart_ids = null,
+        bool $clear_cart = false
     ): array {
         // Validate required parameters
         if (empty($shipping_address)) {
@@ -82,29 +86,38 @@ class OrderService
         $this->db->beginTransaction();
         
         try {
-            // Get cart items query with different levels of joins based on stock check
-            $cart_query = $check_stock 
+            // Build the base query
+            $base_query = $check_stock 
                 ? "SELECT c.*, p.product_name, p.price, p.discount_price, s.stock,
                    CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 
                         THEN p.discount_price ELSE p.price END as final_price 
                    FROM cart c 
                    JOIN product p ON c.product_id = p.product_id 
                    JOIN stock s ON c.product_id = s.product_id AND c.product_size = s.product_size
-                   WHERE c.user_id = ? 
-                   FOR UPDATE"
+                   WHERE c.user_id = ?"
                 : "SELECT c.*, p.product_name, p.price, p.discount_price,
                    CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 
                         THEN p.discount_price ELSE p.price END as final_price 
                    FROM cart c 
                    JOIN product p ON c.product_id = p.product_id 
-                   WHERE c.user_id = ?
-                   FOR UPDATE";
+                   WHERE c.user_id = ?";
+            
+            // Add selection filter if specific cart items are selected
+            $params = [$user_id];
+            if ($selected_cart_ids !== null && !empty($selected_cart_ids)) {
+                $placeholders = implode(',', array_fill(0, count($selected_cart_ids), '?'));
+                $base_query .= " AND c.cart_id IN ($placeholders)";
+                $params = array_merge($params, $selected_cart_ids);
+            }
+            
+            // Add FOR UPDATE to lock rows
+            $cart_query = $base_query . " FOR UPDATE";
             
             // Get cart items
-            $cart_items = $this->db->fetchAll($cart_query, [$user_id]);
+            $cart_items = $this->db->fetchAll($cart_query, $params);
             
             if (empty($cart_items)) {
-                throw new \Exception('Your cart is empty');
+                throw new \Exception('No items selected for checkout');
             }
             
             // Verify stock availability if check_stock is true
@@ -149,16 +162,27 @@ class OrderService
                     ]
                 );
                 
-                // Update stock
-                $this->db->execute(
-                    "UPDATE stock SET stock = stock - ?, last_update_at = CURRENT_TIMESTAMP 
-                     WHERE product_id = ? AND product_size = ?",
-                    [$item['quantity'], $item['product_id'], $item['product_size']]
-                );
+                // Stock will be updated only after payment is confirmed, not at order creation
+                // Removed the stock update code from here
             }
             
-            // Clear the user's cart
-            $this->db->execute("DELETE FROM cart WHERE user_id = ?", [$user_id]);
+            // Clear the user's cart if requested
+            if ($clear_cart) {
+                if ($selected_cart_ids !== null && !empty($selected_cart_ids)) {
+                    // Delete only selected cart items
+                    $placeholders = implode(',', array_fill(0, count($selected_cart_ids), '?'));
+                    $this->db->execute(
+                        "DELETE FROM cart WHERE user_id = ? AND cart_id IN ($placeholders)", 
+                        array_merge([$user_id], $selected_cart_ids)
+                    );
+                } else {
+                    // Delete all cart items
+                    $this->db->execute("DELETE FROM cart WHERE user_id = ?", [$user_id]);
+                }
+            }
+            
+            // Store the order ID in the session for cart retention logic
+            $_SESSION['current_order_id'] = $order_id;
             
             // Log order creation
             $log_context = array_merge([
@@ -166,6 +190,7 @@ class OrderService
                 'order_id' => $order_id,
                 'total_amount' => $total_price,
                 'items_count' => count($cart_items),
+                'selected_items' => $selected_cart_ids !== null ? count($selected_cart_ids) : 'all'
             ], $additional_context);
             
             $this->log('info', 'Order created successfully', $log_context);
@@ -304,6 +329,178 @@ class OrderService
                 'status' => $status
             ]);
             throw $e;
+        }
+    }
+    
+    /**
+     * Update stock levels after payment confirmation
+     * 
+     * @param int $order_id Order ID
+     * @return bool True if stock update was successful
+     * @throws \Exception If stock update fails
+     */
+    public function updateStockAfterPayment(int $order_id): bool
+    {
+        $this->db->beginTransaction();
+        
+        try {
+            // Get order items
+            $orderItems = $this->db->fetchAll(
+                "SELECT oi.* FROM order_items oi WHERE oi.order_id = ?",
+                [$order_id]
+            );
+            
+            if (empty($orderItems)) {
+                throw new \Exception('No items found for this order');
+            }
+            
+            $this->log('info', 'Starting stock update for order', ['order_id' => $order_id, 'items_count' => count($orderItems)]);
+            
+            // Update stock for each item
+            foreach ($orderItems as $item) {
+                // Check current stock
+                $stockInfo = $this->db->fetchOne(
+                    "SELECT stock_id, stock FROM stock WHERE product_id = ? AND product_size = ? FOR UPDATE",
+                    [$item['product_id'], $item['product_size']]
+                );
+                
+                if (!$stockInfo) {
+                    $this->log('error', 'Stock record not found', [
+                        'order_id' => $order_id,
+                        'product_id' => $item['product_id'],
+                        'size' => $item['product_size']
+                    ]);
+                    throw new \Exception("Stock record not found for product ID {$item['product_id']}, size {$item['product_size']}");
+                }
+                
+                if ($stockInfo['stock'] < $item['quantity']) {
+                    $this->log('error', 'Insufficient stock', [
+                        'order_id' => $order_id,
+                        'product_id' => $item['product_id'],
+                        'size' => $item['product_size'],
+                        'requested' => $item['quantity'],
+                        'available' => $stockInfo['stock']
+                    ]);
+                    throw new \Exception(
+                        "Insufficient stock for product ID {$item['product_id']}, size {$item['product_size']}. " .
+                        "Required: {$item['quantity']}, Available: {$stockInfo['stock']}"
+                    );
+                }
+                
+                // Calculate new stock level
+                $newStock = $stockInfo['stock'] - $item['quantity'];
+                
+                // Update stock
+                $result = $this->db->execute(
+                    "UPDATE stock SET stock = ?, last_update_at = CURRENT_TIMESTAMP 
+                     WHERE product_id = ? AND product_size = ?",
+                    [$newStock, $item['product_id'], $item['product_size']]
+                );
+                
+                // Log the stock update details
+                $this->log('info', 'Stock updated for item', [
+                    'order_id' => $order_id,
+                    'product_id' => $item['product_id'],
+                    'size' => $item['product_size'],
+                    'stock_id' => $stockInfo['stock_id'] ?? 'unknown',
+                    'previous_stock' => $stockInfo['stock'],
+                    'quantity_reduced' => $item['quantity'],
+                    'new_stock' => $newStock,
+                    'rows_affected' => $result
+                ]);
+            }
+            
+            // Log stock update
+            $this->log('info', 'Stock update completed successfully for order', [
+                'order_id' => $order_id,
+                'items_count' => count($orderItems)
+            ]);
+            
+            $this->db->commit();
+            return true;
+            
+        } catch (\Exception $e) {
+            $this->db->rollback();
+            
+            $this->log('error', 'Failed to update stock after payment: ' . $e->getMessage(), [
+                'order_id' => $order_id
+            ]);
+            
+            throw $e;
+        }
+    }
+    
+    /**
+     * Verify Stripe payment status directly from Stripe API
+     * 
+     * @param string $stripe_id Stripe payment intent or charge ID
+     * @param string $payment_id Local payment ID for logging
+     * @param string|null $apiKey Optional Stripe API key to use directly
+     * @return bool True if payment is confirmed as successful
+     * @throws \Exception If verification fails or payment is not successful
+     */
+    public function verifyStripePayment(string $stripe_id, string $payment_id, ?string $apiKey = null): bool
+    {
+        try {
+            // If API key is provided directly, use it
+            if ($apiKey) {
+                \Stripe\Stripe::setApiKey($apiKey);
+            } else {
+                // Load Stripe API key from secrets file
+                require_once '/xampp/htdocs/FYP/FYP/User/payment/secrets.php';
+                
+                // Initialize Stripe SDK
+                \Stripe\Stripe::setApiKey($stripeSecretKey);
+            }
+            
+            // Check if ID starts with 'pi_' (payment intent) or 'ch_' (charge)
+            if (strpos($stripe_id, 'pi_') === 0) {
+                $payment = \Stripe\PaymentIntent::retrieve($stripe_id);
+                $is_successful = $payment->status === 'succeeded';
+            } elseif (strpos($stripe_id, 'ch_') === 0) {
+                $payment = \Stripe\Charge::retrieve($stripe_id);
+                $is_successful = $payment->status === 'succeeded' && $payment->paid === true;
+            } elseif (strpos($stripe_id, 'cs_') === 0) {
+                // Checkout Session
+                $session = \Stripe\Checkout\Session::retrieve($stripe_id);
+                $is_successful = $session->payment_status === 'paid';
+            } else {
+                throw new \Exception("Unrecognized Stripe ID format: $stripe_id");
+            }
+            
+            // Log verification result
+            $this->log('info', 'Stripe payment verification', [
+                'payment_id' => $payment_id,
+                'stripe_id' => $stripe_id,
+                'is_successful' => $is_successful,
+                'status' => $payment->status ?? $session->payment_status ?? 'unknown'
+            ]);
+            
+            // Update payment log
+            $this->db->execute(
+                "INSERT INTO payment_log (payment_id, log_level, log_message) 
+                 VALUES (?, 'info', ?)",
+                [$payment_id, "Stripe verification: " . ($is_successful ? 'Confirmed successful' : 'Not successful')]
+            );
+            
+            return $is_successful;
+            
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            // Log Stripe API error
+            $this->log('error', 'Stripe verification error', [
+                'payment_id' => $payment_id,
+                'stripe_id' => $stripe_id,
+                'error' => $e->getMessage()
+            ]);
+            
+            // Update payment log
+            $this->db->execute(
+                "INSERT INTO payment_log (payment_id, log_level, log_message) 
+                 VALUES (?, 'error', ?)",
+                [$payment_id, "Stripe verification error: " . $e->getMessage()]
+            );
+            
+            throw new \Exception("Failed to verify payment with Stripe: " . $e->getMessage());
         }
     }
 } 
