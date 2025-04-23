@@ -51,7 +51,7 @@ table {
 }
 
 .order-table table td {
-    padding: 15px 10px;
+    padding: 20px 10px;
     text-align: center;
     font-size: 15px;
 }
@@ -71,7 +71,7 @@ table {
 }
 
 .order-table table tr:nth-child(even) {
-    background-color: #c5daffd3; 
+    background-color: #ccdfffd3; 
 }
 
 .order-table table tr:nth-child(odd) {
@@ -153,5 +153,5 @@ form h3{
 } 
 
 .order-table table tr:hover {
-    background-color: #7790ff9a;
+    background-color: #a2b3ff9a;
 }
