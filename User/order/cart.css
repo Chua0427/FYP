@@ -49,8 +49,10 @@ h1 {
 
 .store h3 input[type="checkbox"] {
   margin-right: 10px;
-  transform: scale(1.1);
+  width: 18px;
+  height: 18px;
   cursor: pointer;
+  vertical-align: middle;
 }
 
 /* Product Item */
@@ -63,9 +65,11 @@ h1 {
   transition: opacity 0.3s ease-out, transform 0.2s ease-out;
 }
 
+/* Disable hover transform and shadow on product */
 .product:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  /* hover disabled for persistent layout */
+  transform: none;
+  box-shadow: none;
 }
 
 .product:last-child {
@@ -105,6 +109,9 @@ h1 {
 }
 
 .price {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 1.1rem;
   font-weight: bold;
   color: #ee4d2d;
@@ -112,10 +119,9 @@ h1 {
 }
 
 .price del {
-  font-weight: normal;
-  color: #aaa;
-  margin-left: 10px;
-  font-size: 0.9rem;
+  color: #888;
+  font-size: 0.9em;
+  text-decoration: line-through;
 }
 
 /* Actions Area */
@@ -231,6 +237,8 @@ h1 {
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
   font-family: 'Inter', sans-serif;
+  position: relative;
+  padding-right: 2rem;
 }
 
 .checkout-btn:hover {
@@ -240,6 +248,19 @@ h1 {
 
 .checkout-btn:active {
   transform: scale(0.98);
+}
+
+/* Add arrow composed of two lines to checkout button */
+.checkout-btn::after {
+  content: '';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid white;
+  border-right: 2px solid white;
+  transform: translateY(-50%) rotate(45deg);
 }
 
 /* Empty Cart */
@@ -312,3 +333,42 @@ h1 {
     align-self: flex-end;
   }
 }
+
+/* Product links */
+.product-link, .product-name-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.product-name-link:hover .product-name {
+    text-decoration: none;
+}
+
+
+.product-select {
+    margin-right: 15px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.store-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+
+}
+
+.store-link ::after{
+  content: '';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid rgb(0, 0, 0);
+  border-right: 2px solid rgb(0, 0, 0);
+  transform: translateY(-50%) rotate(45deg);
+}
+

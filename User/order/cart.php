@@ -227,25 +227,33 @@ include __DIR__ . '/../Header_and_Footer/header.php';
                     <?php foreach ($cartByStore as $storeName => $items): ?>
                         <div class="store">
                             <h3>
-                                <input type="checkbox" checked> <?php echo htmlspecialchars($storeName); ?> Store
+                                <input type="checkbox" checked>
+                                <a href="../All_Product_Page/all_product.php?brand=<?php echo urlencode($storeName); ?>" class="store-link">
+                                    <?php echo htmlspecialchars($storeName); ?>
+                                </a>
                             </h3>
                             
                             <?php foreach ($items as $item): ?>
                                 <div class="product">
-                                    <img src="<?php echo '../../upload/' . htmlspecialchars($item['product_img1']); ?>" alt="<?php echo htmlspecialchars($item['product_name']); ?>">
+                                    <input type="checkbox" class="product-select" name="selected_items[]" value="<?php echo $item['cart_id']; ?>" checked data-price="<?php echo $item['final_price'] * $item['quantity']; ?>">
+                                    <a href="../ProductPage/product.php?id=<?php echo $item['product_id']; ?>" class="product-link">
+                                        <img src="<?php echo '../../upload/' . htmlspecialchars($item['product_img1']); ?>" alt="<?php echo htmlspecialchars($item['product_name']); ?>">
+                                    </a>
                                     <div class="product-details">
-                                        <p class="product-name"><?php echo htmlspecialchars($item['product_name']); ?></p>
+                                        <a href="../ProductPage/product.php?id=<?php echo $item['product_id']; ?>" class="product-name-link">
+                                            <p class="product-name"><?php echo htmlspecialchars($item['product_name']); ?></p>
+                                        </a>
                                         <p class="product-variant">Size: <?php echo htmlspecialchars($item['product_size']); ?></p>
                                         <div class="price">
                                             <?php echo formatPrice($item['final_price']); ?>
-                                            <?php if ($item['discount_price'] && $item['discount_price'] < $item['price']): ?>
+                                            <?php if (isset($item['discount_price']) && $item['discount_price'] > 0 && $item['discount_price'] < $item['price']): ?>
                                                 <del><?php echo formatPrice($item['price']); ?></del>
                                             <?php endif; ?>
                                         </div>
                                         <div class="actions">
                                             <div class="quantity-control">
                                                 <button type="button" class="quantity-btn minus" data-cart-id="<?php echo $item['cart_id']; ?>">-</button>
-                                                <input type="number" name="quantity[<?php echo $item['cart_id']; ?>]" value="<?php echo $item['quantity']; ?>" min="1" class="quantity-input">
+                                                <input type="number" name="quantity[<?php echo $item['cart_id']; ?>]" value="<?php echo $item['quantity']; ?>" min="1" class="quantity-input" data-cart-id="<?php echo $item['cart_id']; ?>" data-price="<?php echo $item['final_price']; ?>" data-original-price="<?php echo $item['price']; ?>">
                                                 <button type="button" class="quantity-btn plus" data-cart-id="<?php echo $item['cart_id']; ?>">+</button>
                                             </div>
                                             <button type="button" class="remove-btn" data-cart-id="<?php echo $item['cart_id']; ?>">Remove</button>
@@ -259,18 +267,18 @@ include __DIR__ . '/../Header_and_Footer/header.php';
                     <div class="sidebar">
                         <h4>Order Summary</h4>
                         <div class="row">
-                            <span>Total Items (<?php echo $totalItems; ?>)</span>
-                            <span><?php echo formatPrice($totalOriginalPrice); ?></span>
+                            <span>Total Items (<span id="item-count"><?php echo $totalItems; ?></span>)</span>
+                            <span id="original-total"><?php echo formatPrice($totalOriginalPrice); ?></span>
                         </div>
                         <?php if ($totalDiscount > 0): ?>
                         <div class="row">
                             <span>Total Discount</span>
-                            <span>-<?php echo formatPrice($totalDiscount); ?></span>
+                            <span id="total-discount">-<?php echo formatPrice($totalDiscount); ?></span>
                         </div>
                         <?php endif; ?>
                         <div class="row" style="font-weight: bold; font-size: 1.1rem;">
                             <span>Total</span>
-                            <span><?php echo formatPrice($totalPrice); ?></span>
+                            <span id="total-price"><?php echo formatPrice($totalPrice); ?></span>
                         </div>
                         <button type="button" id="checkout-btn" class="checkout-btn">Checkout</button>
                     </div>
@@ -309,9 +317,38 @@ include __DIR__ . '/../Header_and_Footer/header.php';
         const quantityInputs = document.querySelectorAll('.quantity-input');
         const removeButtons = document.querySelectorAll('.remove-btn');
         const checkoutBtn = document.getElementById('checkout-btn');
+        const productCheckboxes = document.querySelectorAll('.product-select');
+        const storeCheckboxes = document.querySelectorAll('.store h3 input[type="checkbox"]');
         
         // Get CSRF token
         const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+        
+        // Initialize the cart calculation
+        updateCartTotals();
+        
+        // Event listener for product checkboxes
+        productCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                updateCartTotals();
+            });
+        });
+        
+        // Event listener for store checkboxes
+        storeCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const storeDiv = this.closest('.store');
+                const isChecked = this.checked;
+                
+                // Update all product checkboxes in this store
+                const productCheckboxes = storeDiv.querySelectorAll('.product-select');
+                productCheckboxes.forEach(productCheckbox => {
+                    productCheckbox.checked = isChecked;
+                });
+                
+                // Update cart totals
+                updateCartTotals();
+            });
+        });
         
         minusButtons.forEach(button => {
             button.addEventListener('click', function() {
@@ -322,7 +359,10 @@ include __DIR__ . '/../Header_and_Footer/header.php';
                 input.value = value;
                 
                 // Update quantity via AJAX
-                updateQuantity(cartId, value);
+                updateQuantityAjax(cartId, value);
+                
+                // Update cart totals
+                updateCartTotals();
             });
         });
         
@@ -335,19 +375,25 @@ include __DIR__ . '/../Header_and_Footer/header.php';
                 input.value = value;
                 
                 // Update quantity via AJAX
-                updateQuantity(cartId, value);
+                updateQuantityAjax(cartId, value);
+                
+                // Update cart totals
+                updateCartTotals();
             });
         });
         
         quantityInputs.forEach(input => {
             input.addEventListener('change', function() {
-                const cartId = this.name.match(/\[(\d+)\]/)[1];
+                const cartId = this.getAttribute('data-cart-id');
                 let value = parseInt(this.value, 10);
                 value = Math.max(1, value); // Ensure minimum value is 1
                 this.value = value;
                 
                 // Update quantity via AJAX
-                updateQuantity(cartId, value);
+                updateQuantityAjax(cartId, value);
+                
+                // Update cart totals
+                updateCartTotals();
             });
         });
         
@@ -356,12 +402,134 @@ include __DIR__ . '/../Header_and_Footer/header.php';
                 if (confirm('Are you sure you want to remove this item?')) {
                     const cartId = this.getAttribute('data-cart-id');
                     
-                    // Set the cart ID in the hidden form and submit
-                    document.getElementById('remove-cart-id').value = cartId;
-                    document.getElementById('remove-form').submit();
+                    // Remove item via AJAX
+                    removeItemAjax(cartId);
                 }
             });
         });
+        
+        // Function to update cart totals based on selected items
+        function updateCartTotals() {
+            let totalItems = 0;
+            let totalPrice = 0;
+            let originalTotal = 0;
+            
+            // Get all checked product checkboxes
+            const checkedItems = document.querySelectorAll('.product-select:checked');
+            
+            // Calculate totals based on checked items
+            checkedItems.forEach(checkbox => {
+                const cartId = checkbox.value;
+                const input = document.querySelector(`input[data-cart-id="${cartId}"]`);
+                const finalUnit = parseFloat(input.getAttribute('data-price'));
+                const origUnit = parseFloat(input.getAttribute('data-original-price'));
+                const qty = parseInt(input.value, 10);
+                
+                totalItems += qty;
+                totalPrice += finalUnit * qty;
+                originalTotal += origUnit * qty;
+            });
+            
+            // Compute discount
+            const discountTotal = originalTotal - totalPrice;
+            
+            // Update the displayed totals
+            document.getElementById('item-count').textContent = totalItems;
+            document.getElementById('original-total').textContent = 'RM ' + originalTotal.toFixed(2);
+            if (document.getElementById('total-discount')) {
+                document.getElementById('total-discount').textContent = '-' + 'RM ' + discountTotal.toFixed(2);
+            }
+            document.getElementById('total-price').textContent = 'RM ' + totalPrice.toFixed(2);
+        }
+        
+        // Function to update quantity via AJAX
+        function updateQuantityAjax(cartId, quantity) {
+            // Create form data
+            const formData = new FormData();
+            formData.append('csrf_token', csrfToken);
+            formData.append('cart_id', cartId);
+            formData.append('quantity', quantity);
+            formData.append('ajax', '1');
+            
+            // Show loading indicator
+            // You could add a loading spinner here
+            
+            // Send AJAX request
+            fetch('update_cart.php', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        // Redirect to login if unauthorized
+                        window.location.href = '../login/login.php?redirect=' + encodeURIComponent(window.location.href);
+                        throw new Error('Please login to update your cart');
+                    }
+                    return response.json().then(err => {
+                        throw new Error(err.error || 'Error updating cart');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data.success) {
+                    alert(data.error || 'An error occurred while updating your cart.');
+                    // Reset the quantity to the original value if needed
+                }
+            })
+            .catch(error => {
+                alert(error.message || 'Error updating your cart. Please try again.');
+                console.error('Update cart error:', error);
+            });
+        }
+        
+        // Function to remove item via AJAX
+        function removeItemAjax(cartId) {
+            // Create form data
+            const formData = new FormData();
+            formData.append('csrf_token', csrfToken);
+            formData.append('cart_id', cartId);
+            formData.append('ajax', '1');
+            
+            // Send AJAX request
+            fetch('remove_cart_item.php', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.error || 'Error removing item');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Remove the item from the DOM
+                    const productElement = document.querySelector(`.product-select[value="${cartId}"]`).closest('.product');
+                    productElement.remove();
+                    
+                    // Update cart totals
+                    updateCartTotals();
+                    
+                    // If no more items in cart, reload page to show empty cart message
+                    const remainingItems = document.querySelectorAll('.product').length;
+                    if (remainingItems === 0) {
+                        location.reload();
+                    }
+                } else {
+                    alert(data.error || 'An error occurred while removing the item.');
+                }
+            })
+            .catch(error => {
+                alert(error.message || 'Error removing item. Please try again.');
+                console.error('Remove item error:', error);
+            });
+        }
         
         // Handle checkout button click
         if (checkoutBtn) {
@@ -371,13 +539,25 @@ include __DIR__ . '/../Header_and_Footer/header.php';
                 this.disabled = true;
                 this.textContent = 'Processing...';
                 
-                // Get shipping address (should be collected properly in a real application)
+                // Get shipping address
                 const shippingAddress = '<?php echo addslashes(htmlspecialchars($user['address'] . ', ' . $user['city'] . ', ' . $user['postcode'] . ', ' . $user['state'])); ?>';
+                
+                // Get selected item IDs
+                const selectedItems = Array.from(document.querySelectorAll('.product-select:checked')).map(checkbox => checkbox.value);
+                
+                // If no items selected, show error
+                if (selectedItems.length === 0) {
+                    alert('Please select at least one item to checkout.');
+                    this.disabled = false;
+                    this.textContent = originalText;
+                    return;
+                }
                 
                 // Create form data
                 const formData = new FormData();
                 formData.append('csrf_token', csrfToken);
                 formData.append('shipping_address', shippingAddress);
+                formData.append('selected_items', JSON.stringify(selectedItems));
                 
                 // Call the create order API
                 fetch('/FYP/FYP/User/payment/create_order.php', {
@@ -422,12 +602,6 @@ include __DIR__ . '/../Header_and_Footer/header.php';
                     this.textContent = originalText;
                 });
             });
-        }
-        
-        function updateQuantity(cartId, quantity) {
-            document.getElementById('update-cart-id').value = cartId;
-            document.getElementById('update-quantity').value = quantity;
-            document.getElementById('update-form').submit();
         }
     });
     </script>

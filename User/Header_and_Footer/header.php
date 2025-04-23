@@ -205,6 +205,7 @@ if ($is_authenticated) {
                 <?php endif; ?>
             </div>
             <div class="shoppingCart">
+                <?php if ($is_authenticated): ?>
                 <a href="../order/cart.php">
                     <i class="fa-solid fa-cart-shopping"></i>
                     <?php if ($cartCount > 0): ?>
@@ -213,6 +214,11 @@ if ($is_authenticated) {
                         <span id="cartCount" class="cart-counter" style="display:none;">0</span>
                     <?php endif; ?>
                 </a>
+                <?php else: ?>
+                <a href="../login/login.php?redirect=<?php echo urlencode('/FYP/FYP/User/order/cart.php'); ?>">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </a>
+                <?php endif; ?>
             </div>
         </div>
     </div>

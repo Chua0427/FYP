@@ -5,6 +5,7 @@ require_once '/xampp/htdocs/FYP/FYP/User/payment/secrets.php';
 require_once __DIR__ . '/db.php';
 require __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/csrf.php';
+require_once __DIR__ . '/../app/services/OrderService.php';
 
 session_start();
 
@@ -26,6 +27,28 @@ if (!isset($_GET['order_id']) || empty($_GET['order_id'])) {
 }
 
 $order_id = $_GET['order_id'];
+
+// Debug log function for stock updates
+function debug_log($message, $data = []) {
+    $log_file = __DIR__ . '/logs/stock_update_debug.log';
+    $timestamp = date('Y-m-d H:i:s');
+    $log_message = "[$timestamp] $message";
+    
+    if (!empty($data)) {
+        $log_message .= " - " . json_encode($data);
+    }
+    
+    $log_message .= PHP_EOL;
+    
+    // Create logs directory if it doesn't exist
+    $log_dir = dirname($log_file);
+    if (!file_exists($log_dir)) {
+        mkdir($log_dir, 0777, true);
+    }
+    
+    // Append to log file
+    file_put_contents($log_file, $log_message, FILE_APPEND);
+}
 
 try {
     // Initialize Database
@@ -121,6 +144,89 @@ try {
                 "UPDATE orders SET delivery_status = 'packing' WHERE order_id = ?",
                 [$order_id]
             );
+            
+            // Verify payment with Stripe before updating stock
+            try {
+                $orderService = new OrderService($db);
+                
+                debug_log("Starting stock update process for order #{$order_id}", [
+                    'payment_method' => 'stripe_card',
+                    'stripe_id' => $charge->id
+                ]);
+                
+                // Verify payment with Stripe API
+                $verified = $orderService->verifyStripePayment($charge->id, $payment_id, $stripeSecretKey);
+                
+                debug_log("Payment verification result", [
+                    'order_id' => $order_id,
+                    'verified' => $verified,
+                    'stripe_id' => $charge->id
+                ]);
+                
+                if ($verified) {
+                    // Update stock after verified payment confirmation
+                    try {
+                        $result = $orderService->updateStockAfterPayment((int)$order_id);
+                        debug_log("Stock update completed", [
+                            'order_id' => $order_id,
+                            'result' => $result
+                        ]);
+                        
+                        // Log successful stock update
+                        $db->execute(
+                            "INSERT INTO payment_log (payment_id, log_level, log_message) 
+                             VALUES (?, 'info', ?)",
+                            [$payment_id, "Stock updated successfully after payment verification"]
+                        );
+                    } catch (Exception $stockUpdateError) {
+                        debug_log("Stock update failed with exception", [
+                            'order_id' => $order_id,
+                            'error' => $stockUpdateError->getMessage(),
+                            'trace' => $stockUpdateError->getTraceAsString()
+                        ]);
+                        throw $stockUpdateError;
+                    }
+                } else {
+                    // Log verification failure
+                    $db->execute(
+                        "INSERT INTO payment_log (payment_id, log_level, log_message) 
+                         VALUES (?, 'warning', ?)",
+                        [$payment_id, "Payment verification failed with Stripe - stock not updated"]
+                    );
+                    
+                    error_log("Payment verification failed for order #$order_id with Stripe ID: " . $charge->id);
+                }
+            } catch (Exception $verifyError) {
+                debug_log("Stripe verification error in process_payment.php", [
+                    'order_id' => $order_id,
+                    'error' => $verifyError->getMessage()
+                ]);
+                
+                // Try direct stock update as fallback
+                try {
+                    $result = $orderService->updateStockAfterPayment((int)$order_id);
+                    debug_log("Fallback stock update after verification error in process_payment.php", [
+                        'order_id' => $order_id,
+                        'result' => $result
+                    ]);
+                    
+                    // Log fallback update
+                    $db->execute(
+                        "INSERT INTO payment_log (payment_id, log_level, log_message) VALUES (?, 'info', ?)",
+                        [$payment_id, "Stock updated via fallback after Stripe API error in process_payment"]
+                    );
+                } catch (Exception $stockUpdateError) {
+                    // Log but continue - don't fail the payment entirely
+                    debug_log("Fallback stock update failed in process_payment.php", [
+                        'order_id' => $order_id,
+                        'error' => $stockUpdateError->getMessage()
+                    ]);
+                    $db->execute(
+                        "INSERT INTO payment_log (payment_id, log_level, log_message) VALUES (?, 'error', ?)",
+                        [$payment_id, "Stock update failed after fallback attempt: " . $stockUpdateError->getMessage()]
+                    );
+                }
+            }
             
             $db->commit();
             
