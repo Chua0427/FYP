@@ -1,6 +1,6 @@
 <?php
     $current_page = basename($_SERVER['PHP_SELF']);
-    $current_user_type = 3; 
+    $current_user_type = 2; 
 ?>
 <div class="sidebar-wrapper">
     <div class="sidebar">
@@ -30,13 +30,13 @@
                 <a href="../Manage_Product/view_product.php"><i class="fas fa-box"></i> ManageProduct</a>
             </li>
             <li class="tab-button <?php if ($current_page == 'view_order.php') echo 'active'; ?>">
-                <a href="#"><i class="fas fa-shopping-cart"></i> View Order</a>
+                <a href="../Order/view_order.php"><i class="fas fa-shopping-cart"></i> View Order</a>
             </li>
-            <li class="tab-button <?php if ($current_page == 'view_order_items.php') echo 'active'; ?>">
-                <a href="#"><i class="fas fa-list"></i> View Order Items</a>
+            <li class="tab-button <?php if ($current_page == 'order_items.php') echo 'active'; ?>">
+                <a href="../Order_items/order_items.php"><i class="fas fa-list"></i> View Order Items</a>
             </li>
             <li class="tab-button <?php if ($current_page == 'view_payment.php') echo 'active'; ?>">
-                <a href="#"><i class="fas fa-credit-card"></i> View Payment</a>
+                <a href="../View_Payment/view_payment.php"><i class="fas fa-credit-card"></i> View Payment</a>
             </li>
             <li class="tab-button <?php if ($current_page == 'contact_us.php') echo 'active'; ?>">
                 <a href="../Contact_Us/contact_us.php"><i class="fas fa-headset"></i> Customer Support</a>

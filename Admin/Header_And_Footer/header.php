@@ -4,7 +4,7 @@
     <div class="title">
 
     <?php
-        $current_user_type = 3;
+        $current_user_type = 2;
 
         if ($current_user_type == 3) {
             echo '<h1>Superadmin</h1>';

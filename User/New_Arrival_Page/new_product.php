@@ -15,12 +15,44 @@
 
 <body>
     <?php 
+    include __DIR__ . '/../../connect_db/config.php';
+
     // Start session if not already started
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
     
     include __DIR__ . '/../Header_and_Footer/header.php'; 
+
+        //check available categries
+        $availableCategories = [];
+
+        $sqlCategories = "SELECT DISTINCT p.product_categories FROM product p JOIN stock s ON p.product_id=s.product_id WHERE 1=1 AND s.stock>0 AND status='New'";
+
+        $categoryResult = $conn->query($sqlCategories);
+        while ($row = $categoryResult->fetch_assoc()) {
+            $availableCategories[] = $row['product_categories'];
+        }
+
+        //check available brand
+        $availableBrands=[];
+
+        $sqlBrands = "SELECT DISTINCT p.brand FROM product p JOIN stock s ON p.product_id=s.product_id WHERE 1=1 AND s.stock>0 AND status='New'";
+    
+        $brandResult= $conn->query($sqlBrands);
+        while($rowbrand = $brandResult->fetch_assoc()){
+            $availableBrands[]= $rowbrand['brand'];
+        }
+
+        //check gender
+        $availableGender=[];
+
+        $sqlGender = "SELECT DISTINCT p.gender FROM product p JOIN stock s ON p.product_id=s.product_id WHERE 1=1 AND s.stock>0 AND status='New'";
+        
+        $genderResult= $conn->query($sqlGender);
+        while($rowgender = $genderResult->fetch_assoc()){
+            $availableGender[]= $rowgender['gender'];
+        }
     ?>
     <div class="new-billboard">
         <img src="images/new-arrival-banner-template-yellow-blue-colors-vector-44784986.jpg" alt="">
@@ -59,46 +91,29 @@
                     </div>
                     <div class="filter" id="category-filter">
                         <h3>Product Category</h3>
-                        <h4>Footwear</h4>
-                        <label><input type="checkbox" class="filter-checkbox" name="category" value="Boot"> Boot</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="category" value="Futsal"> Futsal</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="category" value="Running"> Running</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="category" value="Court"> Court</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="category" value="Training"> Training</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="category" value="School Shoe"> School Shoes</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="category" value="Kids Shoe"> Kids Shoes</label><br>
-                        
-                        <h4>Apparel</h4>
-                        <label><input type="checkbox" class="filter-checkbox" name="category" value="Jersey"> Jerseys</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="category" value="Jacket"> Jackets</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="category" value="Pant"> Pants</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="category" value="Legging"> Leggings</label><br>
-
-                        <h4>Equipment</h4>
-                        <label><input type="checkbox" class="filter-checkbox" name="category" value="Bag"> Bags</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="category" value="Cap"> Caps</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="category" value="Football Accessories"> Football Accessories</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="category" value="Sock"> Socks</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="category" value="Gym Accessories"> Gym Accessories</label><br>
-
+                        <?php
+                            foreach ($availableCategories as $catOption) {
+                                echo '<label><input type="checkbox" class="filter-checkbox" name="category" value="' . $catOption . '" > ' . $catOption . '</label><br>';
+                            }
+                        ?>
                     </div>
+
 
                     <div class="filter" id="gender-filter">
                         <h3>Gender</h3>
-                        <label><input type="checkbox" class="filter-checkbox" name="gender" value="Men"> Men</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="gender" value="Women"> Women</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="gender" value="Kid"> Kid</label><br>
+                        <?php
+                            foreach ($availableGender as $genderOption) {
+                                echo '<label><input type="checkbox" class="filter-checkbox" name="gender" value="' . $genderOption . '" > ' . $genderOption . '</label><br>';
+                            }
+                        ?>
                     </div>
                     <div class="filter" id="brand-filter">
                         <h3>Shop By Brand</h3>
-                        <label><input type="checkbox" class="filter-checkbox" name="brand" value="Nike"> Nike</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="brand" value="Adidas"> Adidas</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="brand" value="Puma"> Puma</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="brand" value="Umbro"> Umbro</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="brand" value="Lotto"> Lotto</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="brand" value="Asics"> Asics</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="brand" value="New Balance"> New Balance</label><br>
-                        <label><input type="checkbox" class="filter-checkbox" name="brand" value="Under Armour"> Under Armour</label><br>
+                        <?php
+                            foreach ($availableBrands as $brandOption) {
+                                echo '<label><input type="checkbox" class="filter-checkbox" name="brand" value="' . $brandOption . '" > ' . $brandOption . '</label><br>';
+                            }
+                        ?>
                     </div>
                 </div>
         </div>
@@ -108,31 +123,16 @@
             <div class="product-container">
 
                 <?php
-                    include __DIR__ . '/../../connect_db/config.php';
-
-                    $sql= "SELECT* FROM product WHERE status='New'";
+                    $sql = "SELECT * FROM product p
+                            WHERE p.status='New'
+                            AND EXISTS (
+                                SELECT 1 FROM stock s
+                                WHERE s.product_id = p.product_id AND s.stock > 0
+                            )";
+            
                     $result= $conn->query($sql);
-                    
-                    $sql1 = "
-                        SELECT p.*, s.stock
-                        FROM product p
-                        LEFT JOIN stock s ON p.product_id = s.product_id
-                        ";
-
-                    $result1 = $conn->query($sql1);
 
                         while($row= $result->fetch_assoc()){
-                            $product_id = $row['product_id'];
-                            $stock = 0;
-                                
-                            while ($row1 = $result1->fetch_assoc()) {
-                                if ($row1['product_id'] == $product_id) {
-                                    $stock = $row1['stock'];
-                                    break;
-                                }
-                            }
-
-                            if ($stock >0) {
                                 echo '<div class="product-column">
                                         <a href="../ProductPage/product.php?id='.$row['product_id'].'">
                                             <img src="../../upload/'.$row['product_img1'].'" alt="">
@@ -141,7 +141,6 @@
                                         </a>
                                     </div>';
                             }
-                        }
                 ?>
                 
             </div>
