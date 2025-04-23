@@ -30,7 +30,7 @@
                 <a href="../Manage_Product/view_product.php"><i class="fas fa-box"></i> ManageProduct</a>
             </li>
             <li class="tab-button <?php if ($current_page == 'view_order.php') echo 'active'; ?>">
-                <a href="../Order/view_order.php"><i class="fas fa-shopping-cart"></i> View Order</a>
+                <a href="../View_Order/view_order.php"><i class="fas fa-shopping-cart"></i> View Order</a>
             </li>
             <li class="tab-button <?php if ($current_page == 'order_items.php') echo 'active'; ?>">
                 <a href="../Order_items/order_items.php"><i class="fas fa-list"></i> View Order Items</a>
