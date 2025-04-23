@@ -218,14 +218,14 @@
             <h1>Recomended</h1>
             <div class="recomend-column">
             <?php
-                $sql="SELECT p.*, SUM(s.stock) as total_stock
-                    FROM product p
-                    JOIN stock s ON p.product_id = s.product_id
-                    WHERE p.product_id!='$current_product_id'
-                    GROUP BY p.product_id
-                    HAVING total_stock > 0
-                    ORDER BY RAND()
-                    LIMIT 4";
+                    $sql = "SELECT * FROM product p
+                        WHERE p.product_id!='$current_product_id'
+                        AND EXISTS (
+                            SELECT 1 FROM stock s
+                            WHERE s.product_id = p.product_id AND s.stock > 0
+                            )
+                            ORDER BY RAND()
+                            LIMIT 4";
 
                 $result= $conn->query($sql);
 

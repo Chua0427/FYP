@@ -13,7 +13,81 @@
 
 </head>
 
-    <?php include __DIR__ . '/../../connect_db/config.php'; ?>
+    <?php include __DIR__ . '/../../connect_db/config.php'; 
+
+        //today sale
+        $todaySales=0;
+        $today=date('y-m-d');
+
+        $sqlTodaySale="SELECT SUM(total_amount) AS total FROM payment WHERE DATE(payment_at) = '$today' AND payment_status='completed'";
+
+        $todaySaleResult= $conn->query($sqlTodaySale);
+
+        while($row= $todaySaleResult->fetch_assoc()){
+            $todaySales=$row['total'] ?? 0;
+        }
+
+        //users
+        $sqlUser= "SELECT COUNT(*) AS total_user FROM users WHERE user_type=1";
+
+        $userResult= $conn->query($sqlUser);
+        while($row= $userResult->fetch_assoc()){
+            $totalUser= $row['total_user'];
+        }
+
+        //total order
+        $sqlOrder="SELECT COUNT(*) AS total_order FROM orders";
+
+        $orderResult= $conn->query($sqlOrder);
+        while($row= $orderResult->fetch_assoc()){
+            $totalOrder= $row['total_order'];
+        }
+
+        //total sale
+        $totalSales=0;
+
+        $sqlTotalSale="SELECT SUM(total_amount) AS total_sales FROM payment WHERE payment_status='completed'";
+
+        $totalSaleResult= $conn->query($sqlTotalSale);
+        while($row= $totalSaleResult->fetch_assoc()){
+            $totalSales+= $row['total_sales'] ?? 0;
+        }
+
+        $sqlChart = "
+        SELECT 
+        (SELECT COUNT(DISTINCT p.product_id) 
+         FROM product p JOIN stock s ON p.product_id = s.product_id 
+         WHERE p.status = 'Normal' AND s.stock > 0) AS normal_count,
+
+        (SELECT COUNT(DISTINCT p.product_id) 
+         FROM product p JOIN stock s ON p.product_id = s.product_id 
+         WHERE p.status = 'Promotion' AND s.stock > 0) AS promotion_count,
+
+        (SELECT COUNT(DISTINCT p.product_id) 
+         FROM product p JOIN stock s ON p.product_id = s.product_id 
+         WHERE p.status = 'New' AND s.stock > 0) AS new_count
+        ";
+
+        $resultChart = $conn->query($sqlChart);
+        $rowchart = $resultChart->fetch_assoc();
+
+        // Get sales data for the last 7 days
+        $salesData = [];
+        $labels = [];
+
+        for ($i = 6; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-$i days"));
+            $labels[] = $date;
+
+            $sql = "SELECT SUM(total_amount) AS total FROM payment 
+                    WHERE DATE(payment_at) = '$date' AND payment_status = 'completed'";
+
+            $result = $conn->query($sql);
+            $row = $result->fetch_assoc();
+            $salesData[] = $row['total'] ?? 0;
+        }
+
+?>
 
 
 <body>
@@ -28,7 +102,7 @@
                     <i class="fa-solid fa-boxes-packing"></i>
                 </div>
                 <h3>Today's Sales</h3>
-                <p class="sales">+ RM 1000</p>
+                <p class="sales">+ RM <?php echo number_format($todaySales,2) ?></p>
             </div>
 
             <div class="column">
@@ -36,14 +110,14 @@
                     <i class="fa-solid fa-circle-user" style="background-color: rgb(108, 108, 255);"></i>
                 </div>
                 <h3>Users</h3>
-                <p class="sales">100</p>
+                <p class="sales"><?php echo $totalUser ?></p>
             </div>
             <div class="column">
                 <div class="icon">
                     <i class="fa-solid fa-box" style="background-color: #ffbb00;"></i>
                 </div>
                 <h3>Total Order</h3>
-                <p class="sales">10</p>
+                <p class="sales"><?php echo $totalOrder ?></p>
             </div>
             
             <div class="column">
@@ -51,41 +125,21 @@
                     <i class="fa-solid fa-arrow-up-wide-short" style="background-color: rgb(0, 196, 0);"></i>
                 </div>
                 <h3>Total Sales</h3>
-                <p class="sales">RM 10000</p>
+                <p class="sales">RM <?php echo number_format($totalSales,2) ?></p>
             </div>
     </div>
 </div>
 
 <div class="sub-dashboard">
     <div class="top-sale">
-        <h2>Top 3 Best Selling Products</h2>
-        <div class="product-list">
-            <div class="product">
-                <img src="images/Screenshot 2025-03-24 124204.png" alt="Product 1">
-                <div class="info">
-                    <h3>Nike Air Max</h3>
-                </div>
-            </div>
-
-            <div class="product">
-                <img src="images/Screenshot 2025-03-24 124204.png" alt="Product 2">
-                <div class="info">
-                    <h3>Adidas Ultraboost</h3>
-                </div>
-            </div>
-
-            <div class="product">
-                <img src="images/Screenshot 2025-03-24 124204.png" alt="Product 3">
-                <div class="info">
-                    <h3>Puma RS-X</h3>
-                </div>
-            </div>
-        </div>
+        <h2>Sales in Last 7 Days</h2>
+        <canvas id="weeklySalesChart" width="450" height="330"></canvas>
     </div>
+
 
     <div class="sub-container">
         <div class="chart">
-            <canvas id="myChart" width="400" height="330"></canvas>
+            <canvas id="myChart" width="420" height="330"></canvas>
         </div>
     </div>
 
@@ -95,8 +149,8 @@
         /*session_start();
 
         $user_id = $_SESSION['user_id'];*/
-
-        $sql= "SELECT * FROM users WHERE user_id = 26";
+        
+        $sql= "SELECT * FROM users WHERE user_id = 33";
         $result = $conn->query($sql);
 
         while ($row = $result->fetch_assoc()) {
@@ -122,7 +176,7 @@
         data: {
             labels: ['Normal', 'Promotion', 'New Arrivals'], 
             datasets: [{
-                data: [60, 25, 15], 
+                data: <?php echo '['.$rowchart['normal_count'].', '.$rowchart['promotion_count'].', '.$rowchart['new_count'].']'; ?>, 
                 backgroundColor: ['#007bff', '#dc3545', '#ffc107'], 
             }]
         },
@@ -130,6 +184,47 @@
             responsive: true,
             plugins: {
                 legend: {
+                    position: 'top'
+                }
+            }
+        }
+    });
+
+    //sales for last 7 days
+    var ctx = document.getElementById('weeklySalesChart').getContext('2d');
+    var weeklySalesChart = new Chart(ctx, {
+        type: 'line', 
+        data: {
+            labels: <?php echo json_encode($labels); ?>,
+            datasets: [{
+                label: 'Sales (RM)',
+                data: <?php echo json_encode($salesData); ?>,
+                fill: true,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                tension: 0.2
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Amount (RM)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
                     position: 'top'
                 }
             }
