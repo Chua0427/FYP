@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'config.php';
+require_once 'db-connect.php';
 
 // Redirect if not logged in
 if (!isset($_SESSION['user_id'])) {
@@ -8,10 +8,13 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Fetch user data from database
+// Fetch user data from database using MySQLi
 $stmt = $conn->prepare("SELECT * FROM users WHERE user_id = ?");
-$stmt->execute([$_SESSION['user_id']]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
+$stmt->bind_param("i", $_SESSION['user_id']);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc(); // Changed to fetch_assoc() for MySQLi
+$stmt->close();
 
 // Determine user type label
 $user_types = [
@@ -28,7 +31,12 @@ $user_type_label = $user_types[$user['user_type']] ?? 'Unknown';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile - VeroSports</title>
+    <link rel="stylesheet" href="../Header_and_Footer/header.css">
+    <link rel="stylesheet" href="../Header_and_Footer/footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <?php include __DIR__ . '/../Header_and_Footer/header.php'; ?>
+    
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -196,7 +204,7 @@ $user_type_label = $user_types[$user['user_type']] ?? 'Unknown';
                 text-align: center;
             }
         }
-    </style>
+        </style>
 </head>
 <body>
     <div class="profile-container">
@@ -206,7 +214,7 @@ $user_type_label = $user_types[$user['user_type']] ?? 'Unknown';
                      alt="Profile Image" class="profile-image">
             </div>
             <div class="profile-info">
-                <h1 class="profile-name"><?php echo htmlspecialchars($user['first_name'] . ' ' . htmlspecialchars($user['last_name']); ?></h1>
+                <h1 class="profile-name"><?php echo htmlspecialchars($user['first_name']) . ' ' . htmlspecialchars($user['last_name']); ?></h1>
                 <div class="profile-meta">
                     Member since <?php echo date('F Y', strtotime($user['create_at'])); ?>
                     <span class="user-type"><?php echo $user_type_label; ?></span>
@@ -221,7 +229,6 @@ $user_type_label = $user_types[$user['user_type']] ?? 'Unknown';
                 </div>
             </div>
         </div>
-        
         <div class="profile-details">
             <div class="detail-card">
                 <h3>Personal Information</h3>
@@ -264,5 +271,6 @@ $user_type_label = $user_types[$user['user_type']] ?? 'Unknown';
             </div>
         </div>
     </div>
+    <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
 </body>
 </html>

@@ -82,6 +82,7 @@ try {
                 'cart_count' => $cart_count ? (int)$cart_count['count'] : 0,
                 'results' => $results
             ]);
+            exit;
         } else {
             // Some items failed, rollback and return partial results
             $db->rollback();
@@ -91,6 +92,7 @@ try {
                 'message' => 'Some items could not be added to your cart',
                 'results' => $results
             ]);
+            exit;
         }
     } else {
         // Process single item (traditional flow)
@@ -249,6 +251,7 @@ try {
             'product' => $product_info,
             'request_id' => $request_id
         ]);
+        exit;
     }
     
 } catch (Exception $e) {
@@ -275,6 +278,7 @@ try {
         'error' => $e->getMessage(),
         'request_id' => $request_id
     ]);
+    exit;
 } finally {
     // Ensure database connection is closed
     if (isset($db)) {

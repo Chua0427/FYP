@@ -219,7 +219,7 @@ include __DIR__ . '/../Header_and_Footer/header.php';
             <?php if (empty($cartItems)): ?>
                 <div class="empty-cart">
                     <p>Your cart is empty</p>
-                    <a href="/FYP/User/HomePage/homePage.php" class="continue-shopping">Continue Shopping</a>
+                    <a href="/FYP//FYP/User/HomePage/homePage.php" class="continue-shopping">Continue Shopping</a>
                 </div>
             <?php else: ?>
                 <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
@@ -380,7 +380,7 @@ include __DIR__ . '/../Header_and_Footer/header.php';
                 formData.append('shipping_address', shippingAddress);
                 
                 // Call the create order API
-                fetch('/FYP/User/payment/create_order.php', {
+                fetch('/FYP/FYP/User/payment/create_order.php', {
                     method: 'POST',
                     body: formData,
                     credentials: 'same-origin'
