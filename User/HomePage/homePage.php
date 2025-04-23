@@ -117,14 +117,14 @@
                 <p><input type="button" class="button" value="Shop Now" onclick="window.location.href='../New_Arrival_Page/new_product.php'"></p>
             </div>
             <?php
-                $sql="SELECT p.*, SUM(s.stock) as total_stock
-                    FROM product p
-                    JOIN stock s ON p.product_id = s.product_id
-                    WHERE p.status='New' 
-                    GROUP BY p.product_id
-                    HAVING total_stock > 0
-                    ORDER BY RAND()
-                    LIMIT 5";
+                $sql = "SELECT * FROM product p
+                        WHERE p.status='New'
+                        AND EXISTS (
+                            SELECT 1 FROM stock s
+                            WHERE s.product_id = p.product_id AND s.stock > 0
+                            )
+                            ORDER BY RAND()
+                            LIMIT 5";
                     
                 $result= $conn->query($sql);
 
@@ -161,14 +161,14 @@
             </div>
 
             <?php
-                $sql="SELECT p.*, SUM(s.stock) as total_stock
-                FROM product p
-                JOIN stock s ON p.product_id = s.product_id
+                $sql = "SELECT * FROM product p
                 WHERE p.status='Promotion'
-                GROUP BY p.product_id
-                HAVING total_stock > 0
-                ORDER BY RAND()
-                LIMIT 5";
+                AND EXISTS (
+                    SELECT 1 FROM stock s
+                    WHERE s.product_id = p.product_id AND s.stock > 0
+                    )
+                    ORDER BY RAND()
+                    LIMIT 5";
                 $result= $conn->query($sql);
 
                 while($row= $result->fetch_assoc()){
@@ -242,12 +242,12 @@
         <i class="fa fa-arrow-left" id="jButton" aria-hidden="true"></i>
         <div class="JerseyContainer">
             <?php
-                $sql="SELECT p.*, SUM(s.stock) as total_stock
-                    FROM product p
-                    JOIN stock s ON p.product_id = s.product_id
-                    WHERE p.status='Normal' && product_categories='Jersey'
-                    GROUP BY p.product_id
-                    HAVING total_stock > 0
+                $sql = "SELECT * FROM product p
+                WHERE p.status='Normal' AND p.product_categories='Jersey'
+                AND EXISTS (
+                    SELECT 1 FROM stock s
+                    WHERE s.product_id = p.product_id AND s.stock > 0
+                    )
                     ORDER BY RAND()
                     LIMIT 6";
                 $result= $conn->query($sql);
