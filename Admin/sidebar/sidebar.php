@@ -1,6 +1,6 @@
 <?php
     $current_page = basename($_SERVER['PHP_SELF']);
-    $current_user_type = 3; 
+    $current_user_type = 2; 
 ?>
 <div class="sidebar-wrapper">
     <div class="sidebar">

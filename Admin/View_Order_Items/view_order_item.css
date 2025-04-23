@@ -57,7 +57,7 @@ table {
 }
 
 .items-table table tr:nth-child(even) {
-    background-color: #c3d9ff7a; 
+    background-color: #eef4ff7a; 
 }
 
 .items-table table tr:nth-child(odd) {
@@ -76,5 +76,5 @@ table {
 }
 
 .items-table table tr:hover {
-    background-color: #0051ff44;
+    background-color: #0051ff21;
 }
