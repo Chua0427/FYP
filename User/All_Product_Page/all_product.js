@@ -22,8 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const urlParams = new URLSearchParams(window.location.search); 
     const category = urlParams.get("product_categories"); 
     const brand = urlParams.get("brand");     
-    const gender = urlParams.get("gender");
-    const productType = urlParams.get("type");   
+    const gender = urlParams.get("gender");   
 
     const categoryFilter = document.getElementById("category-filter");
     const genderFilter = document.getElementById("gender-filter");
