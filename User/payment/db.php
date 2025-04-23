@@ -34,6 +34,11 @@ class Database {
         }
     }
 
+    public function getInsertId(): int
+{
+    return $this->conn->insert_id;
+}
+
     /**
      * Execute a query with parameters
      * 
@@ -257,14 +262,17 @@ class Database {
         if ($this->transactionActive) {
             $this->rollback();
         }
-        $this->conn->close();
+        if ($this->conn !== null) {
+            $this->conn->close();
+            $this->conn = null;
+        }
     }
 
     /**
      * Destructor - ensure connection is closed
      */
     public function __destruct() {
-        if ($this->conn && !$this->conn->connect_error) {
+        if ($this->conn !== null) {
             $this->close();
         }
     }
