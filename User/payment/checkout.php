@@ -20,6 +20,28 @@ $success = null;
 $order_id = null;
 $csrf_token = generateCsrfToken();
 
+// Debug log function for stock updates
+function debug_log($message, $data = []) {
+    $log_file = __DIR__ . '/logs/stock_update_debug.log';
+    $timestamp = date('Y-m-d H:i:s');
+    $log_message = "[$timestamp] $message";
+    
+    if (!empty($data)) {
+        $log_message .= " - " . json_encode($data);
+    }
+    
+    $log_message .= PHP_EOL;
+    
+    // Create logs directory if it doesn't exist
+    $log_dir = dirname($log_file);
+    if (!file_exists($log_dir)) {
+        mkdir($log_dir, 0777, true);
+    }
+    
+    // Append to log file
+    file_put_contents($log_file, $log_message, FILE_APPEND);
+}
+
 try {
     // Initialize Database
     $db = new Database();
