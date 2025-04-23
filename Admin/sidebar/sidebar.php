@@ -1,6 +1,6 @@
 <?php
     $current_page = basename($_SERVER['PHP_SELF']);
-    $current_user_type = 2; 
+    $current_user_type = 3; 
 ?>
 <div class="sidebar-wrapper">
     <div class="sidebar">
@@ -32,8 +32,8 @@
             <li class="tab-button <?php if ($current_page == 'view_order.php') echo 'active'; ?>">
                 <a href="../View_Order/view_order.php"><i class="fas fa-shopping-cart"></i> View Order</a>
             </li>
-            <li class="tab-button <?php if ($current_page == 'order_items.php') echo 'active'; ?>">
-                <a href="../Order_items/order_items.php"><i class="fas fa-list"></i> View Order Items</a>
+            <li class="tab-button <?php if ($current_page == 'view_order_item.php') echo 'active'; ?>">
+                <a href="../View_Order_Items/view_order_item.php"><i class="fas fa-list"></i> View Order Items</a>
             </li>
             <li class="tab-button <?php if ($current_page == 'view_payment.php') echo 'active'; ?>">
                 <a href="../View_Payment/view_payment.php"><i class="fas fa-credit-card"></i> View Payment</a>

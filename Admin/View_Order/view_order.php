@@ -49,22 +49,22 @@
 
                             switch ($status) {
                                 case "prepare":
-                                    $statusColor = "background-color: #DC3545; font-weight: bold; padding: 6px 20px; border-radius: 4px;";
+                                    $statusColor = "background-color: #DC3545; font-weight: bold; padding: 8px 16px; border-radius: 4px; color:white;";
                                     break;
                                 case "packing":
-                                    $statusColor = "background-color:rgb(255, 128, 25); font-weight: bold; padding: 6px 10px; border-radius: 4px;";
+                                    $statusColor = "background-color:rgb(255, 128, 25); font-weight: bold; padding: 8px 15px; border-radius: 4px; color:white;";
                                     break;
                                 case "assign":
-                                    $statusColor = "background-color: #FFC107; font-weight: bold; padding: 6px 10px; border-radius: 4px;";
+                                    $statusColor = "background-color: #FFC107; font-weight: bold; padding: 8px 20px; border-radius: 4px; color:white;";
                                     break;
                                 case "shipping":
-                                    $statusColor = "background-color:rgb(0, 255, 64); font-weight: bold; padding: 6px 10px; border-radius: 4px;";
+                                    $statusColor = "background-color:rgb(0, 199, 50); font-weight: bold; padding: 8px 12px; border-radius: 4px; color:white;";
                                     break;
                                 case "delivered":
-                                    $statusColor = "background-color:rgb(7, 196, 0); font-weight: bold; padding: 6px 10px; border-radius: 4px;" ;
+                                    $statusColor = "color:rgb(7, 196, 0); font-weight: bold; padding: 8px 10px; border-radius: 4px;" ;
                                     break;
                                 default:
-                                    $statusColor = "background-color: red; font-weight: bold; padding: 6px 10px; border-radius: 4px;";
+                                    $statusColor = "background-color: red; font-weight: bold; padding: 8px 10px; border-radius: 4px;";
                                     break;
                             }
 
@@ -80,7 +80,7 @@
                                     if (strtolower($row["delivery_status"]) === "delivered") {
                                         echo '<span style="color: green; font-weight: bold;">Complete</span>';
                                     }else {
-                                        echo '<a href="#" class="update" order_id="'.$row['order_id'].'">Update <i class="fa-solid fa-arrow-right"></i></a>';
+                                        echo '<a href="#" class="update" order_id="'.$row['order_id'].'">Update</a>';
                                     }
                                 
                                     echo    '</td>
