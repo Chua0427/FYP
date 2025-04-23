@@ -423,29 +423,60 @@
                     return;
                 <?php endif; ?>
                 
-                // Default size (first available)
-                const formData = new FormData();
-                formData.append('product_id', productId);
-                formData.append('product_size', 'M'); // Default size
-                formData.append('quantity', 1);
-                
-                // Add CSRF token
-                const csrfToken = getCsrfToken();
-                if (csrfToken) {
-                    formData.append('csrf_token', csrfToken);
-                }
-                
-                // Show loading state
+                // Get the button element that was clicked
                 const button = event.target;
                 const originalText = button.value;
-                button.disabled = true;
-                button.value = 'Adding...';
                 
-                // Send AJAX request
-                fetch('/FYP/User/api/add_to_cart.php', {
-                    method: 'POST',
-                    body: formData,
-                    credentials: 'same-origin'
+                // First, fetch product sizes to handle products like shoes that require specific sizes
+                fetch('../api/product_sizes.php?product_id=' + encodeURIComponent(productId))
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        throw new Error(data.error || 'Failed to get product sizes');
+                    }
+                    
+                    // Default size determination logic
+                    let productSize;
+                    
+                    if (data.sizes.length === 0) {
+                        throw new Error('No sizes available for this product');
+                    } else if (data.sizes.length === 1) {
+                        // If only one size is available, use it
+                        productSize = data.sizes[0].product_size;
+                    } else if (data.product_type === 'Footwear') {
+                        // Footwear typically has specific sizes - use the first available size
+                        productSize = data.sizes[0].product_size;
+                    } else if (data.product_type === 'Equipment' && data.sizes.some(s => s.product_size === 'One Size')) {
+                        // If it's equipment and "One Size" is available, use it
+                        productSize = 'One Size';
+                    } else {
+                        // For apparel, try to find a "M" (medium) size, or use the first available
+                        const mediumSize = data.sizes.find(s => s.product_size === 'M');
+                        productSize = mediumSize ? mediumSize.product_size : data.sizes[0].product_size;
+                    }
+                    
+                    // Prepare form data
+                    const formData = new FormData();
+                    formData.append('product_id', productId);
+                    formData.append('product_size', productSize);
+                    formData.append('quantity', 1);
+                    
+                    // Add CSRF token
+                    const csrfToken = getCsrfToken();
+                    if (csrfToken) {
+                        formData.append('csrf_token', csrfToken);
+                    }
+                    
+                    // Show loading state
+                    button.disabled = true;
+                    button.value = 'Adding...';
+                    
+                    // Send AJAX request
+                    return fetch('../api/add_to_cart.php', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin'
+                    });
                 })
                 .then(response => {
                     if (!response.ok) {
@@ -476,23 +507,13 @@
                     }
                 })
                 .catch(error => {
-                    showMessage('Error adding to cart. Please try again.', 'error');
+                    showMessage(error.message || 'Error adding to cart. Please try again.', 'error');
                     console.error('Add to cart error:', error);
                 })
                 .finally(() => {
                     // Reset button state
                     button.disabled = false;
                     button.value = originalText;
-                    
-                    // Retry in case of network errors
-                    if (navigator.onLine === false) {
-                        // Wait for online status and retry
-                        window.addEventListener('online', function onlineHandler() {
-                            window.removeEventListener('online', onlineHandler);
-                            showMessage('Connection restored. Retrying...', 'info');
-                            setTimeout(() => quickAddToCart(productId), 1000);
-                        });
-                    }
                 });
             }
             
