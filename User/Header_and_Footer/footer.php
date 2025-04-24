@@ -11,7 +11,7 @@
                     <h3>Help & Support</h3>
                     <a href="../fl/RPen.php">Return Policy</a>
                     <a href="../fl/CancellationPolicyEN.php">Cancellation Policy</a>
-                    <a href="../fl/TrackMyOrder.php">Tranck My Order</a>
+                    <a href="../fl/TrackMyOrder.php">Track My Order</a>
                 </div>
                 <div class="footerCategories">
                     <h3>FAQs</h3>
