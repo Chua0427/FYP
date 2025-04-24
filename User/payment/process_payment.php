@@ -324,13 +324,10 @@ function formatPrice($price) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://js.stripe.com 'unsafe-inline'; connect-src 'self' https://*.stripe.com https://api.stripe.com; frame-src 'self' https://*.stripe.com https://*.hcaptcha.com; img-src 'self' data: https://*.stripe.com; worker-src blob: https://*.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;">
     <title>Payment - VeroSports</title>
-    <link rel="stylesheet" href="../Header_and_Footer/header.css">
-    <link rel="stylesheet" href="../Header_and_Footer/footer.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Reset and base styles */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -376,7 +373,7 @@ function formatPrice($price) {
             color: #222;
         }
         
-        /* Messages */
+        /* Error and Success Messages */
         .error-message {
             background-color: #f8d7da;
             color: #721c24;
@@ -402,7 +399,7 @@ function formatPrice($price) {
             gap: 30px;
         }
         
-        .payment-form {
+        .payment-form, .order-summary {
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -410,16 +407,22 @@ function formatPrice($price) {
         }
         
         .order-summary {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            padding: 25px;
             height: fit-content;
         }
         
         /* Form Styling */
         .form-group {
             margin-bottom: 20px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group.half {
+            flex: 1;
         }
         
         label {
@@ -430,27 +433,107 @@ function formatPrice($price) {
             color: #555;
         }
         
-        #card-element {
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
             border: 1px solid #ddd;
             border-radius: 8px;
-            padding: 15px;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            font-size: 16px;
+            transition: border-color 0.3s;
         }
         
-        #card-element.StripeElement--focus {
+        input:focus, select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+        
+        /* Credit Card Input Styling */
+        .card-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-number-input {
+            padding-right: 110px; /* Space for the card logos */
+            letter-spacing: 1px;
+        }
+        
+        .card-icons {
+            position: absolute;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+        
+        .card-logo {
+            height: 24px;
+            width: auto;
+        }
+        
+        /* Stripe Elements Styling */
+        .stripe-element-container {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: white;
+            height: 45px;
+            transition: border-color 0.3s;
+        }
+        
+        .stripe-element-container.StripeElement--focus {
             border-color: #007bff;
             box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
         }
         
-        #card-errors {
-            color: #dc3545;
-            font-size: 14px;
-            margin-top: 8px;
+        .stripe-element-container.StripeElement--invalid {
+            border-color: #dc3545;
         }
         
-        /* Buttons */
+        /* Expiry Date Styling */
+        .expiry-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            position: relative;
+        }
+        
+        .expiry-select {
+            flex: 1;
+            padding-right: 25px;
+        }
+        
+        .expiry-separator {
+            font-size: 18px;
+            color: #777;
+        }
+        
+        .expiry-display {
+            position: absolute;
+            right: 0;
+            width: 70px;
+            text-align: center;
+            background-color: #f7f7f7;
+            border: 1px solid #ddd;
+        }
+        
+        /* Error text for validations */
+        .error-text {
+            color: #dc3545;
+            font-size: 13px;
+            margin-top: 5px;
+            min-height: 18px;
+        }
+        
+        /* Button Styling */
         .button-container {
             margin-top: 25px;
+        }
+        
+        .button-wrapper {
+            position: relative;
+            margin-bottom: 10px;
         }
         
         .btn {
@@ -459,13 +542,12 @@ function formatPrice($price) {
             text-align: center;
             vertical-align: middle;
             cursor: pointer;
-            padding: 10px 20px;
+            padding: 12px 20px;
             font-size: 16px;
             line-height: 1.5;
             border-radius: 6px;
             transition: all 0.15s ease-in-out;
             text-decoration: none;
-            border: none;
         }
         
         .btn-primary {
@@ -473,10 +555,9 @@ function formatPrice($price) {
             background-color: #007bff;
             border: 1px solid #007bff;
             width: 100%;
-            padding: 12px;
         }
         
-        .btn-primary:hover:not(:disabled) {
+        .btn-primary:hover {
             background-color: #0069d9;
             border-color: #0062cc;
         }
@@ -486,10 +567,28 @@ function formatPrice($price) {
             cursor: not-allowed;
         }
         
-        /* Return Link */
+        /* Spinner for loading state */
+        .spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+        
+        /* Back Link */
         .return-link {
             display: block;
-            margin-top: 10px;
             text-align: center;
             color: #6c757d;
             text-decoration: none;
@@ -499,7 +598,29 @@ function formatPrice($price) {
             text-decoration: underline;
         }
         
-        /* Order items */
+        /* Security Info */
+        .security-info {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+            padding: 12px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+        
+        .security-info i {
+            font-size: 18px;
+            color: #28a745;
+            margin-right: 10px;
+        }
+        
+        .security-info p {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* Order Item Styling */
         .order-item {
             display: flex;
             justify-content: space-between;
@@ -525,7 +646,7 @@ function formatPrice($price) {
             font-weight: 500;
         }
         
-        /* Summary totals */
+        /* Summary Totals */
         .summary-totals {
             margin-top: 20px;
             border-top: 1px solid #eee;
@@ -546,59 +667,7 @@ function formatPrice($price) {
             border-top: 1px solid #eee;
         }
         
-        /* Loading spinner */
-        .spinner {
-            display: none;
-            width: 24px;
-            height: 24px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-        
-        @keyframes spin {
-            to { transform: translateY(-50%) rotate(360deg); }
-        }
-        
-        .button-wrapper {
-            position: relative;
-        }
-        
-        /* Card icons */
-        .card-icons {
-            display: flex;
-            margin-bottom: 15px;
-        }
-        
-        .card-icon {
-            font-size: 28px;
-            margin-right: 10px;
-            color: #555;
-        }
-        
-        /* Security info */
-        .security-info {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-            display: flex;
-            align-items: center;
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .security-info i {
-            font-size: 18px;
-            margin-right: 10px;
-            color: #28a745;
-        }
-        
-        /* Responsive */
+        /* Responsive Styles */
         @media (max-width: 992px) {
             .payment-grid {
                 grid-template-columns: 1fr;
@@ -626,13 +695,17 @@ function formatPrice($price) {
             .payment-form, .order-summary {
                 padding: 15px;
             }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
         }
     </style>
     <meta name="csrf-token" content="<?php echo htmlspecialchars($csrf_token); ?>">
 </head>
 <body>
     <div class="page-container">
-        <?php include __DIR__ . '/../Header_and_Footer/header.php'; ?>
         
         <main>
             <div class="payment-container">
@@ -654,24 +727,37 @@ function formatPrice($price) {
                         <div class="payment-form">
                             <h2>Enter Payment Details</h2>
                             
-                            <div class="card-icons">
-                                <span class="card-icon"><i class="fab fa-cc-visa"></i></span>
-                                <span class="card-icon"><i class="fab fa-cc-mastercard"></i></span>
-                                <span class="card-icon"><i class="fab fa-cc-amex"></i></span>
-                                <span class="card-icon"><i class="fab fa-cc-discover"></i></span>
-                            </div>
-                            
                             <form id="payment-form" method="post">
                                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
                                 <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order_id); ?>">
                                 
                                 <div class="form-group">
-                                    <label for="card-element">Credit or Debit Card</label>
-                                    <div id="card-element">
-                                        <!-- Stripe Element will be inserted here -->
-                                    </div>
-                                    <div id="card-errors" role="alert"></div>
+                                    <label for="card-number">Bank card information</label>
+                                    <div id="card-number-element" class="stripe-element-container"></div>
+                                    <div id="card-number-error" class="error-text"></div>
                                 </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group half">
+                                        <label for="card-expiry">Card expiration date</label>
+                                        <div id="card-expiry-element" class="stripe-element-container"></div>
+                                        <div id="card-expiry-error" class="error-text"></div>
+                                    </div>
+                                    
+                                    <div class="form-group half">
+                                        <label for="card-cvc">CVC/CVV</label>
+                                        <div id="card-cvc-element" class="stripe-element-container"></div>
+                                        <div id="card-cvc-error" class="error-text"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="card-name">Cardholder name</label>
+                                    <input type="text" id="card-name" class="card-name-input" placeholder="Full name" autocomplete="cc-name">
+                                    <div id="card-name-error" class="error-text"></div>
+                                </div>
+                                
+                                <div id="card-errors" role="alert" class="error-text"></div>
                                 
                                 <div class="button-container">
                                     <div class="button-wrapper">
@@ -728,26 +814,39 @@ function formatPrice($price) {
             </div>
         </main>
         
-        <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
     </div>
     
     <script src="https://js.stripe.com/v3/"></script>
     <script>
+        // Add comment with development note about HTTPS requirement
+        /**
+         * Note: Stripe requires HTTPS in production environments.
+         * This warning can be ignored in development, but ensure your 
+         * production server uses HTTPS before going live.
+         */
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Stripe
-            const stripe = Stripe('pk_test_51R3yBQQZPLk7FzRY3uO9YLeLKEbmLgOWzlD43uf0xHYeHdVC13kMzpCw5zhRPnp215QEwdZz7F9qmeMT6dv2ZmC600HNBheJIT');
+            // Check if we're using HTTPS
+            if (window.location.protocol !== 'https:' && !window.location.hostname.includes('localhost')) {
+                console.warn('Warning: Stripe requires HTTPS for production use. Current connection is not secure.');
+            }
+
+            // Initialize Stripe with fallback worker handling
+            const stripeFallbackOptions = {
+                apiVersion: '2023-10-16'
+            };
+            
+            const stripe = Stripe('pk_test_51R3yBQQZPLk7FzRY3uO9YLeLKEbmLgOWzlD43uf0xHYeHdVC13kMzpCw5zhRPnp215QEwdZz7F9qmeMT6dv2ZmC600HNBheJIT', stripeFallbackOptions);
             const elements = stripe.elements();
             
-            // Create card element
-            const style = {
+            // Style for Stripe Elements
+            const elementStyle = {
                 base: {
                     fontFamily: '"Inter", sans-serif',
                     fontSize: '16px',
                     color: '#32325d',
                     '::placeholder': {
                         color: '#aab7c4'
-                    },
-                    lineHeight: '1.6'
+                    }
                 },
                 invalid: {
                     color: '#dc3545',
@@ -755,54 +854,144 @@ function formatPrice($price) {
                 }
             };
             
-            const card = elements.create('card', { style });
-            
-            // Mount the card element
-            card.mount('#card-element');
-            
-            // Handle validation errors
-            card.addEventListener('change', function(event) {
-                const displayError = document.getElementById('card-errors');
-                if (event.error) {
-                    displayError.textContent = event.error.message;
-                } else {
-                    displayError.textContent = '';
-                }
+            // Create individual Stripe Elements for each field
+            const cardNumberElement = elements.create('cardNumber', {
+                style: elementStyle,
+                showIcon: true,
+                iconStyle: 'solid'
             });
             
-            // Handle form submission
+            const cardExpiryElement = elements.create('cardExpiry', {
+                style: elementStyle
+            });
+            
+            const cardCvcElement = elements.create('cardCvc', {
+                style: elementStyle
+            });
+            
+            // Mount the elements
+            cardNumberElement.mount('#card-number-element');
+            cardExpiryElement.mount('#card-expiry-element');
+            cardCvcElement.mount('#card-cvc-element');
+            
+            // DOM Elements
             const form = document.getElementById('payment-form');
             const submitButton = document.getElementById('submit-button');
             const spinner = document.getElementById('spinner');
+            const cardName = document.getElementById('card-name');
             
+            // Error elements
+            const cardNumberError = document.getElementById('card-number-error');
+            const cardExpiryError = document.getElementById('card-expiry-error');
+            const cardCvcError = document.getElementById('card-cvc-error');
+            const cardNameError = document.getElementById('card-name-error');
+            const cardErrors = document.getElementById('card-errors');
+            
+            // Add error handling for each element
+            cardNumberElement.addEventListener('change', function(event) {
+                if (event.error) {
+                    cardNumberError.textContent = event.error.message;
+                } else {
+                    cardNumberError.textContent = '';
+                }
+            });
+            
+            cardExpiryElement.addEventListener('change', function(event) {
+                if (event.error) {
+                    cardExpiryError.textContent = event.error.message;
+                } else {
+                    cardExpiryError.textContent = '';
+                }
+            });
+            
+            cardCvcElement.addEventListener('change', function(event) {
+                if (event.error) {
+                    cardCvcError.textContent = event.error.message;
+                } else {
+                    cardCvcError.textContent = '';
+                }
+            });
+            
+            // Validate card form before submission
+            function validateCardForm() {
+                let isValid = true;
+                
+                // Reset error messages
+                cardNameError.textContent = '';
+                cardErrors.textContent = '';
+                
+                // Validate cardholder name
+                if (!cardName.value.trim()) {
+                    cardNameError.textContent = 'Cardholder name is required';
+                    isValid = false;
+                }
+                
+                return isValid;
+            }
+            
+            // Handle form submission
             form.addEventListener('submit', function(event) {
                 event.preventDefault();
+                
+                // Validate form first
+                if (!validateCardForm()) {
+                    return;
+                }
                 
                 // Disable the submit button to prevent multiple submissions
                 submitButton.disabled = true;
                 submitButton.textContent = 'Processing...';
                 spinner.style.display = 'block';
                 
-                // Create a token
-                stripe.createToken(card).then(function(result) {
+                // Create a payment method using the card elements
+                stripe.createPaymentMethod({
+                    type: 'card',
+                    card: cardNumberElement,
+                    billing_details: {
+                        name: cardName.value.trim()
+                    }
+                }).then(function(result) {
                     if (result.error) {
-                        // Show error and re-enable submit button
-                        const errorElement = document.getElementById('card-errors');
-                        errorElement.textContent = result.error.message;
+                        // Show error
+                        cardErrors.textContent = result.error.message;
                         submitButton.disabled = false;
                         submitButton.textContent = 'Pay <?php echo formatPrice($totalPrice); ?>';
                         spinner.style.display = 'none';
                     } else {
-                        // Send the token to the server
-                        const hiddenInput = document.createElement('input');
-                        hiddenInput.setAttribute('type', 'hidden');
-                        hiddenInput.setAttribute('name', 'stripe_token');
-                        hiddenInput.setAttribute('value', result.token.id);
-                        form.appendChild(hiddenInput);
-                        
-                        // Submit the form
-                        form.submit();
+                        // Now create a token for backward compatibility with the server
+                        stripe.createToken(cardNumberElement, {
+                            name: cardName.value.trim()
+                        }).then(function(tokenResult) {
+                            if (tokenResult.error) {
+                                // Show error
+                                cardErrors.textContent = tokenResult.error.message;
+                                submitButton.disabled = false;
+                                submitButton.textContent = 'Pay <?php echo formatPrice($totalPrice); ?>';
+                                spinner.style.display = 'none';
+                            } else {
+                                // Send the token to the server
+                                const hiddenInput = document.createElement('input');
+                                hiddenInput.setAttribute('type', 'hidden');
+                                hiddenInput.setAttribute('name', 'stripe_token');
+                                hiddenInput.setAttribute('value', tokenResult.token.id);
+                                form.appendChild(hiddenInput);
+                                
+                                // Set confirmation message
+                                cardErrors.textContent = 'Processing your payment...';
+                                cardErrors.style.color = '#28a745';
+                                
+                                // Submit the form
+                                form.submit();
+                            }
+                        });
                     }
+                }).catch(function(error) {
+                    // Handle any other errors that might occur
+                    cardErrors.textContent = 'An error occurred while processing your card. Please try again.';
+                    console.error('Stripe payment processing error:', error);
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Pay <?php echo formatPrice($totalPrice); ?>';
+                    spinner.style.display = 'none';
                 });
             });
         });
