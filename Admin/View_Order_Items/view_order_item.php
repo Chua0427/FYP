@@ -22,7 +22,7 @@
         <?php include __DIR__ . '/../sidebar/sidebar.php'; ?>
 
         <div class="items-table">
-            <h3>View Oders Items</h3>
+            <h3>View Order Items</h3>
             <table>
                 <tr>
                     <th>Order ID</th>
