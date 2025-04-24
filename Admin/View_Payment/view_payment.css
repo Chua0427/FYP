@@ -78,3 +78,15 @@ table {
 .items-table table tr:hover {
     background-color: #00b61844;
 }
+
+.view_item{
+    background-color: rgba(0, 140, 255, 0.452);
+    padding: 5px 15px;
+    border-radius: 3px;
+    text-decoration: none;
+    color: black;
+}
+
+.view_item:hover{
+    background-color: rgba(0, 0, 255, 0.445);
+}

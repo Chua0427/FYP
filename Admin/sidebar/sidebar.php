@@ -29,11 +29,11 @@
             <li class="tab-button <?php if ($current_page == 'view_product.php' || $current_page == 'view_stock.php' || $current_page == 'product.php' || $current_page == 'edit.php') echo 'active'; ?>">
                 <a href="../Manage_Product/view_product.php"><i class="fas fa-box"></i> ManageProduct</a>
             </li>
-            <li class="tab-button <?php if ($current_page == 'view_order.php') echo 'active'; ?>">
+            <li class="tab-button <?php if ($current_page == 'view_order.php' || $current_page == 'view_order_item.php') echo 'active'; ?>">
                 <a href="../View_Order/view_order.php"><i class="fas fa-shopping-cart"></i> View Order</a>
             </li>
-            <li class="tab-button <?php if ($current_page == 'view_order_item.php') echo 'active'; ?>">
-                <a href="../View_Order_Items/view_order_item.php"><i class="fas fa-list"></i> View Order Items</a>
+            <li class="tab-button <?php if ($current_page == 'view_delivery.php') echo 'active'; ?>">
+                <a href="../Delivery_Status/view_delivery.php"><i class="fa-solid fa-truck"></i> Delivery Status</a>
             </li>
             <li class="tab-button <?php if ($current_page == 'view_payment.php') echo 'active'; ?>">
                 <a href="../View_Payment/view_payment.php"><i class="fas fa-credit-card"></i> View Payment</a>

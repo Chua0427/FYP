@@ -229,7 +229,7 @@ if (isset($_GET['id'])) {
                 <div class="column1">
                     <div class="form-group">
                         <label>Status:</label>
-                        <select name="status"required>
+                        <select name="status" id="status" required>
                             <option value="<?= ($row['status']); ?>" selected><?= ($row['status']); ?></option>
                             <?php 
                                     if($row['status']== "Normal"){
@@ -253,7 +253,7 @@ if (isset($_GET['id'])) {
                     </div>
                     <div class="form-group">
                         <label>Discount Price: </label>
-                        <input type="number" name="discount_price" step="0.01" value="<?php echo ($row['discount_price']); ?>">
+                        <input type="number" name="discount_price" id="discount_price" step="0.01" value="<?php echo ($row['discount_price']); ?>">
                     </div>
                 </div>
 
