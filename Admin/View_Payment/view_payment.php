@@ -27,25 +27,29 @@
                 <tr>
                     <th>Payment ID</th>
                     <th>Order ID</th>
+                    <th>View Order Items</th>
                     <th>Total Amount</th>
                     <th>Payment Time</th>
                     <th>Payment Status</th>
                 </tr>
+                
                 <?php
                     $sql= "SELECT* FROM payment";
                     $result = $conn->query($sql);
 
                     while($row= $result->fetch_assoc()){
-                        echo '<tr>
+                        echo '
+                            <tr>
                                 <td>'.$row['payment_id'].'</td>
                                 <td>'.$row['order_id'].'</td>
+                                <td><a href="../View_Order_Items/view_order_item.php?order_id='.$row['order_id'].'" class="view_item">View</a></td>
                                 <td style="font-weight: bold;"> RM '.$row['total_amount'].'</td>
                                 <td>'.$row['payment_at'].'</td>
                                 <td><span style="background-color:rgb(35, 161, 31); color: white; padding:10px; border-radius:10px; font-weight: bold;">'.$row['payment_status'].'</span></td>
                             </tr>';
                     }
                     ?>
-                
+                </a>
             </table>
                 
         </div>

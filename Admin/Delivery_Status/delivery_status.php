@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['s
     $result = $conn->query($sql);
 
     if ($result) {
-        echo "<script>alert('Order #" . $order_id . " updated to $status'); window.location.href='view_order.php';</script>";
+        echo "<script>alert('Order #" . $order_id . " updated to $status'); window.location.href='view_delivery.php';</script>";
     } else {
         echo "<script>alert('Failed to update order');</script>";
     }
