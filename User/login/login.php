@@ -162,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label for="remember">Remember me</label>
                 </div>
                 <button type="submit" class="login-btn">Login</button>
-                <a href="#" class="forgot-password">Forgot Password?</a>
+                <a href="../ForgotPassword/forgot_password.php" class="forgot-password">Forgot Password?</a>
             </form>
             
             <div class="divider"><span>OR</span></div>

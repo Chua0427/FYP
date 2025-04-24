@@ -1,0 +1,3 @@
+[2025-04-23T03:00:05.379185+02:00] app.ERROR: Login error {"message":"Failed to generate authentication token","ip":"::1"} []
+[2025-04-23T22:57:41.115715+02:00] app.ERROR: PHP Error {"message":"include_once(../Header_and_Footer/footer.html): Failed to open stream: No such file or directory","file":"C:\\xampp\\htdocs\\FYP\\FYP\\User\\payment\\checkout.php","line":262,"severity":2} []
+[2025-04-23T22:57:41.124698+02:00] app.ERROR: PHP Error {"message":"include_once(): Failed opening '../Header_and_Footer/footer.html' for inclusion (include_path='C:\\xampp\\php\\PEAR')","file":"C:\\xampp\\htdocs\\FYP\\FYP\\User\\payment\\checkout.php","line":262,"severity":2} []
