@@ -341,11 +341,11 @@ try {
             
             <div class="order-stats">
                 <div class="stat-box">
-                    <div class="stat-value"><?php echo $total_orders; ?></div>
+                    <div class="stat-value"><?php echo htmlspecialchars((string)$total_orders); ?></div>
                     <div class="stat-label">Total Orders</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value"><?php echo $delivered_orders; ?></div>
+                    <div class="stat-value"><?php echo htmlspecialchars((string)$delivered_orders); ?></div>
                     <div class="stat-label">Delivered Orders</div>
                 </div>
             </div>
@@ -361,7 +361,7 @@ try {
                     <div class="order-card">
                         <div class="order-header">
                             <div>
-                                <div class="order-id">Order #<?php echo htmlspecialchars($order['order_id']); ?></div>
+                                <div class="order-id">Order #<?php echo htmlspecialchars((string)$order['order_id']); ?></div>
                                 <div class="order-date">
                                     <?php echo date('F j, Y', strtotime($order['order_at'])); ?>
                                 </div>
@@ -385,7 +385,7 @@ try {
                             <div class="needs-review">
                                 <i class="fas fa-exclamation-circle"></i>
                                 <?php echo $order['needs_review_count'] > 1 
-                                    ? "You have {$order['needs_review_count']} items that need your review!" 
+                                    ? "You have " . htmlspecialchars((string)$order['needs_review_count']) . " items that need your review!" 
                                     : "You have 1 item that needs your review!"; ?>
                             </div>
                         <?php endif; ?>
@@ -398,7 +398,7 @@ try {
                                         <div class="item-name"><?php echo htmlspecialchars($item['product_name']); ?></div>
                                         <div>
                                             <span class="item-size">Size: <?php echo htmlspecialchars($item['product_size']); ?></span>
-                                            <span class="item-quantity">Qty: <?php echo htmlspecialchars($item['quantity']); ?></span>
+                                            <span class="item-quantity">Qty: <?php echo htmlspecialchars((string)$item['quantity']); ?></span>
                                             <span class="item-price">RM <?php echo number_format((float)$item['price'], 2, '.', ','); ?></span>
                                         </div>
                                     </div>
