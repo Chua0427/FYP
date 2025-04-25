@@ -32,4 +32,26 @@ document.addEventListener("DOMContentLoaded", function(){
             });
         }
     });
+
+    const statusSelect = document.getElementById('status');
+    const discountInput = document.getElementById('discount_price');
+
+    function handleStatusChange() {
+        const selected = statusSelect.value;
+
+        if (selected === 'Promotion') {
+            discountInput.disabled = false;
+            discountInput.required = true;
+            discountInput.placeholder = "Required when status is Promotion";
+        } else {
+            discountInput.value = ''; 
+            discountInput.disabled = true;
+            discountInput.required = false;
+            discountInput.placeholder = "Disabled";
+        }
+    }
+
+    handleStatusChange();
+
+    statusSelect.addEventListener('change', handleStatusChange);
 });

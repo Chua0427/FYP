@@ -180,9 +180,11 @@ if ($is_authenticated) {
 
     <div class="iconContainer">
         <div class="icon">
+            <a href="../Search/search.php">
             <div class="search">
                 <i class="fa-solid fa-search"></i>
             </div>
+        </a>
             <div class="user">
                 <?php if ($is_authenticated): ?>
                     <div class="user-dropdown">
@@ -191,7 +193,7 @@ if ($is_authenticated) {
                             <div class="user-info">
                                 <span>Hello, <?php echo htmlspecialchars($_SESSION['first_name'] ?? ''); ?></span>
                             </div>
-                            <a href="../order/order_history.php">My Orders</a>
+                            <a href="../View_Order/view_order.php">My Orders</a>
                             <a href="../Edit_Profile/profile.php">My Profile</a>
                             <a href="../login/manage_sessions.php">Manage Devices</a>
                             <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] == 2): ?>
