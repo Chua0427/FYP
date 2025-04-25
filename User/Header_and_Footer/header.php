@@ -14,20 +14,30 @@ if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Check authentication - this will now check both token and session auth
+// Ensure the Auth class is properly initialized
+Auth::init();
+
+// Check authentication - this will check both token and session auth
 $is_authenticated = Auth::check();
 $user_data = null;
 
 if ($is_authenticated) {
     $user_data = Auth::user();
     
-    // Update session for backward compatibility if not already set
-    if (!isset($_SESSION['user_id']) && isset($user_data['user_id'])) {
+    // Update session for backward compatibility if not already set or if values don't match
+    if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] != $user_data['user_id']) {
         $_SESSION['user_id'] = $user_data['user_id'];
         $_SESSION['first_name'] = $user_data['first_name'] ?? '';
         $_SESSION['last_name'] = $user_data['last_name'] ?? '';
         $_SESSION['email'] = $user_data['email'] ?? '';
         $_SESSION['user_type'] = $user_data['user_type'] ?? 0;
+        
+        // Set session fingerprint
+        $_SESSION['auth_fingerprint'] = hash('sha256', 
+            $_SERVER['HTTP_USER_AGENT'] . 
+            ($_SERVER['REMOTE_ADDR'] ?? 'localhost') . 
+            $user_data['user_id']
+        );
     }
 }
 

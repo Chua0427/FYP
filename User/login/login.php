@@ -5,9 +5,13 @@ require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/auth.php';
 
+// PHP Mailer for OTP
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 // Check if user is already authenticated with token
 if (Auth::check()) {
-    header('Location: /FYP/FYP/User/HomePage/homePage.php');
+    header('Location: /FYP/User/HomePage/homePage.php');
     exit;
 }
 
@@ -17,12 +21,74 @@ if (!isset($_SESSION['csrf_token'])) {
 }
 
 // Check if there's a redirect URL
-$redirect = isset($_GET['redirect']) ? $_GET['redirect'] : '/FYP/FYP/User/HomePage/homePage.php';
+$redirect = isset($_GET['redirect']) ? $_GET['redirect'] : '/FYP/User/HomePage/homePage.php';
 
 $error = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Function to generate a random OTP
+function generateOTP() {
+    return mt_rand(100000, 999999); // 6-digit OTP
+}
+
+// Function to send OTP via email
+function sendOTPEmail($email, $otp, $user_name) {
+    require_once __DIR__ . '/../otp/phpmailer/src/Exception.php';
+    require_once __DIR__ . '/../otp/phpmailer/src/PHPMailer.php';
+    require_once __DIR__ . '/../otp/phpmailer/src/SMTP.php';
+    
+    $mail = new PHPMailer(true);
+    
     try {
+        // Server settings
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'DeadHunter0802@gmail.com';
+        $mail->Password = 'drzrsnnjezzdrfvx';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port = 465;
+        
+        // Set timeout values to prevent long waits
+        $mail->Timeout = 10; // Timeout for SMTP connection (in seconds)
+        $mail->SMTPKeepAlive = false; // Don't keep connection alive for multiple emails
+        
+        // Recipients
+        $mail->setFrom('DeadHunter0802@gmail.com', 'VeroSports Authentication');
+        $mail->addAddress($email, $user_name);
+        
+        // Content
+        $mail->isHTML(true);
+        $mail->Subject = 'Your VeroSports Login OTP';
+        $mail->Body = "
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;'>
+                <h2 style='color: #333; text-align: center;'>VeroSports Authentication</h2>
+                <p>Hello {$user_name},</p>
+                <p>Your One-Time Password (OTP) for login is:</p>
+                <div style='background-color: #f5f5f5; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 5px; border-radius: 5px;'>
+                    {$otp}
+                </div>
+                <p style='color: #777; font-size: 14px; margin-top: 20px;'>This OTP is valid for 10 minutes. Please do not share it with anyone.</p>
+                <p style='color: #777; font-size: 14px;'>If you did not request this OTP, please ignore this email.</p>
+            </div>
+        ";
+        
+        // Set priority to speed up delivery
+        $mail->Priority = 1; // High priority
+        
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        error_log("OTP Email Error: " . $mail->ErrorInfo);
+        return false;
+    }
+}
+
+// Handle username/password authentication
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
+    try {
+        // Start timing for performance tracking
+        $start_time = microtime(true);
+        
         // Validate CSRF token
         if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
             throw new Exception('Invalid CSRF token');
@@ -51,73 +117,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute();
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($user && password_verify($password, $user['password'])) {
-            // Create a token only if remember me is checked
-            if ($remember) {
-                // Password is correct, generate and store token for long-term use
-                $token = Auth::login($user['user_id'], $user, true);
-                
-                // Log remember me usage
-                $GLOBALS['authLogger']->info('User enabled Remember Me', [
-                    'user_id' => $user['user_id'],
-                    'email' => $user['email'],
-                    'ip' => $_SERVER['REMOTE_ADDR'],
-                    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown'
-                ]);
-            } else {
-                // No persistent token, just use the session
-                Auth::loginWithoutToken($user);
-                
-                $GLOBALS['authLogger']->info('User login without Remember Me', [
-                    'user_id' => $user['user_id'],
-                    'email' => $user['email'],
-                    'ip' => $_SERVER['REMOTE_ADDR'],
-                    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown'
-                ]);
-            }
+        // Log DB query time
+        $db_time = microtime(true) - $start_time;
+        error_log("Database query time: " . number_format($db_time, 4) . " seconds");
+
+        if (password_verify($password, $user['password'])) {
+            // Authentication successful
+            $auth_time = microtime(true) - $start_time;
+            error_log("Password verification successful at " . date('H:i:s') . " - Time: " . number_format($auth_time, 4) . "s");
             
-            // For backward compatibility, also set session variables
-            $_SESSION['user_id'] = $user['user_id'];
-            $_SESSION['first_name'] = $user['first_name'];
-            $_SESSION['last_name'] = $user['last_name'];
-            $_SESSION['email'] = $user['email'];
-            $_SESSION['user_type'] = $user['user_type'];
+            // Generate OTP
+            $otp = generateOTP();
             
-            // Log successful login using global logger
-            $GLOBALS['authLogger']->info('User login', [
+            // Store OTP and user data in session for verification
+            $_SESSION['login_otp'] = $otp;
+            $_SESSION['temp_user'] = $user;
+            $_SESSION['login_time'] = time();
+            $_SESSION['remember_me'] = $remember;
+            $_SESSION['redirect_after_login'] = $redirect;
+            
+            // Set flag to send OTP email after redirect
+            $_SESSION['send_otp'] = true;
+            
+            // Log the OTP generation
+            $GLOBALS['authLogger']->info('OTP generated for login', [
                 'user_id' => $user['user_id'],
                 'email' => $user['email'],
-                'ip' => $_SERVER['REMOTE_ADDR']
+                'ip' => $_SERVER['REMOTE_ADDR'],
+                'auth_time' => number_format($auth_time, 4)
             ]);
             
-            // Regenerate session ID after login for security
-            session_regenerate_id(true);
+            // Record total processing time before redirect
+            $total_time = microtime(true) - $start_time;
+            error_log("Total login processing time before redirect: " . number_format($total_time, 4) . "s");
             
-            // For enhanced security, store a fingerprint of this session 
-            // This helps prevent session hijacking when using session-only auth
-            $_SESSION['auth_fingerprint'] = hash('sha256', 
-                $_SERVER['HTTP_USER_AGENT'] . 
-                ($_SERVER['REMOTE_ADDR'] ?? 'localhost') . 
-                $user['user_id']
-            );
-            
-            // Check if user is an admin (user_type '2' or '3') and redirect appropriately
-            if ($user['user_type'] === '2' || $user['user_type'] === '3') {
-                // Redirect admin to admin dashboard
-                header('Location: /FYP/FYP/Admin/Dashboard/dashboard.php');
-                exit;
-            }
-            
-            // Redirect regular users to the requested page or homepage
-            header('Location: ' . $redirect);
+            // Redirect to OTP verification page
+            header("Location: verify_login_otp.php");
             exit;
         } else {
-            $error = "Invalid email or password.";
-            
-            // Log failed login attempt using global logger
+            $error = 'Invalid email or password.';
+            error_log("Login failed: Invalid password for email {$email}");
             $GLOBALS['authLogger']->warning('Failed login attempt', [
                 'email' => $email,
-                'ip' => $_SERVER['REMOTE_ADDR']
+                'ip' => $_SERVER['REMOTE_ADDR'],
+                'reason' => 'invalid_password'
             ]);
         }
     } catch (PDOException $e) {
@@ -160,7 +203,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
             
-            <form method="POST" action="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
+            <!-- Login Form (Email/Password) -->
+            <form method="POST" action="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>" class="login-form">
                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                 <input type="email" class="input-box" name="email" placeholder="Email" required>
                 <input type="password" class="input-box" name="password" placeholder="Password" required>
@@ -168,8 +212,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="checkbox" id="remember" name="remember">
                     <label for="remember">Remember me</label>
                 </div>
-                <button type="submit" class="login-btn">Login</button>
-                <a href="#" class="forgot-password">Forgot Password?</a>
+                <button type="submit" name="login" class="login-btn">Login</button>
+                <a href="forgot_password.php" class="forgot-password">Forgot Password?</a>
             </form>
             
             <div class="divider"><span>OR</span></div>
