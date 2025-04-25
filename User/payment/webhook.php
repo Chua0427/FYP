@@ -148,9 +148,7 @@ function handlePaymentIntentSucceeded(Database $db, $paymentIntent) {
         
         // Update order status
         $db->execute(
-            "UPDATE orders 
-             SET delivery_status = 'packing' 
-             WHERE order_id = ?",
+            "UPDATE orders SET delivery_status = 'prepare' WHERE order_id = ?",
             [$orderId]
         );
         
@@ -436,9 +434,7 @@ function handleCheckoutSessionCompleted(Database $db, $session) {
             
             // Update order status
             $db->execute(
-                "UPDATE orders 
-                 SET delivery_status = 'packing' 
-                 WHERE order_id = ?",
+                "UPDATE orders SET delivery_status = 'prepare' WHERE order_id = ?",
                 [$payment['order_id']]
             );
             
@@ -517,9 +513,7 @@ function handleChargeSucceeded(Database $db, $charge) {
         
         // Update order status
         $db->execute(
-            "UPDATE orders 
-             SET delivery_status = 'packing' 
-             WHERE order_id = ?",
+            "UPDATE orders SET delivery_status = 'prepare' WHERE order_id = ?",
             [$orderId]
         );
         
