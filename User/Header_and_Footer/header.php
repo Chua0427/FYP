@@ -180,9 +180,11 @@ if ($is_authenticated) {
 
     <div class="iconContainer">
         <div class="icon">
+            <a href="../Search/search.php">
             <div class="search">
                 <i class="fa-solid fa-search"></i>
             </div>
+        </a>
             <div class="user">
                 <?php if ($is_authenticated): ?>
                     <div class="user-dropdown">

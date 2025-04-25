@@ -129,9 +129,15 @@ if (isset($_GET['id'])) {
             }
         }
 
-        $sql = "UPDATE product SET product_name= '$product_name', product_type= '$product_type', brand= '$brand', product_categories= '$product_category', gender= '$gender', status= '$status', price= '$price', discount_price= '$discount_price', description= '$description' $image1 $image2 $image3 $image4 $image5 WHERE product_id=$product_id";
+        $sql="UPDATE product SET product_name = ?,product_type = ?,brand = ?,product_categories = ?,gender = ?, status = ?,price = ?,discount_price = ?,description = ? $image1 $image2 $image3 $image4 $image5 
+              WHERE product_id = ?";
 
-        $result = $conn->query($sql);
+        $stmt = $conn->prepare($sql);
+
+        $stmt->bind_param(
+        "ssssssddsi",  $product_name,$product_type,$brand,$product_category,$gender,$status,$price,$discount_price,  $description,$product_id);
+
+        $result = $stmt->execute();
 
         if ($result) {
             echo '<script>alert("Edit Successfully"); window.location.href="view_product.php"</script>';

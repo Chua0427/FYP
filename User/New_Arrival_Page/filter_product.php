@@ -13,15 +13,15 @@ $sql = "SELECT p.*, MIN(s.stock) as stock
         WHERE s.stock > 0 AND status='New'";
 
 if (!empty($genders)) {
-    $genderList = "'" . implode("','", array_map('addslashes', $genders)) . "'";
+    $genderList = "'" . implode("','", $genders) . "'";
     $sql .= " AND p.gender IN ($genderList)";
 }
 if (!empty($categories)) {
-    $catList = "'" . implode("','", array_map('addslashes', $categories)) . "'";
+    $catList = "'" . implode("','",$categories) . "'";
     $sql .= " AND p.product_categories IN ($catList)";
 }
 if (!empty($brands)) {
-    $brandList = "'" . implode("','", array_map('addslashes', $brands)) . "'";
+    $brandList = "'" . implode("','",  $brands) . "'";
     $sql .= " AND p.brand IN ($brandList)";
 }
 if ($minprice !== null) {
