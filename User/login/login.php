@@ -101,7 +101,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $user['user_id']
             );
             
-            // Redirect to the requested page or homepage
+            // Check if user is an admin (user_type '2' or '3') and redirect appropriately
+            if ($user['user_type'] === '2' || $user['user_type'] === '3') {
+                // Redirect admin to admin dashboard
+                header('Location: /FYP/FYP/Admin/Dashboard/dashboard.php');
+                exit;
+            }
+            
+            // Redirect regular users to the requested page or homepage
             header('Location: ' . $redirect);
             exit;
         } else {

@@ -191,7 +191,7 @@ if ($is_authenticated) {
                             <div class="user-info">
                                 <span>Hello, <?php echo htmlspecialchars($_SESSION['first_name'] ?? ''); ?></span>
                             </div>
-                            <a href="../order/order_history.php">My Orders</a>
+                            <a href="../order/orderhistory.php">My Order History</a>
                             <a href="../Edit_Profile/profile.php">My Profile</a>
                             <a href="../login/manage_sessions.php">Manage Devices</a>
                             <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] == 2): ?>
