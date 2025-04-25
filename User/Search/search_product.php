@@ -3,6 +3,12 @@ include __DIR__ . '/../../connect_db/config.php';
 
 if (isset($_POST['query'])) {
     $search = trim($_POST['query']);
+
+    if ($search === '') {
+        echo '<p>Please enter a keyword to search.</p>';
+        exit;
+    }
+    
     $keywords = explode(' ', $search); // 将用户输入的多个词分割成数组
     
     // 创建一个查询条件，适用于多个关键词
