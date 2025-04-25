@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 include __DIR__ . '/../../connect_db/config.php';
 session_start();
 
@@ -10,8 +11,16 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = (int)$_SESSION['user_id'];
 
+// Determine which tab is active
+$active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'active';
+
 // Use prepared statement for security
-$sql = "SELECT * FROM orders WHERE user_id = ? AND delivery_status != 'delivered' ORDER BY order_at DESC";
+if ($active_tab === 'delivered') {
+    $sql = "SELECT * FROM orders WHERE user_id = ? AND delivery_status = 'delivered' ORDER BY order_at DESC";
+} else {
+    $sql = "SELECT * FROM orders WHERE user_id = ? AND delivery_status != 'delivered' ORDER BY order_at DESC";
+}
+
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -25,7 +34,7 @@ $result1 = $stmt->get_result();
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VeroSports</title>
+    <title>VeroSports - My Orders</title>
     <link rel="stylesheet" href="search.css">
     <link rel="stylesheet" href="../Header_and_Footer/footer.css">
     <link rel="stylesheet" href="../Header_and_Footer/header.css">
@@ -129,6 +138,38 @@ $result1 = $stmt->get_result();
             color: #ddd;
             margin-bottom: 20px;
         }
+
+        /* Tab navigation styles */
+        .tab-navigation {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .tab.active {
+            background-color: #ff5722;
+            color: white;
+        }
+
+        .tab:hover {
+            background-color: #d0d0d0;
+        }
+
+        .tab.active:hover {
+            background-color: #e64a19;
+        }
     </style>
 </head>
 <body>
@@ -138,6 +179,13 @@ $result1 = $stmt->get_result();
 ?>
 
 <div class="container">
+    <div class="tab-navigation">
+        <a href="?tab=active" class="tab <?php echo $active_tab !== 'delivered' ? 'active' : ''; ?>">Active Orders</a>
+        <a href="?tab=delivered" class="tab <?php echo $active_tab === 'delivered' ? 'active' : ''; ?>">Past Orders</a>
+    </div>
+
+    <h2 style="text-align: center; margin-bottom: 20px;"><?php echo $active_tab === 'delivered' ? 'Past Orders' : 'Active Orders'; ?></h2>
+
 <?php if ($result1->num_rows > 0): ?>
     <?php while($row = $result1->fetch_assoc()): ?>
         <div class="order-card">
@@ -174,6 +222,9 @@ $result1 = $stmt->get_result();
             <?php endwhile; ?>
             <div class="order-footer">
                 <p>Order Time: <?php echo date("Y-m-d H:i", strtotime($row['order_at'])); ?></p>
+                <?php if ($active_tab === 'delivered'): ?>
+                <p>Delivered Time: <?php echo isset($row['deliver_at']) ? date("Y-m-d H:i", strtotime($row['deliver_at'])) : 'N/A'; ?></p>
+                <?php endif; ?>
                 <p>Total: <strong>RM <?php echo number_format((float)$row['total_price'], 2); ?></strong></p>
                 <a href="../Delivery_Status_Page/delivery.php?order_id=<?php echo htmlspecialchars((string)$row['order_id']); ?>">View Status</a>
             </div>
@@ -182,7 +233,7 @@ $result1 = $stmt->get_result();
 <?php else: ?>
     <div class="no-orders">
         <i class="fas fa-shopping-bag"></i>
-        <p>You don't have any active orders.</p>
+        <p>You don't have any <?php echo $active_tab === 'delivered' ? 'past' : 'active'; ?> orders.</p>
         <a href="../All_Product_Page/all_product.php" style="background: #ff5722; color: white; padding: 8px 15px; border-radius: 4px; text-decoration: none; display: inline-block; margin-top: 10px;">Shop Now</a>
     </div>
 <?php endif; ?>

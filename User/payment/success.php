@@ -85,9 +85,9 @@ try {
                 [$payment['payment_id']]
             );
             
-            // Update order status to packing
+            // Update order status to prepare instead of packing
             $db->execute(
-                "UPDATE orders SET delivery_status = 'packing' WHERE order_id = ?",
+                "UPDATE orders SET delivery_status = 'prepare' WHERE order_id = ?",
                 [$order_id]
             );
             
@@ -281,7 +281,7 @@ try {
                         <tr>
                             <td>
                                 <?php if (!empty($item['product_img1'])): ?>
-                                    <img src="<?php echo htmlspecialchars('/FYP' . $item['product_img1']); ?>" 
+                                    <img src="../../upload/<?php echo htmlspecialchars($item['product_img1']); ?>" 
                                          alt="<?php echo htmlspecialchars($item['product_name']); ?>"
                                          class="product-image">
                                 <?php endif; ?>
@@ -299,7 +299,7 @@ try {
 
         <div class="text-center mt-4">
             <a href="../HomePage/homePage.php" class="btn btn-primary">Continue Shopping</a>
-            <a href="../orders.php" class="btn btn-secondary ms-2">View Orders</a>
+            <a href="../View_Order/view_order.php" class="btn btn-secondary ms-2">View Orders</a>
         </div>
     </div>
 
