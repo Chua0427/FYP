@@ -85,9 +85,9 @@ try {
                 [$payment['payment_id']]
             );
             
-            // Update order status to packing
+            // Update order status to prepare instead of packing
             $db->execute(
-                "UPDATE orders SET delivery_status = 'packing' WHERE order_id = ?",
+                "UPDATE orders SET delivery_status = 'prepare' WHERE order_id = ?",
                 [$order_id]
             );
             

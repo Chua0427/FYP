@@ -538,51 +538,56 @@
             }
             
             function showMessage(message, type) {
-                // Check if a message container already exists
-                let messageContainer = document.querySelector('.message-container');
-                
-                // If not, create one
-                if (!messageContainer) {
-                    messageContainer = document.createElement('div');
-                    messageContainer.className = 'message-container';
-                    document.body.appendChild(messageContainer);
+                // Create container div if it doesn't exist
+                let container = document.querySelector('.message-container');
+                if (!container) {
+                    container = document.createElement('div');
+                    container.className = 'message-container';
+                    document.body.appendChild(container);
                     
-                    // Style the container
-                    messageContainer.style.position = 'fixed';
-                    messageContainer.style.top = '20px';
-                    messageContainer.style.right = '20px';
-                    messageContainer.style.zIndex = '1000';
+                    // Style container to appear below the cart icon
+                    container.style.position = 'fixed';
+                    container.style.top = '70px';
+                    container.style.right = '20px';
+                    container.style.left = 'auto';
+                    container.style.width = '300px';
+                    container.style.zIndex = '999';
+                    container.style.textAlign = 'center';
                 }
                 
                 // Create message element
-                const messageElement = document.createElement('div');
-                messageElement.className = `message ${type}`;
-                messageElement.innerHTML = message;
+                const messageEl = document.createElement('div');
+                messageEl.className = 'message ' + type;
+                messageEl.textContent = message;
                 
-                // Style the message
-                messageElement.style.padding = '12px 20px';
-                messageElement.style.marginBottom = '10px';
-                messageElement.style.borderRadius = '4px';
-                messageElement.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+                // Style message
+                messageEl.style.padding = '12px 20px';
+                messageEl.style.marginBottom = '10px';
+                messageEl.style.borderRadius = '4px';
+                messageEl.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+                messageEl.style.display = 'block';
+                messageEl.style.width = '100%';
+                messageEl.style.boxSizing = 'border-box';
                 
+                // Set colors based on message type
                 if (type === 'success') {
-                    messageElement.style.backgroundColor = '#28a745';
-                    messageElement.style.color = 'white';
+                    messageEl.style.backgroundColor = '#28a745';
+                    messageEl.style.color = 'white';
                 } else if (type === 'error') {
-                    messageElement.style.backgroundColor = '#dc3545';
-                    messageElement.style.color = 'white';
+                    messageEl.style.backgroundColor = '#dc3545';
+                    messageEl.style.color = 'white';
                 }
                 
-                // Add to container
-                messageContainer.appendChild(messageElement);
+                // Add animation
+                messageEl.style.animation = 'fadeIn 0.3s';
                 
-                // Remove after 3 seconds
+                // Add to container
+                container.appendChild(messageEl);
+                
+                // Auto-remove after delay
                 setTimeout(() => {
-                    messageElement.style.opacity = '0';
-                    messageElement.style.transition = 'opacity 0.3s ease-out';
-                    setTimeout(() => {
-                        messageElement.remove();
-                    }, 300);
+                    messageEl.style.animation = 'fadeOut 0.3s';
+                    setTimeout(() => messageEl.remove(), 300);
                 }, 3000);
             }
         });
