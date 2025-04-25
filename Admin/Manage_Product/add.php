@@ -39,9 +39,44 @@
         $uniqueName= uniqid() . "." .$fileExtension;
         $targetPath= $upload . $uniqueName;
 
-        $sql= "INSERT INTO product (product_name, product_type, brand, product_categories, gender, status, price, discount_price, description, product_img1, product_img2, product_img3, product_img4, size_chart)
-               VALUE('$product_name', '$product_type', '$brand', '$product_category', '$gender', '$status', '$price', '$discount_price', '$description', '$uniqueName1', '$uniqueName2', '$uniqueName3', '$uniqueName4', '$uniqueName')";
-        $result= $conn->query($sql);
+        $sql = "INSERT INTO product (
+            product_name, 
+            product_type, 
+            brand, 
+            product_categories, 
+            gender, 
+            status, 
+            price, 
+            discount_price, 
+            description, 
+            product_img1, 
+            product_img2, 
+            product_img3, 
+            product_img4, 
+            size_chart
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        $stmt = $conn->prepare($sql);
+        
+        $stmt->bind_param(
+            "ssssssddssssss", 
+            $product_name,
+            $product_type,
+            $brand,
+            $product_category,
+            $gender,
+            $status,
+            $price,
+            $discount_price,
+            $description,
+            $uniqueName1,
+            $uniqueName2,
+            $uniqueName3,
+            $uniqueName4,
+            $uniqueName
+        );
+        
+        $result = $stmt->execute();
 
         if($result){
             move_uploaded_file($_FILES['product_image1']['tmp_name'], $targetPath1);
