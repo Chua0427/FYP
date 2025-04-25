@@ -25,12 +25,13 @@
     <div class="search-container">
         <div class="search-box">
             <form id="searchForm">
-                <input type="text" name="query" id="searchInput" placeholder="Enter Key Word...">
+                <input type="text" name="query" id="searchInput" placeholder="Enter Keyword For Search...">
                 <button type="submit" id="searchButton">Search</button>
             </form> 
         </div>
 
         <div id="results" class="search-results">
+        <p>No keyword to search.</p>
         <div class="product-wrapper">
             <div class="product-container"></div>
         </div>

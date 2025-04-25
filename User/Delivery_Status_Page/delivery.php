@@ -24,7 +24,7 @@
 
     include __DIR__ . '/../../connect_db/config.php';
 
-    $order_id=17; //$_GET['id'];
+    $order_id=$_GET['id'];
 
     $sql='SELECT o.*, u.first_name, u.last_name, u.mobile_number, u.email FROM orders o JOIN users u ON o.user_id=u.user_id WHERE o.order_id= '.$order_id.'';
     $result= $conn->query($sql);
