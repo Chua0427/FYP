@@ -1,10 +1,21 @@
 <?php
 include __DIR__ . '/../../connect_db/config.php';
 session_start();
-$user_id = $_SESSION['user_id'];
-$sql = "SELECT * FROM orders WHERE user_id = $user_id AND delivery_status!= 'Delivered' ORDER BY order_at DESC";
-$result1 = $conn->query($sql);
 
+// Ensure user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../login/login.php');
+    exit;
+}
+
+$user_id = (int)$_SESSION['user_id'];
+
+// Use prepared statement for security
+$sql = "SELECT * FROM orders WHERE user_id = ? AND delivery_status != 'delivered' ORDER BY order_at DESC";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result1 = $stmt->get_result();
 
 ?>
 
@@ -106,6 +117,18 @@ $result1 = $conn->query($sql);
         .order-footer a:hover {
             background: #e64a19;
         }
+        
+        .no-orders {
+            text-align: center;
+            padding: 40px 0;
+            color: #666;
+        }
+        
+        .no-orders i {
+            font-size: 48px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -115,37 +138,54 @@ $result1 = $conn->query($sql);
 ?>
 
 <div class="container">
-<?php while($row = $result1->fetch_assoc()): ?>
-    <div class="order-card">
-        <div class="order-header">
-            <div>Order ID : <?php echo $row['order_id'] ?></div>
-            <div>Status : <strong><?php echo  $row['delivery_status'] ?></strong></div>
-        </div>
-
-        <?php
-            $order_id = $row['order_id'];
-            $items_result = $conn->query("SELECT oi.*, p.product_name, p.product_img1 FROM order_items oi JOIN product p ON oi.product_id = p.product_id WHERE oi.order_id = $order_id");
-            while ($item = $items_result->fetch_assoc()):
-        ?>
-        <div class="order-body">
-            <div class="order-image">
-                <img src="../../upload/<?php echo $item['product_img1'] ?>" alt="product">
+<?php if ($result1->num_rows > 0): ?>
+    <?php while($row = $result1->fetch_assoc()): ?>
+        <div class="order-card">
+            <div class="order-header">
+                <div>Order ID: <?php echo htmlspecialchars((string)$row['order_id']); ?></div>
+                <div>Status: <strong><?php echo htmlspecialchars($row['delivery_status']); ?></strong></div>
             </div>
 
-            <div class="order-info">
-                <h4><?php echo $item['product_name'] ?></h4>
-                <p>Quantity: <?php echo $item['quantity'] ?></p>
-                <p>Price: RM <?php echo number_format($item['price'], 2) ?></p>
+            <?php
+                $order_id = (int)$row['order_id'];
+                // Use prepared statement for items query
+                $items_sql = "SELECT oi.*, p.product_name, p.product_img1 
+                             FROM order_items oi 
+                             JOIN product p ON oi.product_id = p.product_id 
+                             WHERE oi.order_id = ?";
+                $items_stmt = $conn->prepare($items_sql);
+                $items_stmt->bind_param("i", $order_id);
+                $items_stmt->execute();
+                $items_result = $items_stmt->get_result();
+                
+                while ($item = $items_result->fetch_assoc()):
+            ?>
+            <div class="order-body">
+                <div class="order-image">
+                    <img src="../../upload/<?php echo htmlspecialchars($item['product_img1']); ?>" alt="product">
+                </div>
+
+                <div class="order-info">
+                    <h4><?php echo htmlspecialchars($item['product_name']); ?></h4>
+                    <p>Quantity: <?php echo htmlspecialchars((string)$item['quantity']); ?></p>
+                    <p>Price: RM <?php echo number_format((float)$item['price'], 2); ?></p>
+                </div>
+            </div>
+            <?php endwhile; ?>
+            <div class="order-footer">
+                <p>Order Time: <?php echo date("Y-m-d H:i", strtotime($row['order_at'])); ?></p>
+                <p>Total: <strong>RM <?php echo number_format((float)$row['total_price'], 2); ?></strong></p>
+                <a href="../Delivery_Status_Page/delivery.php?order_id=<?php echo htmlspecialchars((string)$row['order_id']); ?>">View Status</a>
             </div>
         </div>
-        <?php endwhile; ?>
-        <div class="order-footer">
-            <p>Order Time : <?php echo date("Y-m-d H:i", strtotime($row['order_at'])) ?></p>
-            <p>Total : <strong>RM <?php echo number_format($row['total_price'], 2) ?></strong></p>
-            <a href="../Delivery_Status_Page/delivery.php?id=<?php echo $row['order_id'] ?>">View Status</a>
-        </div>
-    </div>
     <?php endwhile; ?>
+<?php else: ?>
+    <div class="no-orders">
+        <i class="fas fa-shopping-bag"></i>
+        <p>You don't have any active orders.</p>
+        <a href="../All_Product_Page/all_product.php" style="background: #ff5722; color: white; padding: 8px 15px; border-radius: 4px; text-decoration: none; display: inline-block; margin-top: 10px;">Shop Now</a>
+    </div>
+<?php endif; ?>
 </div>
 
 <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
