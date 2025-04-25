@@ -1,11 +1,9 @@
 <?php
-include __DIR__ . '/../../connect_db/config.php';
-session_start();
-$user_id = $_SESSION['user_id'];
-$sql = "SELECT * FROM orders WHERE user_id = $user_id AND delivery_status!= 'Delivered' ORDER BY order_at DESC";
-$result1 = $conn->query($sql);
-
-
+    include __DIR__ . '/../../connect_db/config.php';
+    session_start();
+    $user_id = $_SESSION['user_id'];
+    $sql = "SELECT * FROM orders WHERE user_id = $user_id AND delivery_status!= 'Delivered' ORDER BY order_at DESC";
+    $result1 = $conn->query($sql);
 ?>
 
 <!DOCTYPE html>
@@ -89,7 +87,7 @@ $result1 = $conn->query($sql);
         }
 
         .order-footer p {
-            margin: 10px 0;
+            margin: 20px 0;
             font-size: 14px;
         }
 
