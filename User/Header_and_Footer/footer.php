@@ -2,7 +2,7 @@
             <div class="footerMenu">
                 <div class="footerCategories">
                     <h3>COMPANY</h3>
-                    <a href="#">About VEROSPORTS</a>
+                    <a href="../fl/AboutVeroSports.php">About VEROSPORTS</a>
                     <a href="#">Our Location</a>
                     <a href="../fl/PPen.php">Privacy Policy</a>
                     <a href="#">Term & Condition</a>
@@ -15,7 +15,7 @@
                 </div>
                 <div class="footerCategories">
                     <h3>FAQs</h3>
-                    <a href="#">Payment Methods</a>
+                    <a href="../fl/PaymentMethod.php">Payment Methods</a>
                     <a href="../fl/AboutDeliveryEN.php">About Delivery</a>
                     <a href="../fl/E-InvoiceEN.php">E-Invoice</a>
                 </div>
