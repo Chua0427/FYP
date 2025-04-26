@@ -11,7 +11,7 @@ use PHPMailer\PHPMailer\Exception;
 
 // Check if user is already authenticated with token
 if (Auth::check()) {
-    header('Location: /FYP/User/HomePage/homePage.php');
+    header('Location: /FYP/FYP/User/HomePage/homePage.php');
     exit;
 }
 
@@ -21,7 +21,7 @@ if (!isset($_SESSION['csrf_token'])) {
 }
 
 // Check if there's a redirect URL
-$redirect = isset($_GET['redirect']) ? $_GET['redirect'] : '/FYP/User/HomePage/homePage.php';
+$redirect = isset($_GET['redirect']) ? $_GET['redirect'] : '/FYP/FYP/User/HomePage/homePage.php';
 
 $error = '';
 
