@@ -213,11 +213,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
                     <label for="remember">Remember me</label>
                 </div>
 
-                <button type="submit" class="login-btn">Login</button>
-                <a href="../ForgotPassword/forgot_password.php" class="forgot-password">Forgot Password?</a>
-
                 <button type="submit" name="login" class="login-btn">Login</button>
-                <a href="forgot_password.php" class="forgot-password">Forgot Password?</a>
+                <a href="../ForgotPassword/forgot_password.php" class="forgot-password">Forgot Password?</a>
 
             </form>
             
