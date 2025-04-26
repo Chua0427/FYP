@@ -34,7 +34,12 @@ if ($_SESSION['user_type'] != 2) {
 
 </head>
 
-    <?php include __DIR__ . '/../../connect_db/config.php'; 
+    <?php 
+        // Start session if not already started
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        include __DIR__ . '/../../connect_db/config.php'; 
 
         //today sale
         $todaySales=0;
@@ -167,11 +172,9 @@ if ($_SESSION['user_type'] != 2) {
 
 
     <?php
-        /*session_start();
-
-        $user_id = $_SESSION['user_id'];*/
+        $user_id = $_SESSION['user_id'];
         
-        $sql= "SELECT * FROM users WHERE user_id = 33";
+        $sql= "SELECT * FROM users WHERE user_id = $user_id";
         $result = $conn->query($sql);
 
         while ($row = $result->fetch_assoc()) {
@@ -179,7 +182,7 @@ if ($_SESSION['user_type'] != 2) {
                 <img src="../../upload/' . $row['profile_image'] . '" alt="Profile Image">
                 <p>Welcome Back ! '.$row['first_name'].'</p>
                 <p>Email: '.$row['email'].'</p>
-                <input type="button" name="" id=""><i class="fa-solid fa-right-from-bracket"></i></input>
+                <a href="../../Admin/logout.php" ><i class="fa-solid fa-right-from-bracket"></i></a>
             </div>';
         }
 

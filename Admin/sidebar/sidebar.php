@@ -1,6 +1,18 @@
 <?php
+    // Start session if not already started
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+
     $current_page = basename($_SERVER['PHP_SELF']);
-    $current_user_type = 2; 
+    $user_id= $_SESSION['user_id'];
+
+    $sql="SELECT * FROM users WHERE user_id= $user_id";
+    $resultsidebar= $conn->query($sql);
+    while($rowsidebar= $resultsidebar->fetch_assoc()){
+        $current_user_type = $rowsidebar['user_type'];
+    }
+     
 ?>
 <div class="sidebar-wrapper">
     <div class="sidebar">

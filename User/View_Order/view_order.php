@@ -1,4 +1,11 @@
 <?php
+
+    include __DIR__ . '/../../connect_db/config.php';
+    session_start();
+    $user_id = $_SESSION['user_id'];
+    $sql = "SELECT * FROM orders WHERE user_id = $user_id AND delivery_status!= 'Delivered' ORDER BY order_at DESC";
+    $result1 = $conn->query($sql);
+
 declare(strict_types=1);
 include __DIR__ . '/../../connect_db/config.php';
 session_start();
@@ -25,6 +32,7 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result1 = $stmt->get_result();
+
 
 ?>
 
@@ -109,7 +117,7 @@ $result1 = $stmt->get_result();
         }
 
         .order-footer p {
-            margin: 10px 0;
+            margin: 20px 0;
             font-size: 14px;
         }
 
@@ -179,6 +187,19 @@ $result1 = $stmt->get_result();
 ?>
 
 <div class="container">
+
+    <?php if($result1->num_rows>0): ?>
+    <?php while($row = $result1->fetch_assoc()): ?>
+        <div class="order-card">
+            <div class="order-header">
+                <div>Order ID : <?php echo $row['order_id'] ?></div>
+                <div>Status : <strong><?php echo  $row['delivery_status'] ?></strong></div>
+            </div>
+
+            <?php
+                $order_id = $row['order_id'];
+                $items_result = $conn->query("SELECT oi.*, p.product_name, p.product_img1 FROM order_items oi JOIN product p ON oi.product_id = p.product_id WHERE oi.order_id = $order_id");
+
     <div class="tab-navigation">
         <a href="?tab=active" class="tab <?php echo $active_tab !== 'delivered' ? 'active' : ''; ?>">Active Orders</a>
         <a href="?tab=delivered" class="tab <?php echo $active_tab === 'delivered' ? 'active' : ''; ?>">Past Orders</a>
@@ -206,10 +227,20 @@ $result1 = $stmt->get_result();
                 $items_stmt->execute();
                 $items_result = $items_stmt->get_result();
                 
+
                 while ($item = $items_result->fetch_assoc()):
             ?>
             <div class="order-body">
                 <div class="order-image">
+
+                    <img src="../../upload/<?php echo $item['product_img1'] ?>" alt="product">
+                </div>
+
+                <div class="order-info">
+                    <h4><?php echo $item['product_name'] ?></h4>
+                    <p>Quantity: <?php echo $item['quantity'] ?></p>
+                    <p>Price: RM <?php echo number_format($item['price'], 2) ?></p>
+
                     <img src="../../upload/<?php echo htmlspecialchars($item['product_img1']); ?>" alt="product">
                 </div>
 
@@ -217,10 +248,25 @@ $result1 = $stmt->get_result();
                     <h4><?php echo htmlspecialchars($item['product_name']); ?></h4>
                     <p>Quantity: <?php echo htmlspecialchars((string)$item['quantity']); ?></p>
                     <p>Price: RM <?php echo number_format((float)$item['price'], 2); ?></p>
+
                 </div>
             </div>
             <?php endwhile; ?>
             <div class="order-footer">
+
+                <p>Order Time : <?php echo date("Y-m-d H:i", strtotime($row['order_at'])) ?></p>
+                <p>Total : <strong>RM <?php echo number_format($row['total_price'], 2) ?></strong></p>
+                <a href="../Delivery_Status_Page/delivery.php?id=<?php echo $row['order_id'] ?>">View Status</a>
+            </div>
+        </div>
+        <?php endwhile; ?>
+        <?php else: ?>
+            <div style="text-align: center; padding: 50px;">
+                <h2 style="margin-bottom: 20px;">No Orders Now</h2>
+                <a href="../HomePage/homePage.php" style="background: #ff5722; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Continue Shopping</a>
+            </div>
+        <?php endif; ?>
+
                 <p>Order Time: <?php echo date("Y-m-d H:i", strtotime($row['order_at'])); ?></p>
                 <?php if ($active_tab === 'delivered'): ?>
                 <p>Delivered Time: <?php echo isset($row['deliver_at']) ? date("Y-m-d H:i", strtotime($row['deliver_at'])) : 'N/A'; ?></p>
@@ -237,6 +283,7 @@ $result1 = $stmt->get_result();
         <a href="../All_Product_Page/all_product.php" style="background: #ff5722; color: white; padding: 8px 15px; border-radius: 4px; text-decoration: none; display: inline-block; margin-top: 10px;">Shop Now</a>
     </div>
 <?php endif; ?>
+
 </div>
 
 <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
