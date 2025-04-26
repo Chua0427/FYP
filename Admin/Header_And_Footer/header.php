@@ -4,13 +4,14 @@
     <div class="title">
 
     <?php
+    include __DIR__ . '/../../connect_db/config.php';
         // Start session if not already started
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
 
         $current_page = basename($_SERVER['PHP_SELF']);
-        $user_id= $_SESSION['user_id'];
+        $user_id=$_SESSION['user_id'];
 
         $sql="SELECT * FROM users WHERE user_id= $user_id";
         $result= $conn->query($sql);
