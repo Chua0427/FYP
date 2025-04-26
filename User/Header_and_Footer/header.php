@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
 
+// Restrict admin access to user pages
+require_once __DIR__ . '/../app/restrict_admin.php';
+
 // Initialize session if not already started
 if (session_status() == PHP_SESSION_NONE) {
     session_start();

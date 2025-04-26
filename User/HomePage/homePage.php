@@ -1,3 +1,7 @@
+<?php
+// Restrict admin access to user pages
+require_once __DIR__ . '/../app/restrict_admin.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
