@@ -22,21 +22,30 @@
         $uniqueFileName = time() . '.' . $fileExtension;
         $targetPath = $upload . $uniqueFileName;
 
-        $sql = "INSERT INTO users (first_name, last_name, email, mobile_number, password, 
-                address, postcode, state, city, birthday_date, gender, user_type, profile_image) 
-                VALUES ('$first_name', '$last_name', '$email', '$mobile_number', '$password', 
-                '$address', '$postcode', '$state', '$city', '$birthday_date', '$gender', 
-                '$user_type', '$uniqueFileName')";
+        $checkEmailSql = "SELECT * FROM users WHERE email = '$email'";
+        $result = $conn->query($checkEmailSql);
 
-        $result = $conn->query($sql);
+            if ($result->num_rows > 0) {
+                echo "<script>alert('Email already exists! Please use another email.'); window.location.href='add.php';</script>";
+            }
+            else{
+                $sql = "INSERT INTO users (first_name, last_name, email, mobile_number, password, 
+                    address, postcode, state, city, birthday_date, gender, user_type, profile_image) 
+                    VALUES ('$first_name', '$last_name', '$email', '$mobile_number', '$password', 
+                    '$address', '$postcode', '$state', '$city', '$birthday_date', '$gender', 
+                    '$user_type', '$uniqueFileName')";
 
-        if ($result) {
-            move_uploaded_file($_FILES['profile_image']['tmp_name'], $targetPath);
-            echo "<script>alert('Add Successfully!'); window.location.href='add.php';</script>";
-        } else {
-            echo "Error: " . $conn->error;
+                $result = $conn->query($sql);
+
+                if ($result) {
+                    move_uploaded_file($_FILES['profile_image']['tmp_name'], $targetPath);
+                    echo "<script>alert('Add Successfully!'); window.location.href='add.php';</script>";
+                } else {
+                    echo "Error: " . $conn->error;
+                }
+            }
         }
-        } else {
+        else {
             echo "Failed to upload image.";
         }
         $conn->close();
