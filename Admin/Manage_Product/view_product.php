@@ -23,21 +23,27 @@
         <div class="product-container">
             <div class="product-table">
                 <h3>View Product</h3>
+                <div class="search-container">
+                    <div class="search-box">
+                        <form id="searchForm">
+                            <input type="text" name="query" id="searchInput" placeholder="Enter Keyword For Search...">
+                            <button type="submit" id="searchButton"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </form> 
+                    </div>
+                </div>
                 <table>
                     <tr>
-                        <th>ID</th>
+                        <th>Product ID</th>
                         <th>Image</th>
                         <th>Name</th>
-                        <th>Type</th>
                         <th>Brand</th>
                         <th>Category</th>
                         <th>Gender</th>
                         <th>Status</th>
                         <th>Price (RM)</th>
-                        <th>Discount Price (RM)</th>
                         <th></th>
                     </tr>
-
+                    <tbody id="userTableBody">
                     <?php
                         include __DIR__ . '/../../connect_db/config.php';
 
@@ -45,23 +51,23 @@
                         $result= $conn->query($sql);
 
                         while($row= $result->fetch_assoc()){
+                            $finalPrice = $row["discount_price"] > 0 ? $row["discount_price"] : $row["price"];
                             echo '<tr>
                                     <td>'. $row["product_id"].'</td>
                                     <td><img src="../../upload/'. $row["product_img1"].'"</td>
                                     <td>'. $row["product_name"].'</td>
-                                    <td>'. $row["product_type"].'</td>
-                                    <td>'. $row["brand"].'</td>
+                                    <td style="color:orangered; font-weight:bold;">'. $row["brand"].'</td>
                                     <td>'. $row["product_categories"].'</td>
                                     <td>'. $row["gender"].'</td>
                                     <td>'. $row["status"].'</td>
-                                    <td>'. $row["price"].'</td>
-                                    <td>'. $row["discount_price"].'</td>
+                                    <td style="color:red; font-weight:bold;">'. number_format($finalPrice,2).'</td>
                                     <td><div class="button"><a href="view_stock.php?id='.$row["product_id"].'" class="stock-button"><i class="fa-solid fa-boxes-packing"></i></a>
                                     <a href="edit.php?id='.$row["product_id"].'" id="edit"><i class="fa-solid fa-pen"></i></a>
                                     <a href="delete.php?id='.$row["product_id"].'" id="delete" onclick="return confirm(\'Are you sure?\')"><i class="fa-solid fa-trash"></i></a></div></td>
                                 </tr>';
                         }
                     ?>
+                    </tbody>
                 </table>
                     <div class="add-btn">
                         <a href="product.php" id="add"><i class="fa-solid fa-plus" style="margin: 5px;"></i>Add More</a>
@@ -69,5 +75,22 @@
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+
+            const form = document.getElementById('searchForm');
+            const formData = new FormData(form);
+
+            fetch('search_product.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('userTableBody').innerHTML = html;
+            }); 
+        });
+    </script>
 </body>
 </html>

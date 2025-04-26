@@ -56,10 +56,22 @@ class Auth {
                     if ($user) {
                         self::$user = $user;
                         return true;
+                    } else {
+                        // User not found in database but exists in session
+                        // Clear invalid session data
+                        unset($_SESSION['user_id']);
+                        unset($_SESSION['auth_fingerprint']);
                     }
                 } catch (Exception $e) {
                     error_log("Session auth error: " . $e->getMessage());
                 }
+            } else {
+                // Fingerprint mismatch - potential session hijacking attempt
+                error_log("Auth fingerprint mismatch for user ID " . $_SESSION['user_id']);
+                
+                // Clear potentially compromised session
+                unset($_SESSION['user_id']);
+                unset($_SESSION['auth_fingerprint']);
             }
         }
         
@@ -270,9 +282,16 @@ class Auth {
             ]
         );
         
-        // Clear session variables
-        if (isset($_SESSION['auth_fingerprint'])) {
-            unset($_SESSION['auth_fingerprint']);
+        // Clear all authentication-related session variables
+        $auth_keys = [
+            'user_id', 'first_name', 'last_name', 'email', 'user_type', 
+            'auth_fingerprint', 'user_email', 'user_name', 'welcome_shown'
+        ];
+        
+        foreach ($auth_keys as $key) {
+            if (isset($_SESSION[$key])) {
+                unset($_SESSION[$key]);
+            }
         }
         
         // Clear user data

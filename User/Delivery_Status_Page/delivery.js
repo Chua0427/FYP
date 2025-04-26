@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     
-    let currentStatus = "shipping"; 
+    let currentStatus = "<?php echo $delivery_status; ?>"; 
     
     let steps = document.querySelectorAll('.step');
     
