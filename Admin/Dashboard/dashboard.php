@@ -1,3 +1,24 @@
+<?php
+declare(strict_types=1);
+
+// Start session if not already started
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_type'])) {
+    header("Location: /FYP/FYP/Admin/login.php");
+    exit;
+}
+
+// Check if user is admin (user_type = 2)
+if ($_SESSION['user_type'] != 2) {
+    // Redirect non-admin users to the main site
+    header("Location: /FYP/FYP/User/HomePage/homePage.php");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -24,7 +45,7 @@
         $todaySaleResult= $conn->query($sqlTodaySale);
 
         while($row= $todaySaleResult->fetch_assoc()){
-            $todaySales=$row['total'] ?? 0;
+            $todaySales= (float)($row['total'] ?? 0);
         }
 
         //users
@@ -50,7 +71,7 @@
 
         $totalSaleResult= $conn->query($sqlTotalSale);
         while($row= $totalSaleResult->fetch_assoc()){
-            $totalSales+= $row['total_sales'] ?? 0;
+            $totalSales+= (float)($row['total_sales'] ?? 0);
         }
 
         $sqlChart = "
@@ -84,7 +105,7 @@
 
             $result = $conn->query($sql);
             $row = $result->fetch_assoc();
-            $salesData[] = $row['total'] ?? 0;
+            $salesData[] = (float)($row['total'] ?? 0);
         }
 
 ?>
@@ -102,7 +123,7 @@
                     <i class="fa-solid fa-boxes-packing"></i>
                 </div>
                 <h3>Today's Sales</h3>
-                <p class="sales">+ RM <?php echo number_format($todaySales,2) ?></p>
+                <p class="sales">+ RM <?php echo number_format((float)$todaySales, 2) ?></p>
             </div>
 
             <div class="column">
@@ -125,7 +146,7 @@
                     <i class="fa-solid fa-arrow-up-wide-short" style="background-color: rgb(0, 196, 0);"></i>
                 </div>
                 <h3>Total Sales</h3>
-                <p class="sales">RM <?php echo number_format($totalSales,2) ?></p>
+                <p class="sales">RM <?php echo number_format((float)$totalSales, 2) ?></p>
             </div>
     </div>
 </div>
