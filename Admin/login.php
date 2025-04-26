@@ -10,6 +10,11 @@ if (!isset($_SESSION['csrf_token'])) {
 
 $error = '';
 
+// Check for error message from redirect
+if (isset($_GET['error'])) {
+    $error = $_GET['error'];
+}
+
 // Handle admin login
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     try {

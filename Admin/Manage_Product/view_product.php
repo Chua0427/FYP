@@ -23,6 +23,14 @@
         <div class="product-container">
             <div class="product-table">
                 <h3>View Product</h3>
+                <div class="search-container">
+                    <div class="search-box">
+                        <form id="searchForm">
+                            <input type="text" name="query" id="searchInput" placeholder="Enter Keyword For Search...">
+                            <button type="submit" id="searchButton"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </form> 
+                    </div>
+                </div>
                 <table>
                     <tr>
                         <th>Product ID</th>
@@ -35,7 +43,7 @@
                         <th>Price (RM)</th>
                         <th></th>
                     </tr>
-
+                    <tbody id="userTableBody">
                     <?php
                         include __DIR__ . '/../../connect_db/config.php';
 
@@ -59,6 +67,7 @@
                                 </tr>';
                         }
                     ?>
+                    </tbody>
                 </table>
                     <div class="add-btn">
                         <a href="product.php" id="add"><i class="fa-solid fa-plus" style="margin: 5px;"></i>Add More</a>
@@ -66,5 +75,22 @@
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+
+            const form = document.getElementById('searchForm');
+            const formData = new FormData(form);
+
+            fetch('search_product.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('userTableBody').innerHTML = html;
+            }); 
+        });
+    </script>
 </body>
 </html>

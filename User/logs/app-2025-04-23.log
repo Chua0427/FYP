@@ -1,11 +1,1 @@
-[2025-04-23T06:54:52.145108+02:00] app.INFO: Add to cart request {"request_id":"cart_6808729c1c8214.84807568","user_id":41,"product_id":41,"product_size":"One Size","quantity":1} []
-[2025-04-23T06:54:52.161743+02:00] app.INFO: New cart item added {"request_id":"cart_6808729c1c8214.84807568","user_id":41,"product_id":41,"product_size":"One Size","quantity":1} []
-[2025-04-23T07:22:31.816333+02:00] app.INFO: Add to cart request {"request_id":"cart_68087917c31e43.10501060","user_id":41,"product_id":43,"product_size":"UK3Y","quantity":1} []
-[2025-04-23T07:22:31.826016+02:00] app.INFO: New cart item added {"request_id":"cart_68087917c31e43.10501060","user_id":41,"product_id":43,"product_size":"UK3Y","quantity":1} []
-[2025-04-23T07:22:39.018531+02:00] app.INFO: Updating cart item quantity {"user_id":41,"cart_id":75,"old_quantity":1,"new_quantity":95} []
-[2025-04-23T09:47:31.644360+02:00] app.INFO: Add to cart request {"request_id":"cart_68089b13988341.60499563","user_id":41,"product_id":47,"product_size":"UK13.5C","quantity":1} []
-[2025-04-23T09:47:31.651481+02:00] app.INFO: New cart item added {"request_id":"cart_68089b13988341.60499563","user_id":41,"product_id":47,"product_size":"UK13.5C","quantity":1} []
-[2025-04-23T11:48:42.297544+02:00] app.INFO: Add to cart request {"request_id":"cart_6808b77a3cd089.27057432","user_id":41,"product_id":44,"product_size":"UK6","quantity":1} []
-[2025-04-23T11:48:42.305713+02:00] app.INFO: New cart item added {"request_id":"cart_6808b77a3cd089.27057432","user_id":41,"product_id":44,"product_size":"UK6","quantity":1} []
-[2025-04-23T16:30:53.985305+02:00] app.INFO: Add to cart request {"request_id":"cart_6808f99deee370.48017440","user_id":41,"product_id":48,"product_size":"M","quantity":1} []
-[2025-04-23T16:30:53.992568+02:00] app.INFO: New cart item added {"request_id":"cart_6808f99deee370.48017440","user_id":41,"product_id":48,"product_size":"M","quantity":1} []
+

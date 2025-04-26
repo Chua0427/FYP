@@ -23,6 +23,14 @@
 
         <div class="items-table">
             <h3>View Payment Status</h3>
+            <div class="search-container">
+                    <div class="search-box">
+                        <form id="searchForm">
+                            <input type="text" name="query" id="searchInput" placeholder="Enter ID For Search...">
+                            <button type="submit" id="searchButton"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </form> 
+                    </div>
+                </div>
             <table>
                 <tr>
                     <th>Payment ID</th>
@@ -33,6 +41,7 @@
                     <th>Payment Status</th>
                 </tr>
                 
+                <tbody id="userTableBody">
                 <?php
                     $sql= "SELECT* FROM payment";
                     $result = $conn->query($sql);
@@ -49,6 +58,7 @@
                             </tr>';
                     }
                     ?>
+                    </tbody>
                 </a>
             </table>
                 
@@ -56,5 +66,23 @@
 
         
     </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+
+            const form = document.getElementById('searchForm');
+            const formData = new FormData(form);
+
+            fetch('search_payment.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('userTableBody').innerHTML = html;
+            }); 
+        });
+    </script>
 </body>
 </html>
