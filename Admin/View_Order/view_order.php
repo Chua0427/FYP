@@ -23,6 +23,14 @@
         <div class="order-container">
             <div class="order-table">
                 <h3>View Order</h3>
+                <div class="search-container">
+                    <div class="search-box">
+                        <form id="searchForm">
+                            <input type="text" name="query" id="searchInput" placeholder="Enter ID Or Name For Search...">
+                            <button type="submit" id="searchButton"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </form> 
+                    </div>
+                </div>
                 <table>
                     <tr>
                         <th>Order ID</th>
@@ -33,33 +41,53 @@
                         <th>Order Time</th>
                         <th>View Order Items</th>
                     </tr>
+                    
+                    <tbody id="userTableBody">
+                        <?php
+                            include __DIR__ . '/../../connect_db/config.php';
 
-                    <?php
-                        include __DIR__ . '/../../connect_db/config.php';
+                            $sql= "SELECT o.*,u.first_name,u.last_name,u.mobile_number, u.profile_image FROM orders o
+                                JOIN users u ON o.user_id= u.user_id";
+                            $result= $conn->query($sql);
 
-                        $sql= "SELECT o.*,u.first_name,u.last_name,u.mobile_number, u.profile_image FROM orders o
-                               JOIN users u ON o.user_id= u.user_id";
-                        $result= $conn->query($sql);
+                            while($row= $result->fetch_assoc()){
+                                $orderId = $row["order_id"];
 
-                        while($row= $result->fetch_assoc()){
-                            $orderId = $row["order_id"];
-
-                            echo '<tr>
-                                    <td>'. $row["order_id"].'</td>
-                                    <td><img src="../../upload/'.$row['profile_image'].'"</td>
-                                    <td>'.$row['first_name'].' '.$row['last_name'].'</td>
-                                    <td>'.$row['mobile_number'].'</td>
-                                    <td style="font-weight:bold;";>RM '. $row["total_price"].'</td>
-                                    <td>'. $row["order_at"].'</td>
-                                    <td><a href="../View_Order_Items/view_order_item.php?order_id='.$row['order_id'].'" class="items">View</a></td>
-                                </tr>';
-                        }
-                    ?>
+                                echo '<tr>
+                                        <td>'. $row["order_id"].'</td>
+                                        <td><img src="../../upload/'.$row['profile_image'].'"</td>
+                                        <td>'.$row['first_name'].' '.$row['last_name'].'</td>
+                                        <td>'.$row['mobile_number'].'</td>
+                                        <td style="font-weight:bold;";>RM '. $row["total_price"].'</td>
+                                        <td>'. $row["order_at"].'</td>
+                                        <td><a href="../View_Order_Items/view_order_item.php?order_id='.$row['order_id'].'" class="items">View</a></td>
+                                    </tr>';
+                            }
+                        ?>
+                    </tbody>
                 </table>
 
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+
+            const form = document.getElementById('searchForm');
+            const formData = new FormData(form);
+
+            fetch('search_order.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('userTableBody').innerHTML = html;
+            }); 
+        });
+    </script>
 
 </body>
 </html>

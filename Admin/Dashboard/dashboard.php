@@ -161,7 +161,7 @@
                 <img src="../../upload/' . $row['profile_image'] . '" alt="Profile Image">
                 <p>Welcome Back ! '.$row['first_name'].'</p>
                 <p>Email: '.$row['email'].'</p>
-                <input type="button" name="" id=""><i class="fa-solid fa-right-from-bracket"></i></input>
+                <a href="../../User/login/logout.php" ><i class="fa-solid fa-right-from-bracket"></i></a>
             </div>';
         }
 

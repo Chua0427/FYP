@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 </head>
-
     <?php include __DIR__ . '/../../connect_db/config.php'; ?>
     
 <body>
@@ -23,6 +22,14 @@
 
         <div class="admin-table">
             <h3>View Admin</h3>
+            <div class="search-container">
+                <div class="search-box">
+                    <form id="searchForm">
+                        <input type="text" name="query" id="searchInput" placeholder="Enter Keyword For Search...">
+                        <button type="submit" id="searchButton"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </form> 
+                </div>
+            </div>
             <table>
                 <tr>
                     <th>Image</th>
@@ -35,7 +42,7 @@
                     <th>City</th>
                     <th>Birthday Date</th>
                     <th>Gender</th>
-
+                <tbody id="userTableBody">
                 <?php
                     $sql= "SELECT * FROM users WHERE user_type = 2";
                     $result = $conn->query($sql);
@@ -72,10 +79,27 @@
                                 echo '</tr>';
                     }
                     ?>
-                
+                </tbody>
             </table>
                 
         </div>
     </div>
+    <script>
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+        e.preventDefault(); 
+
+        const form = document.getElementById('searchForm');
+        const formData = new FormData(form);
+
+        fetch('search_admin.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('userTableBody').innerHTML = html;
+        }); 
+    });
+</script>
 </body>
 </html>
