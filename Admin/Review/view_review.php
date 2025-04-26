@@ -37,7 +37,6 @@
                WHERE r.product_id= $product_id
                ORDER BY r.review_id DESC";
         $result1= $conn->query($sql1);
-        $row1= $result1->fetch_assoc();
     ?>
 
     <div class="review-container">
