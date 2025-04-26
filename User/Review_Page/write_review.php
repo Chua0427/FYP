@@ -96,6 +96,9 @@ try {
                 'action' => $existingReview ? 'update' : 'new'
             ]);
             
+            // Set JavaScript session storage flag before redirecting
+            echo "<script>sessionStorage.setItem('reviewSubmitted', 'true');</script>";
+            
             // Redirect back to order history after a small delay (for the success message)
             echo "<script>alert('" . htmlspecialchars($success) . "'); window.location.href='../order/orderhistory.php';</script>";
             exit;
@@ -167,6 +170,8 @@ try {
                     <button type="submit" class="submit-btn">
                         <?php echo isset($existingReview) ? 'Update Review' : 'Submit'; ?>
                     </button>
+                    
+                    <a href="../order/orderhistory.php" class="return-link">Return to Order History</a>
                 </form>
             <?php endif; ?>
         </div>

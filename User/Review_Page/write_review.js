@@ -24,4 +24,51 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     }
+    
+    // Handle browser back navigation if review already submitted
+    if (sessionStorage.getItem('reviewSubmitted') === 'true') {
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                showReviewSubmittedAlert();
+            }
+        });
+        
+        window.addEventListener('load', function() {
+            showReviewSubmittedAlert();
+        });
+    }
+    
+    // Add event listener to form submit
+    const reviewForm = document.querySelector('form');
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', function(e) {
+            if (validateForm(e)) {
+                sessionStorage.setItem('reviewSubmitted', 'true');
+            }
+        });
+    }
+    
+    function validateForm(e) {
+        const ratingValue = document.getElementById('ratingValue').value;
+        const reviewText = document.getElementById('review').value.trim();
+        
+        if (ratingValue < 1 || ratingValue > 5) {
+            alert('Please select a rating from 1 to 5 stars');
+            e.preventDefault();
+            return false;
+        }
+        
+        if (reviewText === '') {
+            alert('Please enter your review text');
+            e.preventDefault();
+            return false;
+        }
+        
+        return true;
+    }
+    
+    function showReviewSubmittedAlert() {
+        alert('You have already submitted a review for this product');
+        window.location.href = '../order/orderhistory.php';
+    }
 }); 
