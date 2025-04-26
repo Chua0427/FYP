@@ -44,6 +44,15 @@ table {
     overflow: hidden;
 }
 
+.user-table table tr:nth-child(even) {
+    background-color: #f2f7ff; 
+}
+
+.user-table table tr:nth-child(odd) {
+    background-color: #ffffff; 
+}
+
+
 .user-table table th {
     background: #0066ff;
     color: white;
@@ -69,5 +78,5 @@ table {
 }
 
 .user-table table tr:hover {
-    background-color: #dfdfdf3a;
+    background-color: #82d7ff77;
 }

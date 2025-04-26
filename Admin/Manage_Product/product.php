@@ -70,7 +70,7 @@
                 <div class="column1">
                     <div class="form-group">
                         <label>Status:</label>
-                        <select name="status"required>
+                        <select name="status" id="status" required>
                             <option value="Normal">Normal</option>
                             <option value="New">New</option>
                             <option value="Promotion">Promotion</option>
@@ -82,7 +82,7 @@
                     </div>
                     <div class="form-group">
                         <label>Discount Price: </label>
-                        <input type="number" step="0.01" name="discount_price">
+                        <input type="number" step="0.01" name="discount_price" id="discount_price">
                     </div>
                 </div>
 
@@ -123,5 +123,6 @@
     </div>
 
     <script src="add.js"></script>
+
 </body>
 </html>

@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $GLOBALS['authLogger']->info('Session revoked', [
                     'user_id' => $user_id,
                     'token_id' => $token_id,
-                    'ip' => $_SERVER['REMOTE_ADDR']
+                    'ip' => getClientIP()
                 ]);
                 // Refresh sessions list
                 $sessions = Auth::getActiveSessions();
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $message = 'All other devices have been successfully logged out.';
                 $GLOBALS['authLogger']->info('All other sessions revoked', [
                     'user_id' => $user_id,
-                    'ip' => $_SERVER['REMOTE_ADDR']
+                    'ip' => getClientIP()
                 ]);
                 // Refresh sessions list
                 $sessions = Auth::getActiveSessions();
@@ -103,6 +103,42 @@ function getDeviceInfo($user_agent) {
     $device_type = preg_match('/Mobile|Android|iPhone|iPad|iPod/i', $user_agent) ? 'Mobile' : 'Desktop';
     
     return "$browser on $os ($device_type)";
+}
+
+/**
+ * Get the client's real IP address
+ * 
+ * @return string Client IP address
+ */
+function getClientIP() {
+    // Check for proxy forwards
+    $ip_keys = [
+        'HTTP_CF_CONNECTING_IP', // Cloudflare
+        'HTTP_CLIENT_IP',        // Shared internet
+        'HTTP_X_FORWARDED_FOR',  // Common proxy
+        'HTTP_X_FORWARDED',      // Common proxy
+        'HTTP_X_CLUSTER_CLIENT_IP', // Load balancer
+        'HTTP_FORWARDED_FOR',    // Common proxy
+        'HTTP_FORWARDED',        // Common proxy
+        'REMOTE_ADDR'            // Fallback
+    ];
+    
+    foreach ($ip_keys as $key) {
+        if (!empty($_SERVER[$key])) {
+            $ip = $_SERVER[$key];
+            // If the IP is a comma-separated list, get the first one
+            if (strpos($ip, ',') !== false) {
+                $ip = trim(explode(',', $ip)[0]);
+            }
+            
+            // Validate IP format
+            if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                return $ip;
+            }
+        }
+    }
+    
+    return 'Unknown';
 }
 
 // Determine current session
