@@ -350,13 +350,13 @@ require_once __DIR__ . '/../app/restrict_admin.php';
                 <img src="images/b787ff07-4fea-4f93-bc7c-1f10a1333ee8.webp" alt="">
                 <h3>About Us</h3>
                 <p>Founded in 2025, VEROSPORTS was born out of a passion for sports and a commitment to
-                    innovation.......<a href="#">read more </a></p>
+                    innovation.......<a href="../fl/AboutVeroSports.php">read more </a></p>
             </div>
             <div class="aboutUs">
                 <img src="images/NIK22275_1000_9__48380.jpg" alt="">
                 <h3>Products Warranty</h3>
                 <p>Founded in 2025, VEROSPORTS was born out of a passion for sports and a commitment to
-                    innovation........<a href="#">read more </a></p>
+                    innovation........<a href="../fl/AboutVeroSports.php">read more </a></p>
             </div>
             <div class="aboutUs">
                 <img src="images/66c063ce-e067-4f24-9ed7-713d6bcf766c.webp" alt="">

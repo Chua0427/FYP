@@ -212,8 +212,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
                     <input type="checkbox" id="remember" name="remember">
                     <label for="remember">Remember me</label>
                 </div>
+
+                <button type="submit" class="login-btn">Login</button>
+                <a href="../ForgotPassword/forgot_password.php" class="forgot-password">Forgot Password?</a>
+
                 <button type="submit" name="login" class="login-btn">Login</button>
                 <a href="forgot_password.php" class="forgot-password">Forgot Password?</a>
+
             </form>
             
             <div class="divider"><span>OR</span></div>
