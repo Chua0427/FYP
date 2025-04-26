@@ -42,15 +42,17 @@
                     <th>City</th>
                     <th>Birthday Date</th>
                     <th>Gender</th>
+
+                    <?php
+                        if ($current_user_type == 3) {
+                            echo '<th>Edit/Delete</th>';
+                        }
+                    ?>
+                    
                 <tbody id="userTableBody">
                 <?php
                     $sql= "SELECT * FROM users WHERE user_type = 2";
                     $result = $conn->query($sql);
-
-                    if ($current_user_type == 3) {
-                        echo '<th>Edit/Delete</th>';
-                    }
-
 
                     while($row= $result->fetch_assoc()){
                         echo '<tr>
