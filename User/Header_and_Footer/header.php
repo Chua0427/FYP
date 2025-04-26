@@ -209,9 +209,6 @@ if ($is_authenticated) {
 
                             <a href="../Edit_Profile/profile.php">My Profile</a>
                             <a href="../login/manage_sessions.php">Manage Devices</a>
-                            <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] == 2): ?>
-                                <a href="/FYP/FYP/Admin/Dashboard/dashboard.php">Admin Dashboard</a>
-                            <?php endif; ?>
                             <a href="../login/logout.php">Logout</a>
                         </div>
                     </div>
