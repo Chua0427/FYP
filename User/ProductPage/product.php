@@ -276,9 +276,12 @@
     /* Add styles for the cart notification */
     .message-container {
         position: fixed;
-        top: 20px;
+        top: 70px; 
         right: 20px;
-        z-index: 1000;
+        left: auto;
+        width: 300px;
+        z-index: 999;
+        text-align: center;
     }
     .message {
         padding: 12px 20px;
@@ -286,6 +289,9 @@
         border-radius: 4px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         animation: fadeIn 0.3s ease-out;
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
     }
     .message.success {
         background-color: #28a745;

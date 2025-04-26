@@ -1,9 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {   
-
     const userData = {
+        first_name: 'Sodddh',
+        last_name: 'Xi Jie',
+        email: 'john.doe@example.com',
+        mobile_number: '1234567890',
+        address: '123 Main St, Apt 4B',
+        postcode: '12345',
+        state: 'California',
+        city: 'Los Angeles',
+        birthday_date: '1990-01-01',
+        gender: 'Male',
         profile_image: 'default-profile.jpg',
+        create_at: '2023-01-01'
     };
-
 document.getElementById('firstName').value = userData.first_name;
 document.getElementById('lastName').value = userData.last_name;
 document.getElementById('email').value = userData.email;
