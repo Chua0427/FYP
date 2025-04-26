@@ -24,17 +24,45 @@
 
     include __DIR__ . '/../../connect_db/config.php';
 
-    $order_id=$_GET['id'];
+    $order_id = isset($_GET['order_id']) ? (int)$_GET['order_id'] : 0;
 
-    $sql='SELECT o.*, u.first_name, u.last_name, u.mobile_number, u.email FROM orders o JOIN users u ON o.user_id=u.user_id WHERE o.order_id= '.$order_id.'';
-    $result= $conn->query($sql);
-    $row= $result->fetch_assoc();
+    if ($order_id <= 0) {
+        echo '<div style="text-align: center; margin: 50px auto; color: red; font-weight: bold;">
+            Invalid order ID. Please go back and try again.
+            </div>';
+        include __DIR__ . '/../Header_and_Footer/footer.php';
+        exit;
+    }
 
-    $itemSql = "SELECT oi.quantity, oi.price, oi.product_size, p.product_name,p.product_img1
+    $sql = "SELECT o.*, u.first_name, u.last_name, u.mobile_number, u.email 
+            FROM orders o 
+            JOIN users u ON o.user_id = u.user_id 
+            WHERE o.order_id = ?";
+    
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $order_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows == 0) {
+        echo '<div style="text-align: center; margin: 50px auto; color: red; font-weight: bold;">
+            Order not found. Please go back and try again.
+            </div>';
+        include __DIR__ . '/../Header_and_Footer/footer.php';
+        exit;
+    }
+    
+    $row = $result->fetch_assoc();
+
+    $itemSql = "SELECT oi.quantity, oi.price, oi.product_size, p.product_name, p.product_img1
                 FROM order_items oi
                 JOIN product p ON oi.product_id = p.product_id
-                WHERE oi.order_id = $order_id";
-    $itemResult = $conn->query($itemSql);
+                WHERE oi.order_id = ?";
+    
+    $itemStmt = $conn->prepare($itemSql);
+    $itemStmt->bind_param("i", $order_id);
+    $itemStmt->execute();
+    $itemResult = $itemStmt->get_result();
     
     ?>
 

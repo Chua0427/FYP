@@ -13,3 +13,129 @@
 [2025-04-17 02:40:20] [ERROR] Invalid signature: Unable to extract timestamp and signatures from header
 [2025-04-17 02:42:22] [INFO] Webhook received: account.updated
 [2025-04-17 02:42:22] [INFO] Unhandled event type: account.updated
+[2025-04-21 12:55:56] [ERROR] Invalid signature: Unable to extract timestamp and signatures from header
+[2025-04-21 12:57:00] [INFO] Webhook received: charge.succeeded
+[2025-04-21 12:57:00] [INFO] Unhandled event type: charge.succeeded
+[2025-04-21 12:57:41] [INFO] Webhook received: charge.succeeded
+[2025-04-21 12:57:41] [INFO] Unhandled event type: charge.succeeded
+[2025-04-21 12:58:26] [ERROR] Invalid signature: Unable to extract timestamp and signatures from header
+[2025-04-21 12:58:26] [ERROR] Invalid signature: Unable to extract timestamp and signatures from header
+[2025-04-21 12:58:27] [ERROR] Invalid signature: Unable to extract timestamp and signatures from header
+[2025-04-21 12:58:27] [ERROR] Invalid signature: Unable to extract timestamp and signatures from header
+[2025-04-21 12:58:27] [ERROR] Invalid signature: Unable to extract timestamp and signatures from header
+[2025-04-21 16:02:21] [ERROR] Invalid signature: Unable to extract timestamp and signatures from header
+[2025-04-21 16:04:09] [INFO] Webhook received: charge.succeeded
+[2025-04-21 16:04:09] [INFO] Unhandled event type: charge.succeeded
+[2025-04-21 16:14:43] [INFO] Webhook received: charge.succeeded
+[2025-04-21 16:14:43] [INFO] Unhandled event type: charge.succeeded
+[2025-04-21 16:29:18] [INFO] Webhook received: charge.succeeded
+[2025-04-21 16:29:18] [INFO] Unhandled event type: charge.succeeded
+[2025-04-21 16:29:26] [INFO] Webhook received: charge.succeeded
+[2025-04-21 16:29:26] [INFO] Unhandled event type: charge.succeeded
+[2025-04-21 16:31:30] [INFO] Webhook received: charge.succeeded
+[2025-04-21 16:31:30] [INFO] Unhandled event type: charge.succeeded
+[2025-04-21 17:20:38] [INFO] Webhook received: charge.succeeded
+[2025-04-21 17:20:38] [INFO] Unhandled event type: charge.succeeded
+[2025-04-21 17:21:24] [INFO] Webhook received: charge.succeeded
+[2025-04-21 17:21:24] [INFO] Unhandled event type: charge.succeeded
+[2025-04-21 17:29:34] [DEBUG] Webhook received - Raw payload: {
+  "id": "evt_3RGMHpQZPLk7FzRY5OabWlqv",
+  "object": "event",
+  "api_version": "2025-02-24.acacia",
+  "created": 1745249373,
+  "data": {
+    "object": {
+      "id": "ch_3RGMHpQZPLk7FzRY5LPB9apD",
+      "object": "charge",
+      "amount": 72000,
+      "amount_captured": 72000,
+      "amount_refunded": 0,
+      "application": null,
+      "application_fee": null,
+      "application_fee_amount": null,
+      "balance_transaction": "txn_3RGMHpQZPLk7FzRY5YBLlVJ8",
+      "billing_details": {
+        "address": {
+          "city": null,
+          "country": null,
+          "line1": null,
+          "line2": null,
+          "postal_code": "55455",
+          "state": null
+        },
+        "email": null,
+        "name": null,
+        "phone": null,
+        "tax_id": null
+      },
+      "calculated_statement_descriptor": "Stripe",
+      "captured": true,
+      "created": 1745249373,
+      "currency": "myr",
+      "customer": null,
+      "description": "Charge for Order #70",
+      "destination": ...
+[2025-04-21 17:29:34] [INFO] Webhook received: charge.succeeded
+[2025-04-21 17:29:34] [INFO] Unhandled event type: charge.succeeded
+[2025-04-21 17:41:36] [DEBUG] Webhook request received - Headers: {"Host":"localhost","Connection":"keep-alive","Cache-Control":"max-age=0","sec-ch-ua":"\"Microsoft Edge\";v=\"135\", \"Not-A.Brand\";v=\"8\", \"Chromium\";v=\"135\"","sec-ch-ua-mobile":"?0","sec-ch-ua-platform":"\"Windows\"","Upgrade-Insecure-Requests":"1","User-Agent":"Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/135.0.0.0 Safari\/537.36 Edg\/135.0.0.0","Accept":"text\/html,application\/xhtml+xml,application\/xml;q=0.9,image\/avif,image\/webp,image\/apng,*\/*;q=0.8,application\/signed-exchange;v=b3;q=0.7","Sec-Fetch-Site":"same-origin","Sec-Fetch-Mode":"navigate","Sec-Fetch-User":"?1","Sec-Fetch-Dest":"document","Referer":"http:\/\/localhost\/FYP\/FYP\/User\/payment\/","Accept-Encoding":"gzip, deflate, br, zstd","Accept-Language":"en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7","Cookie":"__stripe_mid=739f36fe-cf38-4741-8f01-0e9240792bffd34128; PHPSESSID=5ane2ldmhlj9qnr10uo8nkb2a8; auth_token=9f462dcc30c9497cefc6614b82b6ca030f458e060ecfefe5ca3bb742217c198d; __stripe_sid=04168f8a-7479-4362-bcc8-f28f2e1b6c11d863da"}
+[2025-04-21 17:41:36] [DEBUG] Webhook signature header: 
+[2025-04-21 17:41:36] [ERROR] Invalid signature: Unable to extract timestamp and signatures from header
+[2025-04-21 17:41:36] [DEBUG] Endpoint secret used: whsec...(truncated)
+[2025-04-21 17:41:36] [DEBUG] Signature header received: 
+[2025-04-21 17:43:45] [DEBUG] Webhook request received - Headers: {"Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","User-Agent":"Stripe\/1.0 (+https:\/\/stripe.com\/docs\/webhooks)","Content-Length":"4591","Accept":"*\/*; q=0.5, application\/xml","Cache-Control":"no-cache","Content-Type":"application\/json; charset=utf-8","Stripe-Signature":"t=1745250225,v1=3a6c09ba65e86ec06ea5e9ea1e2f6d0bf90dbdbef1b2d7d009b608bbf05fd263,v0=ee593cde82a7132816d0c458a873fd962c2293d4a3f4949893dca07b4c126c85","X-Forwarded-For":"52.15.183.38","X-Forwarded-Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","X-Forwarded-Proto":"https","Accept-Encoding":"gzip"}
+[2025-04-21 17:43:45] [DEBUG] Webhook signature header: t=1745250225,v1=3a6c09ba65e86ec06ea5e9ea1e2f6d0bf90dbdbef1b2d7d009b608bbf05fd263,v0=ee593cde82a7132816d0c458a873fd962c2293d4a3f4949893dca07b4c126c85
+[2025-04-21 17:43:45] [INFO] Webhook received: charge.succeeded
+[2025-04-21 17:43:45] [ERROR] Failed to verify/update stock for order: 72 | Error: Failed to verify payment with Stripe: No API key provided.  (HINT: set your API key using "Stripe::setApiKey(<API-KEY>)".  You can generate API keys from the Stripe web interface.  See https://stripe.com/api for details, or email support@stripe.com if you have any questions. (charge.succeeded)
+[2025-04-21 17:43:45] [INFO] Charge.succeeded event processed: Order ID: 72, Stripe ID: ch_3RGMVYQZPLk7FzRY2r4QFevE
+[2025-04-21 17:52:13] [DEBUG] Webhook request received - Headers: {"Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","User-Agent":"Stripe\/1.0 (+https:\/\/stripe.com\/docs\/webhooks)","Content-Length":"4591","Accept":"*\/*; q=0.5, application\/xml","Cache-Control":"no-cache","Content-Type":"application\/json; charset=utf-8","Stripe-Signature":"t=1745250732,v1=f340f6075ca4e6f2f5114d666d8f69236f0961a5bb85a6eb2e8df101fe4db96b,v0=5cd38b0eba5d89735ea7f01a92de7ba9c33989f94e429d9f1377489f67091275","X-Forwarded-For":"52.15.183.38","X-Forwarded-Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","X-Forwarded-Proto":"https","Accept-Encoding":"gzip"}
+[2025-04-21 17:52:13] [DEBUG] Webhook signature header: t=1745250732,v1=f340f6075ca4e6f2f5114d666d8f69236f0961a5bb85a6eb2e8df101fe4db96b,v0=5cd38b0eba5d89735ea7f01a92de7ba9c33989f94e429d9f1377489f67091275
+[2025-04-21 17:52:13] [INFO] Webhook received: charge.succeeded
+[2025-04-21 17:52:13] [WARNING] Charge.succeeded webhook received but no payment record found for Stripe ID: ch_3RGJqVQZPLk7FzRY54GSXn2Z
+[2025-04-21 17:52:13] [INFO] Stock updated via webhook without verification for order ID: 58 (charge.succeeded)
+[2025-04-21 17:52:13] [INFO] Charge.succeeded event processed: Order ID: 58, Stripe ID: ch_3RGJqVQZPLk7FzRY54GSXn2Z
+[2025-04-21 17:54:10] [DEBUG] Webhook request received - Headers: {"Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","User-Agent":"Stripe\/1.0 (+https:\/\/stripe.com\/docs\/webhooks)","Content-Length":"4597","Accept":"*\/*; q=0.5, application\/xml","Cache-Control":"no-cache","Content-Type":"application\/json; charset=utf-8","Stripe-Signature":"t=1745250849,v1=f48bc0fd22d713e22fa12f00a4580a1476dcfcc1d68d86364809449ad0ed4db3,v0=040fb3d4fad535eb1c0f52a48674aa960d126522b1f3df5187eaa8fd5debb46b","X-Forwarded-For":"52.15.183.38","X-Forwarded-Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","X-Forwarded-Proto":"https","Accept-Encoding":"gzip"}
+[2025-04-21 17:54:10] [DEBUG] Webhook signature header: t=1745250849,v1=f48bc0fd22d713e22fa12f00a4580a1476dcfcc1d68d86364809449ad0ed4db3,v0=040fb3d4fad535eb1c0f52a48674aa960d126522b1f3df5187eaa8fd5debb46b
+[2025-04-21 17:54:10] [INFO] Webhook received: charge.succeeded
+[2025-04-21 17:54:10] [ERROR] Failed to verify/update stock for order: 73 | Error: Failed to verify payment with Stripe: No API key provided.  (HINT: set your API key using "Stripe::setApiKey(<API-KEY>)".  You can generate API keys from the Stripe web interface.  See https://stripe.com/api for details, or email support@stripe.com if you have any questions. (charge.succeeded)
+[2025-04-21 17:54:10] [INFO] Charge.succeeded event processed: Order ID: 73, Stripe ID: ch_3RGMfcQZPLk7FzRY4i8bFkM8
+[2025-04-21 17:56:25] [DEBUG] Webhook request received - Headers: {"Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","User-Agent":"Stripe\/1.0 (+https:\/\/stripe.com\/docs\/webhooks)","Content-Length":"4598","Accept":"*\/*; q=0.5, application\/xml","Cache-Control":"no-cache","Content-Type":"application\/json; charset=utf-8","Stripe-Signature":"t=1745250984,v1=66024e6f491b17352d2d5301f0c5d3b9b1d99eb314c6f0d752c6523865edd0f2,v0=02b33aa23ff571aded46a409d36fc74809b830d4d8518665a283d2e7b6df6145","X-Forwarded-For":"3.18.12.63","X-Forwarded-Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","X-Forwarded-Proto":"https","Accept-Encoding":"gzip"}
+[2025-04-21 17:56:25] [DEBUG] Webhook signature header: t=1745250984,v1=66024e6f491b17352d2d5301f0c5d3b9b1d99eb314c6f0d752c6523865edd0f2,v0=02b33aa23ff571aded46a409d36fc74809b830d4d8518665a283d2e7b6df6145
+[2025-04-21 17:56:25] [INFO] Webhook received: charge.succeeded
+[2025-04-21 17:56:25] [ERROR] Failed to verify/update stock for order: 74 | Error: Failed to verify payment with Stripe: No API key provided.  (HINT: set your API key using "Stripe::setApiKey(<API-KEY>)".  You can generate API keys from the Stripe web interface.  See https://stripe.com/api for details, or email support@stripe.com if you have any questions. (charge.succeeded)
+[2025-04-21 17:56:25] [INFO] Charge.succeeded event processed: Order ID: 74, Stripe ID: ch_3RGMhnQZPLk7FzRY53XruMF0
+[2025-04-21 18:07:16] [DEBUG] Webhook request received - Headers: {"Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","User-Agent":"Stripe\/1.0 (+https:\/\/stripe.com\/docs\/webhooks)","Content-Length":"4598","Accept":"*\/*; q=0.5, application\/xml","Cache-Control":"no-cache","Content-Type":"application\/json; charset=utf-8","Stripe-Signature":"t=1745251635,v1=9cc5dd7880a42b89558fc1b3f23a4047b457e23a28cc4555c77cd7c4c401aa1d,v0=0dd8c68838beead7b18296e90bdea30b6945552fd897f00d357d226a213ea581","X-Forwarded-For":"3.130.192.231","X-Forwarded-Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","X-Forwarded-Proto":"https","Accept-Encoding":"gzip"}
+[2025-04-21 18:07:16] [DEBUG] Webhook signature header: t=1745251635,v1=9cc5dd7880a42b89558fc1b3f23a4047b457e23a28cc4555c77cd7c4c401aa1d,v0=0dd8c68838beead7b18296e90bdea30b6945552fd897f00d357d226a213ea581
+[2025-04-21 18:07:16] [INFO] Webhook received: charge.succeeded
+[2025-04-21 18:07:16] [ERROR] Stripe API verification error: Insufficient stock for product ID 20, size UK5. Required: 99, Available: 0
+[2025-04-21 18:07:16] [ERROR] Failed to verify/update stock for order: 75 | Error: Insufficient stock for product ID 20, size UK5. Required: 99, Available: 0 (charge.succeeded)
+[2025-04-21 18:07:16] [INFO] Charge.succeeded event processed: Order ID: 75, Stripe ID: ch_3RGMsJQZPLk7FzRY3iBgUIKQ
+[2025-04-21 18:33:43] [DEBUG] Webhook request received - Headers: {"Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","User-Agent":"Stripe\/1.0 (+https:\/\/stripe.com\/docs\/webhooks)","Content-Length":"4597","Accept":"*\/*; q=0.5, application\/xml","Cache-Control":"no-cache","Content-Type":"application\/json; charset=utf-8","Stripe-Signature":"t=1745253222,v1=88548e1a01956c2f991be7f5f5189790aa87a463d117281218a650ea548235ec,v0=137b9aee9ef9f284f7f058d8c1a3572cce943d3bc7fdd9f37b3045e119860115","X-Forwarded-For":"3.130.192.231","X-Forwarded-Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","X-Forwarded-Proto":"https","Accept-Encoding":"gzip"}
+[2025-04-21 18:33:43] [DEBUG] Webhook signature header: t=1745253222,v1=88548e1a01956c2f991be7f5f5189790aa87a463d117281218a650ea548235ec,v0=137b9aee9ef9f284f7f058d8c1a3572cce943d3bc7fdd9f37b3045e119860115
+[2025-04-21 18:33:43] [INFO] Webhook received: charge.succeeded
+[2025-04-21 18:33:43] [WARNING] Charge.succeeded webhook received but no payment record found for Stripe ID: ch_3RGKUZQZPLk7FzRY4ZracGcT
+[2025-04-21 18:33:43] [ERROR] Failed to verify/update stock for order: 61 | Error: Insufficient stock for product ID 21, size One Size. Required: 9, Available: 8 (charge.succeeded)
+[2025-04-21 18:33:43] [INFO] Charge.succeeded event processed: Order ID: 61, Stripe ID: ch_3RGKUZQZPLk7FzRY4ZracGcT
+[2025-04-21 18:34:38] [DEBUG] Webhook request received - Headers: {"Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","User-Agent":"Stripe\/1.0 (+https:\/\/stripe.com\/docs\/webhooks)","Content-Length":"4595","Accept":"*\/*; q=0.5, application\/xml","Cache-Control":"no-cache","Content-Type":"application\/json; charset=utf-8","Stripe-Signature":"t=1745253277,v1=1009b60bf0a4a011f98272def58dfb58085e63f0406a7b7d43f1266a829f5331,v0=958ed524f9cf6f14311950a8e9dd23372be3da27ce40083b67a9f8a2cf01e44c","X-Forwarded-For":"3.130.192.231","X-Forwarded-Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","X-Forwarded-Proto":"https","Accept-Encoding":"gzip"}
+[2025-04-21 18:34:38] [DEBUG] Webhook signature header: t=1745253277,v1=1009b60bf0a4a011f98272def58dfb58085e63f0406a7b7d43f1266a829f5331,v0=958ed524f9cf6f14311950a8e9dd23372be3da27ce40083b67a9f8a2cf01e44c
+[2025-04-21 18:34:38] [INFO] Webhook received: charge.succeeded
+[2025-04-21 18:34:38] [WARNING] Charge.succeeded webhook received but no payment record found for Stripe ID: ch_3RGKTdQZPLk7FzRY1AlKj2hw
+[2025-04-21 18:34:38] [ERROR] Failed to verify/update stock for order: 61 | Error: Insufficient stock for product ID 21, size One Size. Required: 9, Available: 8 (charge.succeeded)
+[2025-04-21 18:34:38] [INFO] Charge.succeeded event processed: Order ID: 61, Stripe ID: ch_3RGKTdQZPLk7FzRY1AlKj2hw
+[2025-04-21 18:37:22] [DEBUG] Webhook request received - Headers: {"Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","User-Agent":"Stripe\/1.0 (+https:\/\/stripe.com\/docs\/webhooks)","Content-Length":"4596","Accept":"*\/*; q=0.5, application\/xml","Cache-Control":"no-cache","Content-Type":"application\/json; charset=utf-8","Stripe-Signature":"t=1745253441,v1=178ecc4c0177bdeb95800149e127bbe50bfa486d6bd05ec993a285796af03422,v0=aac0fa6a8ebcf455d888a287e4e1571455ef647137c73e0a0afbb5f31157ce63","X-Forwarded-For":"52.15.183.38","X-Forwarded-Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","X-Forwarded-Proto":"https","Accept-Encoding":"gzip"}
+[2025-04-21 18:37:22] [DEBUG] Webhook signature header: t=1745253441,v1=178ecc4c0177bdeb95800149e127bbe50bfa486d6bd05ec993a285796af03422,v0=aac0fa6a8ebcf455d888a287e4e1571455ef647137c73e0a0afbb5f31157ce63
+[2025-04-21 18:37:22] [INFO] Webhook received: charge.succeeded
+[2025-04-21 18:37:22] [WARNING] Charge.succeeded webhook received but no payment record found for Stripe ID: ch_3RGKWeQZPLk7FzRY4BnsUerF
+[2025-04-21 18:37:22] [ERROR] Failed to verify/update stock for order: 61 | Error: Insufficient stock for product ID 21, size One Size. Required: 9, Available: 8 (charge.succeeded)
+[2025-04-21 18:37:22] [INFO] Charge.succeeded event processed: Order ID: 61, Stripe ID: ch_3RGKWeQZPLk7FzRY4BnsUerF
+[2025-04-21 18:37:41] [DEBUG] Webhook request received - Headers: {"Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","User-Agent":"Stripe\/1.0 (+https:\/\/stripe.com\/docs\/webhooks)","Content-Length":"4591","Accept":"*\/*; q=0.5, application\/xml","Cache-Control":"no-cache","Content-Type":"application\/json; charset=utf-8","Stripe-Signature":"t=1745253461,v1=2cd449aa5f4cc79afc58a3cf2588344668e633e5b0348cc6316c73312c3381c2,v0=2928379e170b08d5a3dee12aa8da647deb2060c31ca73b70b289b2321ff38cbf","X-Forwarded-For":"3.130.192.231","X-Forwarded-Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","X-Forwarded-Proto":"https","Accept-Encoding":"gzip"}
+[2025-04-21 18:37:41] [DEBUG] Webhook signature header: t=1745253461,v1=2cd449aa5f4cc79afc58a3cf2588344668e633e5b0348cc6316c73312c3381c2,v0=2928379e170b08d5a3dee12aa8da647deb2060c31ca73b70b289b2321ff38cbf
+[2025-04-21 18:37:41] [INFO] Webhook received: charge.succeeded
+[2025-04-21 18:37:41] [WARNING] Charge.succeeded webhook received but no payment record found for Stripe ID: ch_3RGKXJQZPLk7FzRY5Zv33Zv0
+[2025-04-21 18:37:41] [INFO] Stock updated via webhook without verification for order ID: 62 (charge.succeeded)
+[2025-04-21 18:37:41] [INFO] Charge.succeeded event processed: Order ID: 62, Stripe ID: ch_3RGKXJQZPLk7FzRY5Zv33Zv0
+[2025-04-21 18:42:48] [DEBUG] Webhook request received - Headers: {"Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","User-Agent":"Stripe\/1.0 (+https:\/\/stripe.com\/docs\/webhooks)","Content-Length":"4593","Accept":"*\/*; q=0.5, application\/xml","Cache-Control":"no-cache","Content-Type":"application\/json; charset=utf-8","Stripe-Signature":"t=1745253767,v1=c0529db05aa3e3eddc3b9bd913c304e71e2c5b84f1c300b6531bf4da56f81465,v0=8cc7d07ef228c2948d843e39e60a09a8ca6583aee2be2bb97dd0beb09f8eb1ce","X-Forwarded-For":"3.130.192.231","X-Forwarded-Host":"bf8b-2001-e68-5450-41a9-a1c4-e1e5-3e49-6d96.ngrok-free.app","X-Forwarded-Proto":"https","Accept-Encoding":"gzip"}
+[2025-04-21 18:42:48] [DEBUG] Webhook signature header: t=1745253767,v1=c0529db05aa3e3eddc3b9bd913c304e71e2c5b84f1c300b6531bf4da56f81465,v0=8cc7d07ef228c2948d843e39e60a09a8ca6583aee2be2bb97dd0beb09f8eb1ce
+[2025-04-21 18:42:48] [INFO] Webhook received: charge.succeeded
+[2025-04-21 18:42:48] [WARNING] Charge.succeeded webhook received but no payment record found for Stripe ID: ch_3RGKd7QZPLk7FzRY5nSEdKkn
+[2025-04-21 18:42:48] [INFO] Stock updated via webhook without verification for order ID: 62 (charge.succeeded)
+[2025-04-21 18:42:48] [INFO] Charge.succeeded event processed: Order ID: 62, Stripe ID: ch_3RGKd7QZPLk7FzRY5nSEdKkn

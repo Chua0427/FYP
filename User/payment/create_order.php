@@ -48,15 +48,33 @@ try {
     // Get shipping address from post data
     $shipping_address = trim($_POST['shipping_address'] ?? '');
     
+    // Get selected items if provided
+    $selected_cart_ids = null;
+    if (isset($_POST['selected_items'])) {
+        $selected_items_json = $_POST['selected_items'];
+        $selected_cart_ids = json_decode($selected_items_json, true);
+        
+        // Validate selected items
+        if (!is_array($selected_cart_ids)) {
+            throw new Exception('Invalid selected items format');
+        }
+        
+        // Ensure all IDs are integers
+        $selected_cart_ids = array_map('intval', $selected_cart_ids);
+    }
+    
     // Create OrderService instance
     $orderService = new OrderService($db, $logger);
     
     // Create order with check_stock=true and additional request context
+    // We don't clear the cart at this point - it will be cleared only after successful payment
     $result = $orderService->createOrderFromCart(
         $user_id,
         $shipping_address,
         true, // Check stock
-        ['request_id' => $request_id] // Additional context
+        ['request_id' => $request_id], // Additional context
+        $selected_cart_ids, // Selected cart items (null = all items)
+        false // Don't clear cart items yet
     );
     
     // Add redirect URL to the result

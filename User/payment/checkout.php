@@ -20,6 +20,28 @@ $success = null;
 $order_id = null;
 $csrf_token = generateCsrfToken();
 
+// Debug log function for stock updates
+function debug_log($message, $data = []) {
+    $log_file = __DIR__ . '/logs/stock_update_debug.log';
+    $timestamp = date('Y-m-d H:i:s');
+    $log_message = "[$timestamp] $message";
+    
+    if (!empty($data)) {
+        $log_message .= " - " . json_encode($data);
+    }
+    
+    $log_message .= PHP_EOL;
+    
+    // Create logs directory if it doesn't exist
+    $log_dir = dirname($log_file);
+    if (!file_exists($log_dir)) {
+        mkdir($log_dir, 0777, true);
+    }
+    
+    // Append to log file
+    file_put_contents($log_file, $log_message, FILE_APPEND);
+}
+
 try {
     // Initialize Database
     $db = new Database();
@@ -164,272 +186,10 @@ if (isset($order_id)) {
     <title>Checkout - VeroSports</title>
     <link rel="stylesheet" href="../Header_and_Footer/header.css">
     <link rel="stylesheet" href="../Header_and_Footer/footer.css">
+    <link rel="stylesheet" href="checkout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        /* Reset and base styles */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-            line-height: 1.6;
-        }
-        
-        .page-container {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        main {
-            flex: 1;
-            padding: 40px 0;
-        }
-        
-        .checkout-container {
-            max-width: 1140px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
-        
-        h1 {
-            font-size: 32px;
-            font-weight: 600;
-            margin-bottom: 30px;
-            color: #222;
-            text-align: center;
-        }
-        
-        h2 {
-            font-size: 24px;
-            font-weight: 500;
-            margin-bottom: 20px;
-            color: #222;
-        }
-        
-        /* Messages */
-        .error-message {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .success-message {
-            background-color: #d4edda;
-            color: #155724;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #c3e6cb;
-        }
-        
-        /* Checkout Layout */
-        .checkout-grid {
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 30px;
-        }
-        
-        .checkout-details {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            padding: 25px;
-        }
-        
-        .order-summary {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            padding: 25px;
-            height: fit-content;
-        }
-        
-        /* Form Styling */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: #555;
-        }
-        
-        input, textarea {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-        
-        input:focus, textarea:focus {
-            border-color: #007bff;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
-        }
-        
-        textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-        
-        .help-text {
-            font-size: 13px;
-            color: #888;
-            margin-top: 6px;
-        }
-        
-        /* Sections */
-        .shipping-section, .payment-section {
-            margin-bottom: 30px;
-        }
-        
-        /* Order items */
-        .order-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .item-details {
-            flex: 1;
-        }
-        
-        .item-name {
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-        
-        .item-quantity {
-            font-size: 14px;
-            color: #777;
-        }
-        
-        .item-price {
-            font-weight: 500;
-        }
-        
-        /* Summary totals */
-        .summary-totals {
-            margin-top: 20px;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-        }
-        
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        
-        .summary-row.total {
-            font-size: 18px;
-            font-weight: 600;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-        }
-        
-        /* Buttons */
-        .button-container {
-            margin-top: 25px;
-        }
-        
-        .btn {
-            display: inline-block;
-            font-weight: 500;
-            text-align: center;
-            vertical-align: middle;
-            cursor: pointer;
-            padding: 10px 20px;
-            font-size: 16px;
-            line-height: 1.5;
-            border-radius: 6px;
-            transition: all 0.15s ease-in-out;
-            text-decoration: none;
-        }
-        
-        .btn-primary {
-            color: #fff;
-            background-color: #007bff;
-            border: 1px solid #007bff;
-            width: 100%;
-            padding: 12px;
-        }
-        
-        .btn-primary:hover {
-            background-color: #0069d9;
-            border-color: #0062cc;
-        }
-        
-        .btn-secondary {
-            color: #fff;
-            background-color: #6c757d;
-            border: 1px solid #6c757d;
-        }
-        
-        .btn-secondary:hover {
-            background-color: #5a6268;
-            border-color: #545b62;
-        }
-        
-        /* Cart Link */
-        .return-link {
-            display: block;
-            margin-top: 10px;
-            text-align: center;
-            color: #6c757d;
-            text-decoration: none;
-        }
-        
-        .return-link:hover {
-            text-decoration: underline;
-        }
-        
-        /* Responsive */
-        @media (max-width: 992px) {
-            .checkout-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .order-summary {
-                order: -1;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .checkout-container {
-                padding: 0 10px;
-            }
-            
-            h1 {
-                font-size: 24px;
-                margin-bottom: 20px;
-            }
-            
-            h2 {
-                font-size: 20px;
-            }
-            
-            .checkout-details, .order-summary {
-                padding: 15px;
-            }
-        }
-    </style>
+
     <meta name="csrf-token" content="<?php echo htmlspecialchars($csrf_token); ?>">
 </head>
 <body>

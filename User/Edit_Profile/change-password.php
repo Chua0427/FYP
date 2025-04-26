@@ -1,3 +1,53 @@
+<?php
+session_start();
+require_once 'db-connect.php';
+
+// Redirect if not logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$user_id = $_SESSION['user_id'];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $current_password = $_POST['current_password'];
+    $new_password = $_POST['new_password'];
+    $confirm_password = $_POST['confirm_password'];
+    
+    // Fetch current password hash
+    $sql = "SELECT password FROM users WHERE user_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+    
+    // Verify current password
+    if (!password_verify($current_password, $user['password'])) {
+        $error_message = "Current password is incorrect";
+    } elseif ($new_password !== $confirm_password) {
+        $error_message = "New passwords do not match";
+    } elseif (strlen($new_password) < 8) {
+        $error_message = "Password must be at least 8 characters long";
+    } else {
+        // Update password
+        $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+        $sql = "UPDATE users SET password = ? WHERE user_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("si", $hashed_password, $user_id);
+        
+        if ($stmt->execute()) {
+            $_SESSION['success_message'] = "Password changed successfully!";
+            header("Location: profile.php");
+            exit();
+        } else {
+            $error_message = "Error changing password: " . $conn->error;
+        }
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,35 +56,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Change Password - VeroSports</title>
     <link rel="stylesheet" href="change-password.css">
+    <link rel="stylesheet" href="../Header_and_Footer/header.css">
+    <link rel="stylesheet" href="../Header_and_Footer/footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 </head>
 <body>
-    <header>
-        <img src="../HomePage/images/VeroSports.jpeg" class="logo">
-        <div class="nav-links">
-            <a href="edit-profile.php">Edit Profile</a>
-            <a href="change-password.php">Change Password</a>
-            <a href="#">Logout</a>
-        </div>
-    </header>
+    <?php include __DIR__ . '/../Header_and_Footer/header.php'; ?>
     
-    <div class="container">
+    <div class="change-password-container">
         <h1>Change Password</h1>
         
-        <form id="changePasswordForm">
+        <?php if (isset($error_message)): ?>
+            <div class="alert error"><?php echo $error_message; ?></div>
+        <?php endif; ?>
+        
+        <form id="passwordForm" action="change-password.php" method="POST">
             <div class="form-group">
-                <label for="currentPassword">Current Password</label>
-                <input type="password" id="currentPassword" name="current_password" required>
-                <i class="fas fa-eye password-toggle" onclick="togglePassword('currentPassword')"></i>
+                <label for="current_password">Current Password</label>
+                <div class="password-input">
+                    <input type="password" id="current_password" name="current_password" required>
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword('current_password', this)"></i>
+                </div>
             </div>
             
             <div class="form-group">
-                <label for="newPassword">New Password</label>
-                <input type="password" id="newPassword" name="new_password" required>
-                <i class="fas fa-eye password-toggle" onclick="togglePassword('newPassword')"></i>
+                <label for="new_password">New Password</label>
+                <div class="password-input">
+                    <input type="password" id="new_password" name="new_password" required>
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword('new_password', this)"></i>
+                </div>
                 <div class="password-strength">
-                    <div class="strength-meter" id="strengthMeter"></div>
+                    <span id="strengthText">Password Strength: </span>
+                    <span id="strengthMeter">
+                        <span class="strength-bar weak"></span>
+                        <span class="strength-bar medium"></span>
+                        <span class="strength-bar strong"></span>
+                    </span>
                 </div>
                 <div class="requirements">
                     <div class="requirement" id="lengthReq">
@@ -53,23 +112,22 @@
             </div>
             
             <div class="form-group">
-                <label for="confirmPassword">Confirm New Password</label>
-                <input type="password" id="confirmPassword" name="confirm_password" required>
-                <i class="fas fa-eye password-toggle" onclick="togglePassword('confirmPassword')"></i>
-                <div id="passwordMatch" style="margin-top: 5px; font-size: 13px;"></div>
+                <label for="confirm_password">Confirm New Password</label>
+                <div class="password-input">
+                    <input type="password" id="confirm_password" name="confirm_password" required>
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword('confirm_password', this)"></i>
+                </div>
+                <span id="passwordMatch" class="validation-message"></span>
             </div>
             
-            <div class="btn-container">
-<<<<<<< HEAD
-                <button type="submit" class="btn"><b>Change Password</b></button>
-                <a href="../HomePage/homePage.php" class="btn btn-cancel"><b>Cancel</b></a>
-=======
-                <button type="submit" class="btn">Change Password</button>
-                <a href="../HomePage/homePage.php" class="btn btn-cancel">Cancel</a>
->>>>>>> a95b9eca4863135b0f7a7228aaf3e3a942d6a4d0
+            <div class="form-actions">
+                <button type="submit" class="save-btn">Change Password</button>
+                <a href="profile.php" class="cancel-btn">Cancel</a>
             </div>
         </form>
     </div>
+    
+    <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
     <script src="change-password.js"></script>
 </body>
 </html>
