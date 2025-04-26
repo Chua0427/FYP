@@ -161,6 +161,19 @@ if (isset($_POST['otp_submit'])) {
                 'user_id' => $_SESSION['temp_user']['user_id']
             ]);
             
+            // Check if user is an admin (user_type = 2)
+            if ($_SESSION['temp_user']['user_type'] == 2) {
+                // Clear all session data
+                $_SESSION = array();
+                
+                // Set error message
+                $_SESSION['login_error'] = 'Admin accounts must use the admin login page.';
+                
+                // Redirect to admin login page
+                header("Location: /FYP/FYP/Admin/Dashboard/dashboard.php");
+                exit();
+            }
+            
             // Copy from temp_user to user session
             $_SESSION['user_id'] = $_SESSION['temp_user']['user_id'];
             $_SESSION['first_name'] = $_SESSION['temp_user']['first_name'];
