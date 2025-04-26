@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Invoice FAQ - VeroSports</title>
+    <link rel="stylesheet" href="../Header_and_Footer/header.css">
+    <link rel="stylesheet" href="../Header_and_Footer/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .faq-container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 30px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        
+        h2 {
+            color: #3498db;
+            margin-top: 40px;
+            font-size: 1.5em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .faq-item {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        
+        .question {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            display: flex;
+        }
+        
+        .question .q {
+            color: #3498db;
+            margin-right: 8px;
+        }
+        
+        .answer {
+            color: #555;
+            padding-left: 20px;
+        }
+        
+        .answer .a {
+            color: #4CAF50;
+            margin-right: 8px;
+        }
+        
+        .highlight {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .language-switcher {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        
+        .language-switcher a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .language-switcher a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .faq-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <?php include __DIR__ . '/../Header_and_Footer/header.php'; ?>
+    
+    <div class="faq-container">
+        <div class="language-switcher">
+            <a href="E-InvoiceBM.php">View in Bahasa Malaysia</a>
+        </div>
+        
+        <h1>E-Invoice Frequently Asked Questions</h1>
+        
+        <div class="faq-item">
+            <div class="question"><span class="q">Q:</span> What is e-invoicing?</div>
+            <div class="answer"><span class="a">A:</span> E-invoicing is a digital transaction that makes it easier for customers to claim tax on the sport item they have purchased.</div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="question"><span class="q">Q:</span> Is e-invoicing safe?</div>
+            <div class="answer"><span class="a">A:</span> Yes, because it is issued by a registered company, and companies will carefully check with the requester.</div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="question"><span class="q">Q:</span> Is e-invoicing only for physical purchases?</div>
+            <div class="answer"><span class="a">A:</span> No, e-invoicing can be used for both physical purchases and online purchases.</div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="question"><span class="q">Q:</span> How long is the validity period?</div>
+            <div class="answer"><span class="a">A:</span> The validity period is within the same month of purchase only.</div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="question"><span class="q">Q:</span> How do I get an e-invoice?</div>
+            <div class="answer"><span class="a">A:</span> You can obtain an e-invoice at every point of your purchase.</div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="question"><span class="q">Q:</span> I have bought at Store A, can I get an e-invoice at Store C?</div>
+            <div class="answer"><span class="a">A:</span> Sorry, it's not possible. E-Invoice can only be claimed at the store where you made the purchase with the same month.</div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="question"><span class="q">Q:</span> Will I get an e-invoice after making a purchase?</div>
+            <div class="answer"><span class="a">A:</span> Yes, after making a purchase, you can request the counter worker to issue an e-invoice.</div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="question"><span class="q">Q:</span> Where do I need to get a QR to scan?</div>
+            <div class="answer"><span class="a">A:</span> The QR code can be found on your e-invoice receipt that the employee issues.</div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="question"><span class="q">Q:</span> What do I need to prepare to get an e-invoice?</div>
+            <div class="answer"><span class="a">A:</span> You just need to bring a copy of the receipt and IC to make an e-invoice request.</div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="question"><span class="q">Q:</span> Where can I read about this e-invoicing?</div>
+            <div class="answer"><span class="a">A:</span> You can visit <a href="https://www.hasil.gov.my/e-invoice/" target="_blank">https://www.hasil.gov.my/e-invoice/</a> for more information.</div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="question"><span class="q">Q:</span> I forgot to ask the e-invoice during my purchase, can I get it now?</div>
+            <div class="answer"><span class="a">A:</span> Yes, e-Invoice can only be claimed at the store where you made the purchase with the same month.</div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="question"><span class="q">Q:</span> Can I make an e-invoicing claim without having to register as an VeroSports member?</div>
+            <div class="answer"><span class="a">A:</span> Yes, it is possible to submit an e-Invoicing claim without registering as an VeroSports member. However, we strongly recommend registering as a member with VeroSports, as this will not only enable you to take advantage of the e-Invoicing feature, but also provide you with a range of additional benefits. By registering, you will be eligible to receive a 15% voucher on your purchase, as well as being the first to receive information about ongoing promotions and exclusive offers at VeroSports.</div>
+        </div>
+    </div>
+    
+    <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
+</body>
+</html>

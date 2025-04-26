@@ -130,3 +130,4 @@ document.getElementById('passwordForm').addEventListener('submit', function(e) {
         return;
     }
 });
+
