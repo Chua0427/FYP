@@ -1,2 +1,5 @@
 [2025-04-26T03:56:07.815622+02:00] auth.INFO: User login without Remember Me {"user_id":49,"email":"chiannchua0427@gmail.com","ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"} []
 [2025-04-26T03:56:07.820973+02:00] auth.INFO: User login {"user_id":49,"email":"chiannchua0427@gmail.com","ip":"::1"} []
+[2025-04-26T04:19:24.098021+02:00] auth.INFO: User logout {"user_id":49,"email":"chiannchua0427@gmail.com","ip":"::1"} []
+[2025-04-26T04:19:25.814887+02:00] auth.INFO: User login without Remember Me {"user_id":41,"email":"chiannchua05@gmail.com","ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"} []
+[2025-04-26T04:19:25.817848+02:00] auth.INFO: User login {"user_id":41,"email":"chiannchua05@gmail.com","ip":"::1"} []
