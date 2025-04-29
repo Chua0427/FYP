@@ -37,6 +37,7 @@
                WHERE r.product_id= $product_id
                ORDER BY r.review_id DESC";
         $result1= $conn->query($sql1);
+
     ?>
 
     <div class="review-container">

@@ -97,3 +97,10 @@ Stack trace:
 #2 [internal function]: Database->__destruct()
 #3 {main}
   thrown in C:\xampp\htdocs\FYP\FYP\User\payment\db.php on line 260
+[23-Apr-2025 22:57:45 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli object is already closed in C:\xampp\htdocs\FYP\FYP\User\payment\db.php:260
+Stack trace:
+#0 C:\xampp\htdocs\FYP\FYP\User\payment\db.php(260): mysqli->close()
+#1 C:\xampp\htdocs\FYP\FYP\User\payment\db.php(268): Database->close()
+#2 [internal function]: Database->__destruct()
+#3 {main}
+  thrown in C:\xampp\htdocs\FYP\FYP\User\payment\db.php on line 260

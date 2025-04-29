@@ -24,7 +24,7 @@ try {
         "SELECT o.*, 
          (SELECT payment_status FROM payment WHERE order_id = o.order_id ORDER BY payment_at DESC LIMIT 1) as payment_status
          FROM orders o 
-         WHERE o.user_id = ? 
+         WHERE o.user_id = ? AND o.delivery_status = 'delivered' 
          ORDER BY o.order_at DESC",
         [$user_id]
     );
@@ -44,7 +44,7 @@ try {
         // Count items needing review
         $order['needs_review_count'] = 0;
         foreach ($order['items'] as $item) {
-            if ($item['reviewed'] == 0 && $order['delivery_status'] == 'delivered') {
+            if ($item['reviewed'] == 0) {
                 $order['needs_review_count']++;
             }
         }
@@ -53,13 +53,8 @@ try {
     // Count total orders
     $total_orders = count($orders);
     
-    // Count delivered orders
-    $delivered_orders = 0;
-    foreach ($orders as $order) {
-        if ($order['delivery_status'] == 'delivered') {
-            $delivered_orders++;
-        }
-    }
+    // Count delivered orders (which is now the same as total orders)
+    $delivered_orders = $total_orders;
     
 } catch (Exception $e) {
     $logger->error('Error fetching order history', [
@@ -344,10 +339,6 @@ try {
                     <div class="stat-value"><?php echo htmlspecialchars((string)$total_orders); ?></div>
                     <div class="stat-label">Total Orders</div>
                 </div>
-                <div class="stat-box">
-                    <div class="stat-value"><?php echo htmlspecialchars((string)$delivered_orders); ?></div>
-                    <div class="stat-label">Delivered Orders</div>
-                </div>
             </div>
         
             <?php if (empty($orders)): ?>
@@ -381,7 +372,7 @@ try {
                             </div>
                         </div>
                         
-                        <?php if ($order['needs_review_count'] > 0 && $order['delivery_status'] == 'delivered'): ?>
+                        <?php if ($order['needs_review_count'] > 0): ?>
                             <div class="needs-review">
                                 <i class="fas fa-exclamation-circle"></i>
                                 <?php echo $order['needs_review_count'] > 1 
@@ -402,16 +393,14 @@ try {
                                             <span class="item-price">RM <?php echo number_format((float)$item['price'], 2, '.', ','); ?></span>
                                         </div>
                                     </div>
-                                    <?php if ($order['delivery_status'] == 'delivered'): ?>
-                                        <?php if ($item['reviewed'] == 0): ?>
-                                            <a href="../Review_Page/write_review.php?product_id=<?php echo htmlspecialchars((string)$item['product_id']); ?>" class="review-button">
-                                                Write Review
-                                            </a>
-                                        <?php else: ?>
-                                            <span class="already-reviewed">
-                                                <i class="fas fa-check-circle"></i> Reviewed
-                                            </span>
-                                        <?php endif; ?>
+                                    <?php if ($item['reviewed'] == 0): ?>
+                                        <a href="../Review_Page/write_review.php?product_id=<?php echo htmlspecialchars((string)$item['product_id']); ?>" class="review-button">
+                                            Write Review
+                                        </a>
+                                    <?php else: ?>
+                                        <span class="already-reviewed">
+                                            <i class="fas fa-check-circle"></i> Reviewed
+                                        </span>
                                     <?php endif; ?>
                                 </div>
                             <?php endforeach; ?>

@@ -96,8 +96,12 @@ try {
                 'action' => $existingReview ? 'update' : 'new'
             ]);
             
+            // Set JavaScript session storage flag before redirecting
+            echo "<script>sessionStorage.setItem('reviewSubmitted', 'true');</script>";
+            
             // Redirect back to order history after a small delay (for the success message)
-            header("Refresh: 2; URL=../order/orderhistory.php");
+            echo "<script>alert('" . htmlspecialchars($success) . "'); window.location.href='../order/orderhistory.php';</script>";
+            exit;
         }
     }
     
@@ -121,269 +125,60 @@ try {
     <link rel="stylesheet" href="../Header_and_Footer/header.css">
     <link rel="stylesheet" href="../Header_and_Footer/footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-        
-        .review-container {
-            max-width: 800px;
-            margin: 30px auto;
-            padding: 25px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .page-title {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #333;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .product-info {
-            display: flex;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .product-image {
-            width: 120px;
-            height: 120px;
-            object-fit: cover;
-            margin-right: 20px;
-            border: 1px solid #eee;
-            border-radius: 4px;
-        }
-        
-        .product-details h3 {
-            margin: 0 0 5px 0;
-            color: #333;
-        }
-        
-        .product-brand {
-            color: #777;
-            margin: 0 0 5px 0;
-        }
-        
-        .star-rating {
-            margin: 25px 0;
-            text-align: center;
-        }
-        
-        .star {
-            font-size: 35px;
-            color: #ddd;
-            cursor: pointer;
-            margin: 0 5px;
-            transition: color 0.2s;
-        }
-        
-        .star.selected {
-            color: #ffc107;
-        }
-        
-        .rating-text {
-            text-align: center;
-            margin: 10px 0 25px;
-            font-size: 16px;
-            color: #666;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #555;
-        }
-        
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-family: inherit;
-            height: 120px;
-            resize: vertical;
-        }
-        
-        .submit-btn {
-            background-color: #0077cc;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-            display: block;
-            margin: 0 auto;
-        }
-        
-        .submit-btn:hover {
-            background-color: #005fa3;
-        }
-        
-        .error-message {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 12px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .success-message {
-            background-color: #d4edda;
-            color: #155724;
-            padding: 12px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            color: #0077cc;
-            text-decoration: none;
-        }
-        
-        .back-link:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <link rel="stylesheet" href="write_review.css">
 </head>
 <body>
     <?php include __DIR__ . '/../Header_and_Footer/header.php'; ?>
 
-    <div class="review-container">
-        <h1 class="page-title">Write a Review</h1>
-        
-        <?php if (!empty($error)): ?>
-            <div class="error-message">
-                <?php echo htmlspecialchars($error); ?>
-            </div>
-        <?php endif; ?>
-        
-        <?php if (!empty($success)): ?>
-            <div class="success-message">
-                <?php echo htmlspecialchars($success); ?>
-            </div>
-        <?php else: ?>
+    <div class="formWrapper">
+        <div class="formContainer">
+            <h2>Review</h2>
+            
+            <?php if (!empty($error)): ?>
+                <div class="error-message">
+                    <?php echo htmlspecialchars($error); ?>
+                </div>
+            <?php endif; ?>
             
             <?php if (isset($product)): ?>
-                <div class="product-info">
+                <div class="product-details">
                     <img src="../../upload/<?php echo htmlspecialchars($product['product_img1']); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>" class="product-image">
-                    <div class="product-details">
-                        <h3><?php echo htmlspecialchars($product['product_name']); ?></h3>
-                        <p class="product-brand"><?php echo htmlspecialchars($product['brand']); ?></p>
+                    <div>
+                        <h4><?php echo htmlspecialchars($product['product_name']); ?></h4>
+                        <p><?php echo htmlspecialchars($product['brand']); ?></p>
                     </div>
                 </div>
                 
+                <h3>Click star to rate the product!</h3>
+
                 <form method="POST" action="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                     
                     <div class="star-rating">
-                        <i class="fas fa-star star" data-value="1"></i>
-                        <i class="fas fa-star star" data-value="2"></i>
-                        <i class="fas fa-star star" data-value="3"></i>
-                        <i class="fas fa-star star" data-value="4"></i>
                         <i class="fas fa-star star" data-value="5"></i>
+                        <i class="fas fa-star star" data-value="4"></i>
+                        <i class="fas fa-star star" data-value="3"></i>
+                        <i class="fas fa-star star" data-value="2"></i>
+                        <i class="fas fa-star star" data-value="1"></i>
                     </div>
                     
-                    <p class="rating-text">Select your rating</p>
+                    <input type="hidden" id="ratingValue" name="ratingValue" value="<?php echo isset($existingReview) ? htmlspecialchars((string)$existingReview['rating']) : '0'; ?>">
                     
-                    <input type="hidden" id="ratingValue" name="ratingValue" value="0">
-                    
-                    <div class="form-group">
-                        <label for="review">Your Review</label>
-                        <textarea id="review" name="review" placeholder="Share your experience with this product..."><?php echo isset($existingReview) ? htmlspecialchars($existingReview['review_text']) : ''; ?></textarea>
-                    </div>
+                    <h3>Share your review about recently purchased product!</h3>
+                    <textarea id="review" name="review" placeholder="Please write your comment..."><?php echo isset($existingReview) ? htmlspecialchars($existingReview['review_text']) : ''; ?></textarea>
                     
                     <button type="submit" class="submit-btn">
-                        <?php echo isset($existingReview) ? 'Update Review' : 'Submit Review'; ?>
+                        <?php echo isset($existingReview) ? 'Update Review' : 'Submit'; ?>
                     </button>
+                    
+                    <a href="../order/orderhistory.php" class="return-link">Return to Order History</a>
                 </form>
             <?php endif; ?>
-        <?php endif; ?>
-        
-        <a href="../order/orderhistory.php" class="back-link">Back to Order History</a>
+        </div>
     </div>
 
     <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
     
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const stars = document.querySelectorAll('.star');
-            const ratingValue = document.getElementById('ratingValue');
-            const ratingText = document.querySelector('.rating-text');
-            
-            // Set initial rating if editing
-            <?php if (isset($existingReview)): ?>
-            const initialRating = <?php echo (int)$existingReview['rating']; ?>;
-            setRating(initialRating);
-            <?php endif; ?>
-            
-            // Handle star clicks
-            stars.forEach(star => {
-                star.addEventListener('click', function() {
-                    const value = parseInt(this.getAttribute('data-value'));
-                    setRating(value);
-                });
-                
-                star.addEventListener('mouseover', function() {
-                    const value = parseInt(this.getAttribute('data-value'));
-                    highlightStars(value);
-                });
-                
-                star.addEventListener('mouseout', function() {
-                    const currentRating = parseInt(ratingValue.value) || 0;
-                    highlightStars(currentRating);
-                });
-            });
-            
-            function setRating(value) {
-                ratingValue.value = value;
-                highlightStars(value);
-                
-                // Update text based on rating
-                const ratingTexts = [
-                    'Select your rating',
-                    'Poor - 1 star',
-                    'Fair - 2 stars',
-                    'Average - 3 stars',
-                    'Good - 4 stars',
-                    'Excellent - 5 stars'
-                ];
-                
-                ratingText.textContent = ratingTexts[value] || ratingTexts[0];
-            }
-            
-            function highlightStars(count) {
-                stars.forEach(star => {
-                    const starValue = parseInt(star.getAttribute('data-value'));
-                    if (starValue <= count) {
-                        star.classList.add('selected');
-                    } else {
-                        star.classList.remove('selected');
-                    }
-                });
-            }
-        });
-    </script>
+    <script src="write_review.js"></script>
 </body>
 </html> 
