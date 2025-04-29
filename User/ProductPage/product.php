@@ -335,7 +335,7 @@ document.addEventListener("DOMContentLoaded", function () {
         addToCartBtn.addEventListener('click', function(e) {
             e.preventDefault();
             // Redirect to login page with return URL
-            window.location.href = '/FYP/User/login/login.php?redirect=' + encodeURIComponent(window.location.href);
+            window.location.href = '/FYP/FYP/User/login/login.php?redirect=' + encodeURIComponent(window.location.href);
         });
     }
 });

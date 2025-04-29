@@ -2,24 +2,22 @@
             <div class="footerMenu">
                 <div class="footerCategories">
                     <h3>COMPANY</h3>
-                    <a href="#">About VEROSPORTS</a>
+                    <a href="../fl/AboutVeroSports.php">About VEROSPORTS</a>
                     <a href="#">Our Location</a>
-                    <a href="#">Privacy Policy</a>
+                    <a href="../fl/PPen.php">Privacy Policy</a>
                     <a href="#">Term & Condition</a>
                 </div>
                 <div class="footerCategories">
                     <h3>Help & Support</h3>
-                    <a href="#">Size Chart</a>
-                    <a href="#">Return Policy</a>
-                    <a href="#">Cancellation Policy</a>
-                    <a href="#">Contact Us</a>
-                    <a href="#">Tranck My Order</a>
+                    <a href="../fl/RPen.php">Return Policy</a>
+                    <a href="../fl/CancellationPolicyEN.php">Cancellation Policy</a>
+                    <a href="../fl/TrackMyOrder.php">Track My Order</a>
                 </div>
                 <div class="footerCategories">
                     <h3>FAQs</h3>
-                    <a href="#">Payment Methods</a>
-                    <a href="#">About Delivery</a>
-                    <a href="#">E-Invoice</a>
+                    <a href="../fl/PaymentMethod.php">Payment Methods</a>
+                    <a href="../fl/AboutDeliveryEN.php">About Delivery</a>
+                    <a href="../fl/E-InvoiceEN.php">E-Invoice</a>
                 </div>
                 <div class="contactUsWrapper">
                     <div class="contactUs">

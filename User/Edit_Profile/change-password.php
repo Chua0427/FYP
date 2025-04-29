@@ -38,8 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("si", $hashed_password, $user_id);
         
         if ($stmt->execute()) {
-            $_SESSION['success_message'] = "Password changed successfully!";
-            header("Location: profile.php");
+            $_SESSION['password_change_success'] = true;
+            header("Location: change-password.php");
             exit();
         } else {
             $error_message = "Error changing password: " . $conn->error;
@@ -127,7 +127,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
     
+    <div id="successPopup" class="popup">
+        <div class="popup-content">
+            <span class="close-popup">&times;</span>
+            <i class="fas fa-check-circle success-icon"></i>
+            <h2>Success!</h2>
+            <p>Your password has been changed successfully.</p>
+            <a href="../HomePage/homePage.php" class="popup-ok-btn">OK</a>
+
+        </div>
+    </div>
+
     <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    <?php if (isset($_SESSION['password_change_success']) && $_SESSION['password_change_success']): ?>
+        showSuccessPopup();
+        <?php unset($_SESSION['password_change_success']); ?>
+    <?php endif; ?>
+});
+
+function showSuccessPopup() {
+    const popup = document.getElementById('successPopup');
+    popup.style.display = 'flex';
+    
+    // Close popup when clicking X or OK button
+    document.querySelector('.close-popup').addEventListener('click', function() {
+        popup.style.display = 'none';
+    });
+    
+    document.querySelector('.popup-ok-btn').addEventListener('click', function() {
+        popup.style.display = 'none';
+    });
+    
+    // Close when clicking outside the popup
+    popup.addEventListener('click', function(e) {
+        if (e.target === popup) {
+            popup.style.display = 'none';
+        }
+    });
+}
+</script>
     <script src="change-password.js"></script>
 </body>
 </html>
