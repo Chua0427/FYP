@@ -1,23 +1,22 @@
-<?php     
-include __DIR__ . '/../../connect_db/config.php';     
-session_start();     
-$user_id = $_SESSION['user_id'];     
+<?php
+    include __DIR__ . '/../../connect_db/config.php';
+    session_start();
+    $user_id = $_SESSION['user_id'];
+    $sql = "SELECT * FROM orders WHERE user_id = $user_id AND delivery_status!= 'Delivered' ORDER BY order_at DESC";
+    $result1 = $conn->query($sql);
+?>
 
-$sql = "SELECT * FROM orders WHERE user_id = $user_id AND delivery_status != 'delivered' ORDER BY order_at DESC";     
-$result1 = $conn->query($sql); 
-?>  
+<!DOCTYPE html>
+<html lang="en">
 
-<!DOCTYPE html> 
-<html lang="en"> 
-<head> 
-    <meta charset="UTF-8"> 
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <title>VeroSports</title> 
-    <link rel="stylesheet" href="search.css"> 
-    <link rel="stylesheet" href="../Header_and_Footer/footer.css"> 
-    <link rel="stylesheet" href="../Header_and_Footer/header.css"> 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"> 
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeroSports</title>
+    <link rel="stylesheet" href="search.css">
+    <link rel="stylesheet" href="../Header_and_Footer/footer.css">
+    <link rel="stylesheet" href="../Header_and_Footer/header.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         body {
@@ -28,9 +27,8 @@ $result1 = $conn->query($sql);
 
         .container {
             max-width: 1000px;
-            margin: 205px auto;
+            margin: 30px auto;
             padding: 0 20px;
-            text-align: center;
         }
 
         .order-card {
@@ -45,7 +43,7 @@ $result1 = $conn->query($sql);
         .order-header {
             display: flex;
             justify-content: space-between;
-            background: rgb(240, 240, 240);
+            background:rgb(240, 240, 240);
             padding: 10px 15px;
             font-size: 18px;
             border-bottom: 1px solid #ddd;
@@ -68,7 +66,6 @@ $result1 = $conn->query($sql);
 
         .order-info {
             flex: 1;
-            text-align: left;
         }
 
         .order-info h4 {
@@ -107,73 +104,56 @@ $result1 = $conn->query($sql);
         .order-footer a:hover {
             background: #e64a19;
         }
-
-        .no-order {
-            margin-top: 50px;
-            font-size: 20px;
-            color: #777;
-        }
-
-        .continue-btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #ff5722;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        .continue-btn:hover {
-            background-color: #e64a19;
-        }
     </style>
-</head> 
+</head>
+<body>
 
-<body> 
-<?php include __DIR__ . '/../Header_and_Footer/header.php'; ?> 
+<?php 
+    include __DIR__ . '/../Header_and_Footer/header.php'; 
+?>
 
 <div class="container">
-    <?php if ($result1->num_rows > 0): ?>
-        <?php while($row = $result1->fetch_assoc()): ?>
-            <div class="order-card">
-                <div class="order-header">
-                    <div>Order ID : <?php echo $row['order_id'] ?></div>
-                    <div>Status : <strong><?php echo  $row['delivery_status'] ?></strong></div>
+    <?php if($result1->num_rows>0): ?>
+    <?php while($row = $result1->fetch_assoc()): ?>
+        <div class="order-card">
+            <div class="order-header">
+                <div>Order ID : <?php echo $row['order_id'] ?></div>
+                <div>Status : <strong><?php echo  $row['delivery_status'] ?></strong></div>
+            </div>
+
+            <?php
+                $order_id = $row['order_id'];
+                $items_result = $conn->query("SELECT oi.*, p.product_name, p.product_img1 FROM order_items oi JOIN product p ON oi.product_id = p.product_id WHERE oi.order_id = $order_id");
+                while ($item = $items_result->fetch_assoc()):
+            ?>
+            <div class="order-body">
+                <div class="order-image">
+                    <img src="../../upload/<?php echo $item['product_img1'] ?>" alt="product">
                 </div>
 
-                <?php
-                    $order_id = $row['order_id'];
-                    $items_result = $conn->query("SELECT oi.*, p.product_name, p.product_img1 FROM order_items oi JOIN product p ON oi.product_id = p.product_id WHERE oi.order_id = $order_id");
-                    while ($item = $items_result->fetch_assoc()):
-                ?>
-                <div class="order-body">
-                    <div class="order-image">
-                        <img src="../../upload/<?php echo $item['product_img1'] ?>" alt="product">
-                    </div>
-
-                    <div class="order-info">
-                        <h4><?php echo $item['product_name'] ?></h4>
-                        <p>Quantity: <?php echo $item['quantity'] ?></p>
-                        <p>Price: RM <?php echo number_format($item['price'], 2) ?></p>
-                    </div>
-                </div>
-                <?php endwhile; ?>
-
-                <div class="order-footer">
-                    <p>Order Time : <?php echo date("Y-m-d H:i", strtotime($row['order_at'])) ?></p>
-                    <p>Total : <strong>RM <?php echo number_format($row['total_price'], 2) ?></strong></p>
-                    <a href="../Delivery_Status_Page/delivery.php?id=<?php echo $row['order_id'] ?>">View Status</a>
+                <div class="order-info">
+                    <h4><?php echo $item['product_name'] ?></h4>
+                    <p>Quantity: <?php echo $item['quantity'] ?></p>
+                    <p>Price: RM <?php echo number_format($item['price'], 2) ?></p>
                 </div>
             </div>
+            <?php endwhile; ?>
+            <div class="order-footer">
+                <p>Order Time : <?php echo date("Y-m-d H:i", strtotime($row['order_at'])) ?></p>
+                <p>Total : <strong>RM <?php echo number_format($row['total_price'], 2) ?></strong></p>
+                <a href="../Delivery_Status_Page/delivery.php?id=<?php echo $row['order_id'] ?>">View Status</a>
+            </div>
+        </div>
         <?php endwhile; ?>
-    <?php else: ?>
-        <div class="no-order">No orders now.</div>
-        <a href="../HomePage/homePage.php" class="continue-btn">Continue Shopping</a>
-    <?php endif; ?>
+        <?php else: ?>
+            <div style="text-align: center; padding: 50px;">
+                <h2 style="margin-bottom: 20px;">No Orders Now</h2>
+                <a href="../HomePage/homePage.php" style="background: #ff5722; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Continue Shopping</a>
+            </div>
+        <?php endif; ?>
 </div>
 
-<?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?> 
-</body> 
+<?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
+
+</body>
 </html>
