@@ -1,0 +1,2 @@
+[2025-04-29T04:36:10.271185+02:00] app.INFO: Add to cart request {"request_id":"cart_68103b1a31b0f3.79969097","user_id":54,"product_id":28,"product_size":"UK6Y","quantity":1} []
+[2025-04-29T04:36:10.289745+02:00] app.INFO: New cart item added {"request_id":"cart_68103b1a31b0f3.79969097","user_id":54,"product_id":28,"product_size":"UK6Y","quantity":1} []
