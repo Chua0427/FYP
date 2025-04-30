@@ -13,7 +13,7 @@
         $city = $_POST["city"];
         $birthday_date = $_POST["birthday_date"];
         $gender = $_POST["gender"];
-        $user_type = 2; 
+        $user_type = 2; // Admin user type
 
         $upload = "../../upload/";
 

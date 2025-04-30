@@ -19,7 +19,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $city = $_POST["city"];
     $birthday_date = $_POST["birthday_date"];
     $gender = $_POST["gender"];
-    $user_type = 2;
+    
+    // Keep the existing user_type to preserve admin level (2 or 3)
+    $user_type = $admin['user_type'];
 
     if(!empty($_POST["password"])){
         $password= password_hash($_POST["password"], PASSWORD_DEFAULT);
