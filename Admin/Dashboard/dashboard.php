@@ -12,8 +12,8 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_type'])) {
     exit;
 }
 
-// Check if user is admin (user_type = 2)
-if ($_SESSION['user_type'] != 2) {
+// Check if user is admin (user_type = 2 or user_type = 3)
+if ($_SESSION['user_type'] != 2 && $_SESSION['user_type'] != 3) {
     // Redirect non-admin users to the main site
     header("Location: /FYP/FYP/User/HomePage/homePage.php");
     exit;
