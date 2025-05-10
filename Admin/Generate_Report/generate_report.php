@@ -198,7 +198,7 @@ $totalOrders = count($orderIDs);
             <input type="date" name="start_date" value="<?php echo $startDate; ?>">
           </label>
           <label style="margin-left:15px;">End Date:
-            <input type="date" name="end_date" value="<?php echo $endDate; ?>">
+            <input type="date" name="end_date" value="<?php echo $endDateRaw; ?>">
           </label>
           <button type="submit">Filter</button>
         </form>
