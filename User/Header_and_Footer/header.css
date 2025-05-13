@@ -10,7 +10,7 @@ body {
 }
 
 header {
-    position: relative;
+    position: fixed;
     width: 100%;
     padding: 9px 1%;
     background: rgb(0, 0, 0);
