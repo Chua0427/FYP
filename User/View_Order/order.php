@@ -27,8 +27,10 @@
 
         .container {
             max-width: 1000px;
-            margin: 30px auto;
+            margin: 0px auto;
             padding: 0 20px;
+            position:relative;
+            top: 100px;
         }
 
         .order-card {
@@ -152,8 +154,6 @@
             </div>
         <?php endif; ?>
 </div>
-
-<?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
 
 </body>
 </html>

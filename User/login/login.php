@@ -43,8 +43,8 @@ function sendOTPEmail($email, $otp, $user_name) {
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'DeadHunter0802@gmail.com';
-        $mail->Password = 'drzrsnnjezzdrfvx';
+        $mail->Username = 'chiannchua05@gmail.com';
+        $mail->Password = 'niiwzkwxnqlecaww';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
         $mail->Port = 465;
         
@@ -53,7 +53,7 @@ function sendOTPEmail($email, $otp, $user_name) {
         $mail->SMTPKeepAlive = false; // Don't keep connection alive for multiple emails
         
         // Recipients
-        $mail->setFrom('DeadHunter0802@gmail.com', 'VeroSports Authentication');
+        $mail->setFrom('chiannchua05@gmail.com', 'VeroSports Authentication');
         $mail->addAddress($email, $user_name);
         
         // Content

@@ -1,0 +1,3 @@
+[2025-05-15T02:46:16.735144+02:00] app.INFO: User submitted product review {"user_id":54,"product_id":20,"rating":5,"action":"new"} []
+[2025-05-15T02:49:27.480422+02:00] app.INFO: Add to cart request {"request_id":"cart_68253a1769f311.29124971","user_id":54,"product_id":72,"product_size":"L","quantity":1} []
+[2025-05-15T02:49:27.484085+02:00] app.INFO: New cart item added {"request_id":"cart_68253a1769f311.29124971","user_id":54,"product_id":72,"product_size":"L","quantity":1} []
