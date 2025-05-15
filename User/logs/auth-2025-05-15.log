@@ -1,0 +1,7 @@
+[2025-05-15T02:09:18.724862+02:00] auth.INFO: OTP generated for login {"user_id":54,"email":"caichian8@gmail.com","ip":"::1","auth_time":"0.5278"} []
+[2025-05-15T02:09:24.816048+02:00] auth.INFO: OTP sent after redirect {"user_id":54,"email":"caichian8@gmail.com","ip":"::1","send_time":"5.4430"} []
+[2025-05-15T02:09:38.489400+02:00] auth.INFO: User successfully verified OTP and logged in {"email":"caichian8@gmail.com","user_id":54} []
+[2025-05-15T02:19:51.196905+02:00] auth.INFO: User logout {"user_id":54,"email":"caichian8@gmail.com","ip":"::1"} []
+[2025-05-15T02:44:07.597739+02:00] auth.INFO: OTP generated for login {"user_id":54,"email":"caichian8@gmail.com","ip":"::1","auth_time":"0.0695"} []
+[2025-05-15T02:44:11.020480+02:00] auth.INFO: OTP sent after redirect {"user_id":54,"email":"caichian8@gmail.com","ip":"::1","send_time":"3.3221"} []
+[2025-05-15T02:44:23.568639+02:00] auth.INFO: User successfully verified OTP and logged in {"email":"caichian8@gmail.com","user_id":54} []
