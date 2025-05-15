@@ -49,6 +49,7 @@ try {
             }
         }
     }
+    unset($order);
     
     // Count total orders
     $total_orders = count($orders);
@@ -86,7 +87,9 @@ try {
         
         .order-history-container {
             max-width: 1200px;
-            margin: 30px auto;
+            position: relative;
+            top: 100px;
+            margin: auto auto 150px auto;
             padding: 20px;
             background: #fff;
             border-radius: 8px;
