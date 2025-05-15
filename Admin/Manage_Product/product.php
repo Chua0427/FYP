@@ -100,15 +100,15 @@
                     </div>
                     <div class="form-group">
                         <label>Image 2:</label>
-                        <input type="file" name="product_image2">
+                        <input type="file" name="product_image2" required>
                     </div>
                     <div class="form-group">
                         <label>Image 3:</label>
-                        <input type="file" name="product_image3">
+                        <input type="file" name="product_image3" required>
                     </div>
                     <div class="form-group">
-                        <label>Image 4:</label>
-                        <input type="file" name="product_image4">
+                        <label>Image 4:</label> 
+                        <input type="file" name="product_image4" required>
                     </div>
                 </div>
 

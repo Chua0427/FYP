@@ -11,6 +11,7 @@ body {
 
 .new-billboard{
     position: relative;
+    top: 78px;
 }
 
 .new-billboard img{
