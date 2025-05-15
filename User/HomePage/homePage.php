@@ -302,7 +302,7 @@ require_once __DIR__ . '/../app/restrict_admin.php';
             </div>
         </div>
 
-        <h2 style="background-color: white; margin-top: 100px; margin-bottom: -60px;">Shop By Gender</h2>
+        <h2 style="background-color: white; margin-top: 140px; margin-bottom: -60px;">Shop By Gender</h2>
         <div class="column1" style="margin-top:1%;">
             <div class="column" style="width: 400px; height: 600px;">
                 <img src="images/man.jpg">
