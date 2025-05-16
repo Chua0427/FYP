@@ -1,3 +1,7 @@
 [2025-05-15T02:46:16.735144+02:00] app.INFO: User submitted product review {"user_id":54,"product_id":20,"rating":5,"action":"new"} []
 [2025-05-15T02:49:27.480422+02:00] app.INFO: Add to cart request {"request_id":"cart_68253a1769f311.29124971","user_id":54,"product_id":72,"product_size":"L","quantity":1} []
 [2025-05-15T02:49:27.484085+02:00] app.INFO: New cart item added {"request_id":"cart_68253a1769f311.29124971","user_id":54,"product_id":72,"product_size":"L","quantity":1} []
+[2025-05-15T15:24:42.119909+02:00] app.INFO: Add to cart request {"request_id":"cart_6825eb1a118e99.80151694","user_id":54,"product_id":27,"product_size":"UK13.5C","quantity":1} []
+[2025-05-15T15:24:42.127785+02:00] app.INFO: New cart item added {"request_id":"cart_6825eb1a118e99.80151694","user_id":54,"product_id":27,"product_size":"UK13.5C","quantity":1} []
+[2025-05-15T15:25:00.768084+02:00] app.INFO: Order created successfully {"user_id":54,"order_id":34,"total_amount":419.3,"items_count":1,"selected_items":1,"request_id":"order_6825eb2cba6722.79265416"} []
+[2025-05-15T15:25:04.718499+02:00] app.INFO: Cart items cleared after payment method selection {"user_id":54,"order_id":"34"} []

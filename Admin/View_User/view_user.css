@@ -45,7 +45,7 @@ table {
 }
 
 .user-table table th {
-    background: #00308aa4;
+    background: #3A506B;
     color: white;
     padding: 5px 15px;
     font-size: 16px;
@@ -67,8 +67,16 @@ table {
     border-bottom:1px solid lightgray;
 }
 
+.user-table table tr:nth-child(even) {
+    background-color: #f2f7ff; 
+}
+
+.user-table table tr:nth-child(odd) {
+    background-color: #ffffff; 
+}
+
 .user-table table tr:hover {
-    background-color: #b1b6ff31;
+    background-color: #d1e7fda2;
 }
 
 .search-container{
@@ -94,7 +102,7 @@ table {
 }
 
 #searchButton{
-    background-color: rgb(0, 140, 255);
+    background-color: #4E73DF;
     padding: 10px 20px;
     border-radius: 20px;
     cursor: pointer;

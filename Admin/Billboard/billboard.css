@@ -34,10 +34,11 @@ table {
     border-collapse: collapse;
     background: white;
     overflow: hidden;
+    border:1px solid rgb(214, 214, 214);
 }
 
 .table table th {
-    background: #0084ff;
+    background: #3A506B;
     color: white;
     padding: 5px 15px;
     font-size: 16px;
@@ -47,13 +48,14 @@ table {
 .table table td {
     padding: 30px;
     text-align: center;
+    border: 1px solid rgb(212, 212, 212);
 }
 
 .table img {
     width: 600px;
     height: 100%;
     object-fit: cover;
-    border: 2px solid #007bff;
+    border: 2px solid #3A506B;
 }
 
 .table table tr{
@@ -109,7 +111,7 @@ table {
 }
 
 .custom-file-label:hover {
-    background-color: #007bff9f;
+    background-color: #004c9ea4;
     color: white;
 }
 
