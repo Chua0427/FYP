@@ -22,36 +22,48 @@
         <?php include __DIR__ . '/../sidebar/sidebar.php'; ?>
 
         <div class="user-table">
+            <div class="search-container">
+                    <div class="search-box">
+                        <form id="searchForm">
+                            <input type="text" name="query" id="searchInput" placeholder="Enter ID Or Name For Search...">
+                            <button type="submit" id="searchButton"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </form> 
+                    </div>
+                </div>
+                
             <h3>Product Review</h3>
             <table>
-                <?php
-                    $sql= "SELECT p.*, AVG(r.rating) AS avr_rating
-                           FROM product p
-                           LEFT JOIN review r ON p.product_id=r.product_id
-                           GROUP BY p.product_id";
 
-                    $result = $conn->query($sql);
+                <tbody id="userTableBody">
+                    <?php
+                        $sql= "SELECT p.*, AVG(r.rating) AS avr_rating
+                            FROM product p
+                            LEFT JOIN review r ON p.product_id=r.product_id
+                            GROUP BY p.product_id";
 
-                    while($row= $result->fetch_assoc()){
-                        $user_rating = round($row['avr_rating']);
+                        $result = $conn->query($sql);
 
-                        echo '<tr>
-                                <td><img src="../../upload/'.$row['product_img1'].'"
-                                </td>
-                                <td><span class="name">'.$row['product_name'].'<span></td>
-                                <td><div class="rating">';
-                                        for ($i = 1; $i <= 5; $i++) {
-                                            $filled = $i <= $user_rating ? 'filled' : '';
-                                            echo "<span class='star $filled' data-value='$i'>&#9733;</span>";
-                                        }
-                        echo '</div>
-                                </td>
-                                <td>
-                                        <a class="review-button" href="view_review.php?id='.$row['product_id'].'"><i class="fa-solid fa-eye"></i></a>
-                                </td>
-                            </tr>';
-                    }
+                        while($row= $result->fetch_assoc()){
+                            $user_rating = round($row['avr_rating']);
+
+                            echo '<tr>
+                                    <td><img src="../../upload/'.$row['product_img1'].'"
+                                    </td>
+                                    <td><span class="name">'.$row['product_name'].'<span></td>
+                                    <td><div class="rating">';
+                                            for ($i = 1; $i <= 5; $i++) {
+                                                $filled = $i <= $user_rating ? 'filled' : '';
+                                                echo "<span class='star $filled' data-value='$i'>&#9733;</span>";
+                                            }
+                            echo '</div>
+                                    </td>
+                                    <td>
+                                            <a class="review-button" href="view_review.php?id='.$row['product_id'].'"><i class="fa-solid fa-eye"></i></a>
+                                    </td>
+                                </tr>';
+                        }
                     ?>
+                </tbody>
                 
             </table>
                 
@@ -59,5 +71,23 @@
 
         
     </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+
+            const form = document.getElementById('searchForm');
+            const formData = new FormData(form);
+
+            fetch('search_review.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('userTableBody').innerHTML = html;
+            }); 
+        });
+    </script>
 </body>
 </html>

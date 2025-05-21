@@ -177,6 +177,8 @@ form h3{
     padding: 10px;
     margin-bottom: 20px;
     border-bottom: 1px solid rgb(235, 235, 235);
+    display: flex;
+    justify-content: space-between;
 }
 
 #searchInput{
@@ -184,14 +186,27 @@ form h3{
     width: 30%;
     border-radius: 20px;
     border: 1px solid #808080;
+    min-width: 300px;
 }
 
 #searchButton{
-    background-color: rgb(0, 140, 255);
+    background-color: #4E73DF;
     padding: 10px 20px;
     border-radius: 20px;
     cursor: pointer;
     border: none;
     color: white;
     font-weight: bold;
+}
+
+#sortDeliveryStatus {
+    padding: 10px 20px;
+    background-color: white;
+    color: rgb(112, 112, 112);
+    border: 1px solid rgb(85, 85, 85);
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
