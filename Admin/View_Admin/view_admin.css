@@ -45,7 +45,7 @@ table {
 }
 
 .admin-table table th {
-    background: #007bff;
+    background: #3A506B;
     color: white;
     padding: 5px 15px;
     font-size: 16px;
@@ -66,6 +66,14 @@ table {
 
 .admin-table table tr{
     border-bottom:1px solid lightgray;
+}
+
+.admin-table table tr:nth-child(even) {
+    background-color: #f2f7ff; 
+}
+
+.admin-table table tr:nth-child(odd) {
+    background-color: #ffffff; 
 }
 
 .admin-table table tr:hover {
@@ -126,7 +134,7 @@ table {
 }
 
 #searchButton{
-    background-color: rgb(0, 140, 255);
+    background-color: #4E73DF;
     padding: 10px 20px;
     border-radius: 20px;
     cursor: pointer;

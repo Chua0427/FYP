@@ -23,6 +23,9 @@
 
         <div class="user-table">
             <h3>View Customer Message</h3>
+            <div class="sorting">
+                <button id="sortTime" onclick="triggerSort()">Sort by Time</button>
+            </div>
             <table>
                 <tr>
                     <th>Image</th>
@@ -31,29 +34,54 @@
                     <th>Message</th>
                     <th>Contact At</th>
                 </tr>
-                <?php
-                    $sql= "SELECT* FROM contact_us c
-                           JOIN users u ON c.user_id=u.user_id";
 
-                    $result = $conn->query($sql);
+                <tbody id="userTableBody">
+                    <?php
+                        $sql= "SELECT* FROM contact_us c
+                            JOIN users u ON c.user_id=u.user_id";
 
-                    while($row= $result->fetch_assoc()){
-                        $image = !empty($row['profile_image']) ? $row['profile_image'] : 'default.jpg';
-                        echo '<tr>
-                                <td><img src="../../upload/'.$image.'"</td>
-                                <td>'.$row['first_name']." ".$row['last_name'].'</td>
-                                <td>'.$row['email'].'</td>
-                                <td>'.$row['message'].'</td>
-                                <td>'.$row['contact_at'].'</td>
-                            </tr>';
-                    }
+                        $result = $conn->query($sql);
+
+                        while($row= $result->fetch_assoc()){
+                            $image = !empty($row['profile_image']) ? $row['profile_image'] : 'default.jpg';
+                            echo '<tr>
+                                    <td><img src="../../upload/'.$image.'"</td>
+                                    <td>'.$row['first_name']." ".$row['last_name'].'</td>
+                                    <td>'.$row['email'].'</td>
+                                    <td>'.$row['message'].'</td>
+                                    <td>'.$row['contact_at'].'</td>
+                                </tr>';
+                        }
                     ?>
-                
+                </tbody>
             </table>
-                
         </div>
-
-        
     </div>
+
+    <script>
+        let timeSortAsc = true;
+        let originalRows=[];
+        let tbody;
+
+        document.addEventListener('DOMContentLoaded',function(){
+            tbody=document.getElementById('userTableBody');
+            originalRows=Array.from(tbody.rows);
+        });
+
+        function triggerSort(){
+
+            originalRows.sort((a,b)=>{
+                const timeA= new Date(a.children[4].textContent.trim());
+                const timeB= new Date(b.children[4].textContent.trim());
+                return timeSortAsc ? timeB-timeA : timeA-timeB;
+            });
+
+            originalRows.forEach(row => tbody.appendChild(row));
+            
+            timeSortAsc = !timeSortAsc;
+            document.getElementById("sortTime").innerHTML = timeSortAsc ? "Sort by Time" : "Sort by Time ▲";
+
+        }
+    </script>
 </body>
 </html>
