@@ -5,6 +5,7 @@ require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/auth.php';
 
+
 // Check if user is already authenticated with token
 if (Auth::check()) {
     header('Location: /FYP/FYP/User/HomePage/homePage.php');

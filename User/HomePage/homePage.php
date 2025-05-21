@@ -352,13 +352,13 @@
                 <img src="images/NIK22275_1000_9__48380.jpg" alt="">
                 <h3>Products Warranty</h3>
                 <p>Founded in 2025, VEROSPORTS was born out of a passion for sports and a commitment to
-                    innovation........<a href="../fl/AboutVeroSports.php">read more </a></p>
+                    innovation........<a href="../fl/warranty.php">read more </a></p>
             </div>
             <div class="aboutUs">
                 <img src="images/66c063ce-e067-4f24-9ed7-713d6bcf766c.webp" alt="">
                 <h3>Mission And Vision</h3>
                 <p>At VEROSPORTS, our vision is to revolutionize the sports industry by offering top-tier products that
-                    blend performance with style........<a href="#">read more </a></p>
+                    blend performance with style........<a href="../fl/MV.php">read more </a></p>
             </div>
         </div>
 

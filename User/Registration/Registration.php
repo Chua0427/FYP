@@ -26,6 +26,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     $profile_image = null;
     
+    // Check if email already exists
+    $check_email = $conn->prepare("SELECT email FROM users WHERE email = ?");
+    $check_email->bind_param("s", $email);
+    $check_email->execute();
+    $check_email->store_result();
+    
+    if ($check_email->num_rows > 0) {
+        // Email already exists
+        echo "<script>
+                alert('This email is already registered. Please use a different email.');
+                window.history.back();
+              </script>";
+        exit();
+    }
+    
+    // Rest of your registration code...
     if(isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] == UPLOAD_ERR_OK) {
         $upload = "../../upload/";
         $originalName = $_FILES['profile_image']['name'];
@@ -52,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $gender, $profile_image, $user_type);
 
     if ($stmt->execute()) {
-        echo "<script>alert('Registration Successful!'); window.location.href='add.php';</script>";
+        echo "<script>alert('Registration Successful!'); window.location.href='../login/login.php';</script>";
     } else {
         echo "Error: " . $stmt->error;
     }
