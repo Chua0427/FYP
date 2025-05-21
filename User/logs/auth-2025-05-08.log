@@ -1,7 +1,1 @@
-[2025-05-08T03:00:40.574711+02:00] auth.INFO: User login without Remember Me {"user_id":53,"email":"sohxj0802@gmail.com","ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"} []
-[2025-05-08T03:00:40.698847+02:00] auth.INFO: User login {"user_id":53,"email":"sohxj0802@gmail.com","ip":"::1"} []
-[2025-05-08T03:08:32.847877+02:00] auth.INFO: User logout {"user_id":53,"email":"sohxj0802@gmail.com","ip":"::1"} []
-[2025-05-08T03:08:46.995149+02:00] auth.WARNING: Failed login attempt {"email":"deadhunter0802@gmail.com","ip":"::1"} []
-[2025-05-08T03:09:00.227752+02:00] auth.INFO: User login without Remember Me {"user_id":53,"email":"sohxj0802@gmail.com","ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"} []
-[2025-05-08T03:09:00.229693+02:00] auth.INFO: User login {"user_id":53,"email":"sohxj0802@gmail.com","ip":"::1"} []
-[2025-05-08T03:10:59.646687+02:00] auth.INFO: User logout {"user_id":53,"email":"sohxj0802@gmail.com","ip":"::1"} []
+

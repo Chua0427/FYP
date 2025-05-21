@@ -50,8 +50,9 @@
                     $result = $conn->query($sql);
 
                     while($row= $result->fetch_assoc()){
+                        $image = !empty($row['profile_image']) ? $row['profile_image'] : 'default.jpg';
                         echo '<tr>
-                                <td><img src="../../upload/'.$row['profile_image'].'"</td>
+                                <td><img src="../../upload/'.$image.'"></td>
                                 <td>'.$row['first_name']." ".$row['last_name'].'</td>
                                 <td>'.$row['email'].'</td>
                                 <td>'.$row['mobile_number'].'</td>

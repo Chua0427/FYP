@@ -15,6 +15,8 @@ body {
     margin: auto;
     padding-top: 60px;
     background: white;
+    position: relative;
+    top: 80px;
 }
 
 .imgContainer{
@@ -34,7 +36,7 @@ body {
 }
 
 .small-img{
-    width: 100%;
+    width: 80%;
     height: auto;
 }
 
@@ -287,14 +289,13 @@ input{
     width: 100%;
     overflow: hidden;
     text-align: center;
-    margin-top: 150px;
+    margin-top: 200px;
     margin-bottom: 100px;
 }
 
 .recomend-container h1{
     text-decoration: underline orangered;
     color: #5a5a5a;
-
 }
 
 .recomend-column{

@@ -20,11 +20,11 @@ body {
 
 .user-table {
     background: #fff; 
-    padding: 10px;
+    padding: 10px 20px;
     border-radius: 1px; 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 98%;
-    height: 100%;
+    width: 99%;
+    height: 60%;
     position: relative;
     top: 100px;
 }
@@ -66,7 +66,7 @@ table {
 }
 
 .rating{
-    margin-left: -100px;
+    margin-left: 0px;
 }
 
 .star {
@@ -80,8 +80,6 @@ table {
 }
 
 .name{
-    margin-left: -280px;
-    margin-right: -100px;
     font-weight: bold;
     color: gray;
 }
@@ -92,4 +90,37 @@ table {
     color: white;
     border-radius: 10px;
     margin-left: 30px;
+}
+
+.search-container{
+    width: 100%;
+    height: 100%;
+    text-align: start;
+}
+
+.search-box{
+    position: relative;
+    border: none;
+    font-size: 16px;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgb(235, 235, 235);
+}
+
+#searchInput{
+    padding: 10px;
+    width: 30%;
+    border-radius: 20px;
+    border: 1px solid #808080;
+    min-width: 300px;
+}
+
+#searchButton{
+    background-color: #4E73DF;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    border: none;
+    color: white;
+    font-weight: bold;
 }

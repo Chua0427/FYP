@@ -13,7 +13,7 @@
         $city = $_POST["city"];
         $birthday_date = $_POST["birthday_date"];
         $gender = $_POST["gender"];
-        $user_type = 2; 
+        $user_type = 2; // Admin user type
 
         $upload = "../../upload/";
 
@@ -30,12 +30,28 @@
             }
             else{
                 $sql = "INSERT INTO users (first_name, last_name, email, mobile_number, password, 
-                    address, postcode, state, city, birthday_date, gender, user_type, profile_image) 
-                    VALUES ('$first_name', '$last_name', '$email', '$mobile_number', '$password', 
-                    '$address', '$postcode', '$state', '$city', '$birthday_date', '$gender', 
-                    '$user_type', '$uniqueFileName')";
+                address, postcode, state, city, birthday_date, gender, user_type, profile_image) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-                $result = $conn->query($sql);
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("sssssssssssss", 
+                    $first_name, 
+                    $last_name, 
+                    $email, 
+                    $mobile_number, 
+                    $password, 
+                    $address, 
+                    $postcode, 
+                    $state, 
+                    $city, 
+                    $birthday_date, 
+                    $gender, 
+                    $user_type, 
+                    $uniqueFileName
+                );
+
+                $result = $stmt->execute();
+
 
                 if ($result) {
                     move_uploaded_file($_FILES['profile_image']['tmp_name'], $targetPath);

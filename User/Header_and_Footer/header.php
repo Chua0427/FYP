@@ -208,7 +208,7 @@ if ($is_authenticated) {
                             </div>
 
                             <a href="../order/orderhistory.php">My Order History</a>
-                            <a href="../View_Order/view_order.php">My Orders</a>
+                            <a href="../View_Order/order.php">My Orders</a>
 
                             <a href="../Edit_Profile/profile.php">My Profile</a>
                             <a href="../login/manage_sessions.php">Manage Devices</a>

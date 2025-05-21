@@ -11,6 +11,7 @@ body {
 
 .promotion-billboard{
     position: relative;
+    top: 78px;
 }
 
 .promotion-billboard img{

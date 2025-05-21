@@ -99,7 +99,12 @@
                         <span id="price"><?php echo $row['price']; ?></span>
                     <?php } ?>
                 
-                <span class="size-chart-icon" onclick="openModal()"><i class="fa-solid fa-ruler-combined"></i></span>
+                    <?php if ($row['product_type'] === 'Footwear'  || $row['product_type'] === 'Apparel') { ?>
+                        <span class="size-chart-icon" onclick="openModal()"><i class="fa-solid fa-ruler-combined"></i></span>
+                    <?php } 
+                        else{ ?>
+                            <span class="size-chart-icon" onclick=""><i class="fa-solid fa-ruler-combined"></i></span>
+                    <?php } ?>
                 </div>
                 
                 <div class="sizeContainer">
@@ -330,7 +335,7 @@ document.addEventListener("DOMContentLoaded", function () {
         addToCartBtn.addEventListener('click', function(e) {
             e.preventDefault();
             // Redirect to login page with return URL
-            window.location.href = '/FYP/User/login/login.php?redirect=' + encodeURIComponent(window.location.href);
+            window.location.href = '/FYP/FYP/User/login/login.php?redirect=' + encodeURIComponent(window.location.href);
         });
     }
 });

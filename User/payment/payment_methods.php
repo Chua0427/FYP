@@ -156,7 +156,8 @@ function formatPrice($price) {
             line-height: 1.6;
         }
         
-        .page-container {
+        .page-container {            
+
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -168,8 +169,10 @@ function formatPrice($price) {
         }
         
         .payment-container {
+            position: relative;
+            top: 100px;
+            margin: auto auto 150px auto;
             max-width: 1140px;
-            margin: 0 auto;
             padding: 0 15px;
         }
         

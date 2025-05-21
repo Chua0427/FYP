@@ -37,7 +37,7 @@
                WHERE r.product_id= $product_id
                ORDER BY r.review_id DESC";
         $result1= $conn->query($sql1);
-        $row1= $result1->fetch_assoc();
+
     ?>
 
     <div class="review-container">
@@ -63,9 +63,10 @@
         <h3>Review</h3>
         <div class="review">
             <table>
-                <?php while ($row1 = $result1->fetch_assoc()){ ?>
+                <?php while ($row1 = $result1->fetch_assoc()){ 
+                    $image = !empty($row1['profile_image']) ? $row1['profile_image'] : 'default.jpg';?>
                 <tr>
-                    <td><img src="../../upload/<?php echo $row1['profile_image'] ?>" alt=""><p></p>
+                    <td><img src="../../upload/<?php echo $image ?>" alt=""><p></p>
                         <p><?php echo $row1['first_name'] . " " . $row1['last_name'] ?></p>
                             <?php
                                 $user_rating= $row1['rating'];
