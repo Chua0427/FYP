@@ -2,13 +2,17 @@
 include __DIR__ . '/../../connect_db/config.php';
 
 if (isset($_GET['id'])) {
-    $admin_id = $_GET['id'];
-    $sql = "SELECT * FROM users WHERE user_id = $admin_id";
-    $result = $conn->query($sql);
+    $admin_id = (int)$_GET['id'];
+    $sql = "SELECT * FROM users WHERE user_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $admin_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
     $admin = $result->fetch_assoc();
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $admin_id = (int)$_GET['id'];
     $first_name = $_POST["first_name"];
     $last_name = $_POST["last_name"];
     $email = $_POST["email"];
@@ -23,21 +27,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Keep the existing user_type to preserve admin level (2 or 3)
     $user_type = $admin['user_type'];
 
-    if(!empty($_POST["password"])){
-        $password= password_hash($_POST["password"], PASSWORD_DEFAULT);
-        $password_sql= ", password= '$password'";
-    }
-    else{
-        $password_sql="";
-    }
+    $params = [$first_name, $last_name, $email, $mobile_number, $address, $postcode, $state, $city, $birthday_date, $gender, $user_type];
+    $types = "sssssssssss";
 
-    $profile_image_sql = '';
-
-    $sql_old_image = "SELECT profile_image FROM users WHERE user_id = $admin_id";
-    $result_old_image = $conn->query($sql_old_image);
-    $row_old_image = $result_old_image->fetch_assoc();
+    $sql_old_image = "SELECT profile_image FROM users WHERE user_id = ?";
+    $stmt_old = $conn->prepare($sql_old_image);
+    $stmt_old->bind_param("i", $admin_id);
+    $stmt_old->execute();
+    $result_old = $stmt_old->get_result();
+    $row_old_image = $result_old->fetch_assoc();
     $old_profile_image = $row_old_image['profile_image'] ?? '';
 
+    if (!empty($_POST["password"])) {
+        $password = password_hash($_POST["password"], PASSWORD_DEFAULT);
+        $sql_password = ", password=?";
+        $params[] = $password;
+        $types .= "s";
+    } else {
+        $sql_password = "";
+    }
+
+    $sql_image = "";
     if (!empty($_FILES['profile_image']['name'])) {
         $upload = "../../upload/";
         $originalName = $_FILES['profile_image']['name'];
@@ -45,24 +55,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $uniqueFileName = time() . '.' . $fileExtension;
         $targetPath = $upload . $uniqueFileName;
 
-
         if (!empty($old_profile_image) && file_exists($upload . $old_profile_image)) {
             unlink($upload . $old_profile_image);
         }
 
         if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $targetPath)) {
-            $profile_image_sql = ", profile_image='$uniqueFileName'";
+            $sql_image = ", profile_image=?";
+            $params[] = $uniqueFileName;
+            $types .= "s";
         }
     }
 
-    $sql = "UPDATE users SET first_name='$first_name', last_name='$last_name', email='$email', mobile_number='$mobile_number' $password_sql ,address='$address' , postcode='$postcode' , state='$state' , city='$city', birthday_date= '$birthday_date', gender= '$gender', user_type ='$user_type' $profile_image_sql WHERE user_id=$admin_id";
-    if ($conn->query($sql)) {
+    $sql = "UPDATE users SET first_name=?, last_name=?, email=?, mobile_number=?, address=?, postcode=?, state=?, city=?, birthday_date=?, gender=?, user_type=? $sql_password $sql_image WHERE user_id=?";
+    $params[] = $admin_id;
+    $types .= "i";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param($types, ...$params);
+
+    if ($stmt->execute()) {
         echo "<script>alert('Edit Successfully!'); window.location.href='view_admin.php';</script>";
     } else {
-        echo "Error: " . $conn->error;
+        echo "Error: " . $stmt->error;
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

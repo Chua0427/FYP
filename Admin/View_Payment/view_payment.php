@@ -28,7 +28,9 @@
                         <form id="searchForm">
                             <input type="text" name="query" id="searchInput" placeholder="Enter ID For Search...">
                             <button type="submit" id="searchButton"><i class="fa-solid fa-magnifying-glass"></i></button>
-                        </form> 
+                        </form>
+                        
+                        <button id="sortTime" onclick="triggerSort()">Sort by Time</button>
                     </div>
                 </div>
             <table>
@@ -68,6 +70,30 @@
     </div>
 
     <script>
+        let timeSortAsc = true;
+        let originalRows=[];
+        let tbody;
+
+        document.addEventListener('DOMContentLoaded',function(){
+            tbody=document.getElementById('userTableBody');
+            originalRows=Array.from(tbody.rows);
+        });
+
+        function triggerSort(){
+
+            originalRows.sort((a,b)=>{
+                const timeA= new Date(a.children[4].textContent.trim());
+                const timeB= new Date(b.children[4].textContent.trim());
+                return timeSortAsc ? timeB-timeA : timeA-timeB;
+            });
+
+            originalRows.forEach(row => tbody.appendChild(row));
+            
+            timeSortAsc = !timeSortAsc;
+            document.getElementById("sortTime").innerHTML = timeSortAsc ? "Sort by Time " : "Sort by Time ▲";
+
+        }
+        
         document.getElementById('searchForm').addEventListener('submit', function(e) {
             e.preventDefault(); 
 
@@ -81,6 +107,7 @@
             .then(res => res.text())
             .then(html => {
                 document.getElementById('userTableBody').innerHTML = html;
+                originalRows = Array.from(document.getElementById('userTableBody').rows);
             }); 
         });
     </script>

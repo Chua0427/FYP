@@ -42,8 +42,12 @@ $result1 = $stmt->get_result();
 
         .container {
             max-width: 1000px;
-            margin: 30px auto;
+            position: relative;
+            top: 100px;
+            margin-bottom: 150px;
             padding: 0 20px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .order-card {
@@ -179,7 +183,7 @@ $result1 = $stmt->get_result();
                 <div class="order-footer">
                     <p>Order Time: <?php echo date("Y-m-d H:i", strtotime($row['order_at'])); ?></p>
                     <p>Total: <strong>RM <?php echo number_format((float)$row['total_price'], 2); ?></strong></p>
-                    <a href="../Delivery_Status_Page/delivery.php?order_id=<?php echo htmlspecialchars((string)$row['order_id']); ?>">View Status</a>
+                    <a href="../Delivery_Status_Page/delivery.php?id=<?php echo htmlspecialchars((string)$row['order_id']); ?>">View Status</a>
                 </div>
             </div>
         <?php endwhile; ?>
