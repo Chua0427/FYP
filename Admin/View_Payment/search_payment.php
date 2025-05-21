@@ -32,16 +32,9 @@ if (isset($_POST['query'])) {
                     <td>'.$row['order_id'].'</td>
                     <td><a href="../View_Order_Items/view_order_item.php?order_id='.$row['order_id'].'" class="view_item">View</a></td>
                     <td style="font-weight: bold;"> RM '.$row['total_amount'].'</td>
-                    <td>'.$row['payment_at'].'</td>';
-                    
-                    if($row['payment_status'] == "Completed"){
-                        echo '<td><span style="background-color:rgb(35, 161, 31); color: white; padding:10px; border-radius:10px; font-weight: bold;">'.$row['payment_status'].'</span></td>';
-                    }
-                    else{
-                         echo '<td><span style="background-color:rgb(209, 0, 0); color: white; padding:10px; border-radius:10px; font-weight: bold;">'.$row['payment_status'].'</span></td>';
-                    }
-                    
-                echo '</tr>';
+                    <td>'.$row['payment_at'].'</td>
+                    <td><span style="background-color:rgb(35, 161, 31); color: white; padding:10px; border-radius:10px; font-weight: bold;">'.$row['payment_status'].'</span></td>
+                </tr>';
         }
     } else {
         echo '<p>No order found.</p>';
