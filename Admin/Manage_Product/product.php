@@ -100,21 +100,21 @@
                     </div>
                     <div class="form-group">
                         <label>Image 2:</label>
-                        <input type="file" name="product_image2">
+                        <input type="file" name="product_image2" required>
                     </div>
                     <div class="form-group">
                         <label>Image 3:</label>
-                        <input type="file" name="product_image3">
+                        <input type="file" name="product_image3" required>
                     </div>
                     <div class="form-group">
-                        <label>Image 4:</label>
-                        <input type="file" name="product_image4">
+                        <label>Image 4:</label> 
+                        <input type="file" name="product_image4" required>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>Size Chart:</label>
-                    <input type="file" name="size_chart">
+                    <input type="file" name="size_chart" required>
                 </div>
 
                 <button type="submit" id="submit">Add</button>

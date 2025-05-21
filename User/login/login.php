@@ -46,8 +46,8 @@ function sendOTPEmail($email, $otp, $user_name) {
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'DeadHunter0802@gmail.com';
-        $mail->Password = 'drzrsnnjezzdrfvx';
+        $mail->Username = 'chiannchua05@gmail.com';
+        $mail->Password = 'niiwzkwxnqlecaww';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
         $mail->Port = 465;
         
@@ -56,7 +56,7 @@ function sendOTPEmail($email, $otp, $user_name) {
         $mail->SMTPKeepAlive = false; // Don't keep connection alive for multiple emails
         
         // Recipients
-        $mail->setFrom('DeadHunter0802@gmail.com', 'VeroSports Authentication');
+        $mail->setFrom('chiannchua05@gmail.com', 'VeroSports Authentication');
         $mail->addAddress($email, $user_name);
         
         // Content
@@ -128,6 +128,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             // Authentication successful
             $auth_time = microtime(true) - $start_time;
             error_log("Password verification successful at " . date('H:i:s') . " - Time: " . number_format($auth_time, 4) . "s");
+            
+            // Check if user is an admin (user_type = 2)
+            if (isset($user['user_type']) && $user['user_type'] == 2) {
+                $error = 'Admin accounts must use the admin login page.';
+                $GLOBALS['authLogger']->warning('Admin attempted to login on user page', [
+                    'email' => $email,
+                    'ip' => $_SERVER['REMOTE_ADDR']
+                ]);
+                
+                // Stop processing
+                throw new Exception('Admin accounts must use the admin login page.');
+            }
             
             // Generate OTP
             $otp = generateOTP();
@@ -215,13 +227,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
                     <input type="checkbox" id="remember" name="remember">
                     <label for="remember">Remember me</label>
                 </div>
-
-                <button type="submit" class="login-btn">Login</button>
-                <a href="../ForgotPassword/forgot_password.php" class="forgot-password">Forgot Password?</a>
-
                 <button type="submit" name="login" class="login-btn">Login</button>
                 <a href="forgot_password.php" class="forgot-password">Forgot Password?</a>
-
             </form>
             
             <div class="divider"><span>OR</span></div>

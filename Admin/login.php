@@ -10,6 +10,11 @@ if (!isset($_SESSION['csrf_token'])) {
 
 $error = '';
 
+// Check for error message from redirect
+if (isset($_GET['error'])) {
+    $error = $_GET['error'];
+}
+
 // Handle admin login
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     try {
@@ -44,8 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             throw new Exception('Invalid email or password');
         }
 
-        // Check if the user is an admin (user_type = 2)
-        if (!isset($user['user_type']) || $user['user_type'] != 2) {
+        // Check if the user is an admin (user_type = 2 or user_type = 3)
+        if (!isset($user['user_type']) || ($user['user_type'] != 2 && $user['user_type'] != 3)) {
             throw new Exception('This login page is for admin accounts only');
         }
 

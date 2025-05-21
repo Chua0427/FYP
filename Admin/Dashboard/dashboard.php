@@ -12,8 +12,8 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_type'])) {
     exit;
 }
 
-// Check if user is admin (user_type = 2)
-if ($_SESSION['user_type'] != 2) {
+// Check if user is admin (user_type = 2 or user_type = 3)
+if ($_SESSION['user_type'] != 2 && $_SESSION['user_type'] != 3) {
     // Redirect non-admin users to the main site
     header("Location: /FYP/FYP/User/HomePage/homePage.php");
     exit;
@@ -182,7 +182,7 @@ if ($_SESSION['user_type'] != 2) {
                 <img src="../../upload/' . $row['profile_image'] . '" alt="Profile Image">
                 <p>Welcome Back ! '.$row['first_name'].'</p>
                 <p>Email: '.$row['email'].'</p>
-                <a href="../../User/login/logout.php" ><i class="fa-solid fa-right-from-bracket"></i></a>
+                <a href="../../Admin/logout.php" ><i class="fa-solid fa-right-from-bracket"></i></a>
             </div>';
         }
 

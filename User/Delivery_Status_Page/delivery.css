@@ -12,7 +12,7 @@ body {
 h1{
     text-align: center;
     position: relative;
-    top: 60px;
+    top: 120px;
 }
 
 .order_id{
@@ -28,7 +28,7 @@ h1{
     justify-content: center;
     align-items: center;
     position: relative;
-    margin-top: 130px;
+    margin-top: 180px;
     margin-bottom: 100px;
     gap: 20px;
 }
