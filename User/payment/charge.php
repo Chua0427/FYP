@@ -136,7 +136,7 @@ try {
     
     if ($payment_status === 'completed') {
         $db->execute(
-            "UPDATE orders SET delivery_status = 'packing' WHERE order_id = ?",
+            "UPDATE orders SET delivery_status = 'prepare' WHERE order_id = ?",
             [$order_id]
         );
     }

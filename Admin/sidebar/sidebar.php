@@ -1,6 +1,18 @@
 <?php
+    // Start session if not already started
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+
     $current_page = basename($_SERVER['PHP_SELF']);
-    $current_user_type = 3; 
+    $user_id= $_SESSION['user_id'];
+
+    $sql="SELECT * FROM users WHERE user_id= $user_id";
+    $resultsidebar= $conn->query($sql);
+    while($rowsidebar= $resultsidebar->fetch_assoc()){
+        $current_user_type = $rowsidebar['user_type'];
+    }
+     
 ?>
 <div class="sidebar-wrapper">
     <div class="sidebar">
@@ -29,14 +41,14 @@
             <li class="tab-button <?php if ($current_page == 'view_product.php' || $current_page == 'view_stock.php' || $current_page == 'product.php' || $current_page == 'edit.php') echo 'active'; ?>">
                 <a href="../Manage_Product/view_product.php"><i class="fas fa-box"></i> ManageProduct</a>
             </li>
-            <li class="tab-button <?php if ($current_page == 'view_order.php') echo 'active'; ?>">
-                <a href="#"><i class="fas fa-shopping-cart"></i> View Order</a>
+            <li class="tab-button <?php if ($current_page == 'view_order.php' || $current_page == 'view_order_item.php') echo 'active'; ?>">
+                <a href="../View_Order/view_order.php"><i class="fas fa-shopping-cart"></i> View Order</a>
             </li>
-            <li class="tab-button <?php if ($current_page == 'view_order_items.php') echo 'active'; ?>">
-                <a href="#"><i class="fas fa-list"></i> View Order Items</a>
+            <li class="tab-button <?php if ($current_page == 'view_delivery.php') echo 'active'; ?>">
+                <a href="../Delivery_Status/view_delivery.php"><i class="fa-solid fa-truck"></i> Delivery Status</a>
             </li>
             <li class="tab-button <?php if ($current_page == 'view_payment.php') echo 'active'; ?>">
-                <a href="#"><i class="fas fa-credit-card"></i> View Payment</a>
+                <a href="../View_Payment/view_payment.php"><i class="fas fa-credit-card"></i> View Payment</a>
             </li>
             <li class="tab-button <?php if ($current_page == 'contact_us.php') echo 'active'; ?>">
                 <a href="../Contact_Us/contact_us.php"><i class="fas fa-headset"></i> Customer Support</a>

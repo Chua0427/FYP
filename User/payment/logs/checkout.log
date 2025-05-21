@@ -1,5 +1,0 @@
-[2025-04-10 03:19:07] [ERROR] Checkout session failed: SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it
-[2025-04-10 03:27:46] [ERROR] Checkout session failed: SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it
-[2025-04-10 07:12:35] [ERROR] Checkout error: Missing order ID
-[2025-04-10 07:12:56] [ERROR] Checkout error: Missing order ID
-[2025-04-23 22:57:51] [ERROR] Checkout error: Missing order ID

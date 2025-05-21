@@ -23,7 +23,7 @@
                     <div class="contactUs">
                         <h3>Contact Us</h3>
                         <form action="../Header_and_Footer/contact_us.php" method="post">
-                            <input type="text" name="message" placeholder="Message..." style="height: 100px;">
+                            <input type="text" name="message" placeholder="Message..." style="height: 100px;" required>
                             <button type="submit">Submit</button>
                         </form>
                         <ul>

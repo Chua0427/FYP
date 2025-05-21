@@ -36,19 +36,18 @@ body {
 
 .column h3{
     margin-top: -30px;
-    margin-left: 30px;
     display: flex;
     justify-content: center;
 }
 
 .sales{
     margin-top: 30px;
-    margin-left: 30px;
     display: flex;
     justify-content: center;
     font-weight: bold;
     font-size: 25px;
     color: rgb(0, 190, 0);
+    text-align: center ;
 }
 
 
@@ -70,19 +69,17 @@ body {
     display: flex;
     justify-content: space-around;
     margin-top: 60px;
-    margin-left: 270px;
+    margin-left: 250px;
 }
 
 
 
 .top-sale {
-    background: linear-gradient(135deg, #57c2ff, #2f00ff);
+    background: rgba(0, 140, 255, 0.205);
     padding: 20px;
     border-radius: 15px;
-    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-    width: 350px;
+    width: 400px;
     height: 335px;
-    color: white;
 }
 
 .top-sale h2 {
@@ -90,19 +87,20 @@ body {
     font-size: 22px;
     margin-bottom: 15px;
     font-weight: bold;
+    color: rgb(83, 83, 83);
 }
 
 .product-list {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 5px;
 }
 
 .product {
     display: flex;
     align-items: center;
     gap: 15px;
-    padding: 12px;
+    padding: 5px;
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.2);
 }
@@ -113,14 +111,14 @@ body {
 }
 
 .product img {
-    width: 50px;
-    height: 50px;
+    width: 75px;
+    height: 75px;
     border-radius: 10px;
     border: 2px solid white;
 }
 
 .info h3 {
-    font-size: 16px;
+    font-size: 12px;
     font-weight: bold;
     color: white;
 }
@@ -136,7 +134,7 @@ body {
 }
 
 .chart {
-    background: linear-gradient(#ceebff83, #00e1ffce);
+    background: linear-gradient(#006eff33, #0051ff7e);
     padding: 20px;
     text-align: center;
     border-radius: 20px;
@@ -164,7 +162,7 @@ body {
 
 .admin img{
     width: 120px;
-    height: 110px;
+    height: 120px;
     border-radius: 50%;
 }
 

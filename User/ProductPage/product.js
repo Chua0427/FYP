@@ -199,11 +199,14 @@ function showMessage(message, type) {
         messageContainer.className = 'message-container';
         document.body.appendChild(messageContainer);
         
-        // Style the container
+        // Style the container to appear below the cart icon
         messageContainer.style.position = 'fixed';
-        messageContainer.style.top = '20px';
+        messageContainer.style.top = '70px';
         messageContainer.style.right = '20px';
-        messageContainer.style.zIndex = '1000';
+        messageContainer.style.left = 'auto';
+        messageContainer.style.width = '300px';
+        messageContainer.style.zIndex = '999';
+        messageContainer.style.textAlign = 'center';
     }
     
     // Create message element
@@ -217,6 +220,10 @@ function showMessage(message, type) {
     messageElement.style.borderRadius = '4px';
     messageElement.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
     messageElement.style.animation = 'fadeIn 0.3s ease-out';
+    messageElement.style.display = 'block';
+    messageElement.style.width = '100%';
+    messageElement.style.boxSizing = 'border-box';
+
     
     if (type === 'success') {
         messageElement.style.backgroundColor = '#28a745';

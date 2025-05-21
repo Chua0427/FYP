@@ -12,12 +12,11 @@ body {
 h2{
     position: relative;
     text-align: center;
-    background: linear-gradient(to right, #ff8800, #ff5500); 
+    background: orangered;
     padding: 30px;
     font-size: 32px; 
     font-weight: bold;
     color: white; 
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); 
     letter-spacing: 2px;
 }
 

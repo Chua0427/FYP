@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
 
+// Restrict admin access to user pages
+require_once __DIR__ . '/../app/restrict_admin.php';
+
 // Initialize session if not already started
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -14,20 +17,30 @@ if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Check authentication - this will now check both token and session auth
+// Ensure the Auth class is properly initialized
+Auth::init();
+
+// Check authentication - this will check both token and session auth
 $is_authenticated = Auth::check();
 $user_data = null;
 
 if ($is_authenticated) {
     $user_data = Auth::user();
     
-    // Update session for backward compatibility if not already set
-    if (!isset($_SESSION['user_id']) && isset($user_data['user_id'])) {
+    // Update session for backward compatibility if not already set or if values don't match
+    if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] != $user_data['user_id']) {
         $_SESSION['user_id'] = $user_data['user_id'];
         $_SESSION['first_name'] = $user_data['first_name'] ?? '';
         $_SESSION['last_name'] = $user_data['last_name'] ?? '';
         $_SESSION['email'] = $user_data['email'] ?? '';
         $_SESSION['user_type'] = $user_data['user_type'] ?? 0;
+        
+        // Set session fingerprint
+        $_SESSION['auth_fingerprint'] = hash('sha256', 
+            $_SERVER['HTTP_USER_AGENT'] . 
+            ($_SERVER['REMOTE_ADDR'] ?? 'localhost') . 
+            $user_data['user_id']
+        );
     }
 }
 
@@ -180,9 +193,11 @@ if ($is_authenticated) {
 
     <div class="iconContainer">
         <div class="icon">
+            <a href="../Search/search.php">
             <div class="search">
                 <i class="fa-solid fa-search"></i>
             </div>
+        </a>
             <div class="user">
                 <?php if ($is_authenticated): ?>
                     <div class="user-dropdown">
@@ -191,12 +206,17 @@ if ($is_authenticated) {
                             <div class="user-info">
                                 <span>Hello, <?php echo htmlspecialchars($_SESSION['first_name'] ?? ''); ?></span>
                             </div>
-                            <a href="../order/order_history.php">My Orders</a>
+
+                            <a href="../order/orderhistory.php">My Order History</a>
+                            <a href="../View_Order/view_order.php">My Orders</a>
+
                             <a href="../Edit_Profile/profile.php">My Profile</a>
                             <a href="../login/manage_sessions.php">Manage Devices</a>
+
                             <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] == 2): ?>
-                                <a href="/FYP/FYP/Superadmin/dashboard.php">Admin Dashboard</a>
+                                <a href="/FYP/FYP/Admin/Dashboard/dashboard.php">Admin Dashboard</a>
                             <?php endif; ?>
+
                             <a href="../login/logout.php">Logout</a>
                         </div>
                     </div>
@@ -205,6 +225,7 @@ if ($is_authenticated) {
                 <?php endif; ?>
             </div>
             <div class="shoppingCart">
+                <?php if ($is_authenticated): ?>
                 <a href="../order/cart.php">
                     <i class="fa-solid fa-cart-shopping"></i>
                     <?php if ($cartCount > 0): ?>
@@ -213,6 +234,11 @@ if ($is_authenticated) {
                         <span id="cartCount" class="cart-counter" style="display:none;">0</span>
                     <?php endif; ?>
                 </a>
+                <?php else: ?>
+                <a href="../login/login.php?redirect=<?php echo urlencode('/FYP/FYP/User/order/cart.php'); ?>">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </a>
+                <?php endif; ?>
             </div>
         </div>
     </div>
