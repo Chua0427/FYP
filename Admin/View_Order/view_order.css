@@ -1,0 +1,129 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    color: #333;
+}
+
+.contain{
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    width: 100%;
+    padding-left: 250px;
+}
+
+.order-table h3 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+    padding: 10px;
+}
+
+.order-container {
+    background: #fff; 
+    padding: 10px;
+    border-radius: 1px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 98%;
+    height: 100%;
+    position: relative;
+    top: 100px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    overflow: hidden;
+}
+
+.order-table table th {
+    background: #005281;
+    color: #ffffff;
+    padding: 5px 15px;
+    font-size: 16px;
+}
+
+.order-table table td {
+    padding: 10px 10px;
+    text-align: center;
+    font-size: 15px;
+}
+
+.order-table img {
+    width: 50px;
+    height:50px;
+    border-radius: 50%;
+}
+
+.order-table table tr{
+    border-bottom:1px solid lightgray;
+}
+
+.order-table table tr:hover {
+    background-color: #00c3ff10;
+}
+
+.order-table table tr:nth-child(even) {
+    background-color: #ccdfffd3; 
+}
+
+.order-table table tr:nth-child(odd) {
+    background-color: #ffffff; 
+}
+
+.items{
+    padding: 8px 15px;
+    font-weight: bold;
+    background-color: rgb(0, 120, 233);
+    border-radius: 3px;
+    border: none;
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+}
+
+.items:hover{
+    background-color: rgba(0, 45, 143, 0.521);
+}
+
+.order-table table tr:hover {
+    background-color: #a2b3ff9a;
+}
+
+.search-container{
+    width: 100%;
+    height: 100%;
+    text-align: start;
+}
+
+.search-box{
+    position: relative;
+    border: none;
+    font-size: 16px;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgb(235, 235, 235);
+}
+
+#searchInput{
+    padding: 10px;
+    width: 30%;
+    border-radius: 20px;
+    border: 1px solid #808080;
+}
+
+#searchButton{
+    background-color: rgb(0, 140, 255);
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    border: none;
+    color: white;
+    font-weight: bold;
+}

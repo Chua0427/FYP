@@ -21,6 +21,49 @@
     }
     
     include __DIR__ . '/../Header_and_Footer/header.php'; 
+
+    include __DIR__ . '/../../connect_db/config.php';
+
+    $order_id = isset($_GET['order_id']) ? (int)$_GET['order_id'] : 0;
+
+    if ($order_id <= 0) {
+        echo '<div style="text-align: center; margin: 50px auto; color: red; font-weight: bold;">
+            Invalid order ID. Please go back and try again.
+            </div>';
+        include __DIR__ . '/../Header_and_Footer/footer.php';
+        exit;
+    }
+
+    $sql = "SELECT o.*, u.first_name, u.last_name, u.mobile_number, u.email 
+            FROM orders o 
+            JOIN users u ON o.user_id = u.user_id 
+            WHERE o.order_id = ?";
+    
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $order_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows == 0) {
+        echo '<div style="text-align: center; margin: 50px auto; color: red; font-weight: bold;">
+            Order not found. Please go back and try again.
+            </div>';
+        include __DIR__ . '/../Header_and_Footer/footer.php';
+        exit;
+    }
+    
+    $row = $result->fetch_assoc();
+
+    $itemSql = "SELECT oi.quantity, oi.price, oi.product_size, p.product_name, p.product_img1
+                FROM order_items oi
+                JOIN product p ON oi.product_id = p.product_id
+                WHERE oi.order_id = ?";
+    
+    $itemStmt = $conn->prepare($itemSql);
+    $itemStmt->bind_param("i", $order_id);
+    $itemStmt->execute();
+    $itemResult = $itemStmt->get_result();
+    
     ?>
 
     <h1>Tracking Delivery</h1><p></p>
@@ -51,33 +94,66 @@
 
         <div class="invoice">
             <h2>Order</h2>
-            <p style="margin-top: 20px;"><strong>Order ID:</strong> 12345</p>
-            <p><strong>Date:</strong> 13/2/2025</p>
-            <p><strong>Customer:</strong> Elvis</p>
-            <p><strong>Shipping Address:</strong> No 26, Jalan Oren 3, Taman Cantik , 85000 Segamat, Johor</p>
+            <p style="margin-top: 20px;"><strong>Order ID: </strong><?php echo $row['order_id'] ?></p>
+            <p><strong>Date: </strong><?php echo date("d/m/Y", strtotime($row['order_at'])); ?></p>
+            <p><strong>Customer:</strong> <?php echo $row['first_name'] . " " . $row['last_name'] ?></p>
+            <p><strong>Phone Number:</strong> <?php echo $row['mobile_number'] ?></p>
+            <p><strong>Email:</strong> <?php echo $row['email'] ?></p>
+            <p><strong>Shipping Address:</strong> <?php echo $row['shipping_address'] ?></p>
             
             <h3 >Order Items</h3>
             <table>
                 <tr>
                     <th>Product</th>
+                    <th>Product Name</th>
+                    <th>Product Size</th>
                     <th>Quantity</th>
-                    <th>Price</th>
+                    <th>Subtotal</th>
                 </tr>
-                <tr>
-                    <td>Nike</td>
-                    <td>2</td>
-                    <td style="color: red;">RM 100</td>
-                </tr>
+
+                <?php
+                    $total=0;
+                    while($row1=$itemResult->fetch_assoc()){
+                        $subtotal= $row1['quantity'] * $row1['price'];
+                        $total += $subtotal;
+                        echo '<tr>
+                            <td><img src="../../upload/'.$row1["product_img1"].'"</td>
+                            <td>'.$row1["product_name"].'</td>
+                            <td>'.$row1["product_size"].'</td>
+                            <td>'.$row1["quantity"].'</td>
+                            <td style="color: red; font-weight: bold;">RM '.number_format($subtotal,2).'</td>
+                        </tr>';
+                    }
+                ?>
+                
             </table>
 
-            <p style="margin-bottom: 20px;"><strong>Total Price:</strong> RM 200</p>
+            <p style="margin-bottom: 20px; font-weight: bold; font-size:20px;"><strong>Total Price:</strong> RM <?php echo number_format($total,2) ?></p>
             <hr>
             <p style="margin-top:10px; margin-bottom: 10px;">Note: </p>
             <p>If you have any problem about delivery, please email to our customer service (Email:support@verosports.com)</p>
         </div>
 
     <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
-    <script src="delivery.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    
+            let currentStatus = "<?php echo $row['delivery_status']; ?>"; 
+            
+            let steps = document.querySelectorAll('.step');
+            
+            const statusOrder = ["prepare", "packing", "assign", "shipping", "delivered"];
+            
+            let currentIndex = statusOrder.indexOf(currentStatus);
+            
+            steps.forEach((step, index) => {
+                if (index <= currentIndex) {
+                    step.classList.add('completed');
+                }
+            });
+        });
+</script>
+
     
 </body>
 

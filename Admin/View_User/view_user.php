@@ -23,6 +23,14 @@
 
         <div class="user-table">
             <h3>View User</h3>
+            <div class="search-container">
+                <div class="search-box">
+                    <form id="searchForm">
+                        <input type="text" name="query" id="searchInput" placeholder="Enter Keyword For Search...">
+                        <button type="submit" id="searchButton"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </form> 
+                </div>
+            </div>
             <table>
                 <tr>
                     <th>Image</th>
@@ -36,6 +44,7 @@
                     <th>Birthday Date</th>
                     <th>Gender</th>
                 </tr>
+                <tbody id="userTableBody">
                 <?php
                     $sql= "SELECT * FROM users WHERE user_type=1";
                     $result = $conn->query($sql);
@@ -55,12 +64,30 @@
                             </tr>';
                     }
                     ?>
-                
+                    </tbody>
             </table>
                 
         </div>
 
         
     </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+
+            const form = document.getElementById('searchForm');
+            const formData = new FormData(form);
+
+            fetch('search_user.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('userTableBody').innerHTML = html;
+            }); 
+        });
+    </script>
 </body>
 </html>

@@ -90,7 +90,7 @@ h1{
     border: 2px solid #ccc;
     border-radius: 20px;
     padding: 20px;
-    width: 50%;
+    width: 60%;
     margin: 60px auto;
     background: white;
     box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
@@ -123,8 +123,16 @@ h1{
     color: white;
 }
 
+.invoice table td img{
+    width: 80px;
+}
+
+.invoice table tr{
+    border-bottom: 1px solid rgb(211, 211, 211);
+}
+
 .invoice table tr:hover{
-    background-color: rgba(0, 153, 255, 0.397);
+    background-color: rgba(0, 153, 255, 0.212);
 }
 
 

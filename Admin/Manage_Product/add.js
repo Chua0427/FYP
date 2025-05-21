@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", function(){
     const categoryByType = {
         "Footwear": ["Boot", "Futsal", "Running", "Court", "Training", "Football Shoes", "Kid Shoes", "School Shoes"],
-        "Apparel": ["Jersey", "Jacket", "Paint", "Legging"],
-        "Equipment": ["Bag", "Cap", "Football Accessories", "Socks", "Gym Accessories"]
+        "Apparel": ["Jersey", "Jacket", "Pant", "Legging"],
+        "Equipment": ["Bag", "Cap", "Football Accessories", "Sock", "Gym Accessories"]
     };
 
     const productType = document.getElementById("product_type");
@@ -32,4 +32,26 @@ document.addEventListener("DOMContentLoaded", function(){
             });
         }
     });
+
+    const statusSelect = document.getElementById('status');
+    const discountInput = document.getElementById('discount_price');
+
+    function handleStatusChange() {
+        const selected = statusSelect.value;
+
+        if (selected === 'Promotion') {
+            discountInput.disabled = false;
+            discountInput.required = true;
+            discountInput.placeholder = "Required when status is Promotion";
+        } else {
+            discountInput.value = ''; 
+            discountInput.disabled = true;
+            discountInput.required = false;
+            discountInput.placeholder = "Disabled";
+        }
+    }
+
+    handleStatusChange();
+
+    statusSelect.addEventListener('change', handleStatusChange);
 });

@@ -39,7 +39,7 @@ class TokenAuth {
             
             // Get browser and device info for logging
             $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
-            $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+            $ip_address = $this->getClientIP();
             
             // Store token in database with prepared statement and user agent info
             $stmt = $this->db->prepare("INSERT INTO user_tokens 
@@ -254,6 +254,42 @@ class TokenAuth {
         } catch (Exception $e) {
             error_log("Token Cleanup Error: " . $e->getMessage());
         }
+    }
+
+    /**
+     * Get the client's real IP address
+     * 
+     * @return string Client IP address
+     */
+    private function getClientIP(): string {
+        // Check for proxy forwards
+        $ip_keys = [
+            'HTTP_CF_CONNECTING_IP', // Cloudflare
+            'HTTP_CLIENT_IP',        // Shared internet
+            'HTTP_X_FORWARDED_FOR',  // Common proxy
+            'HTTP_X_FORWARDED',      // Common proxy
+            'HTTP_X_CLUSTER_CLIENT_IP', // Load balancer
+            'HTTP_FORWARDED_FOR',    // Common proxy
+            'HTTP_FORWARDED',        // Common proxy
+            'REMOTE_ADDR'            // Fallback
+        ];
+        
+        foreach ($ip_keys as $key) {
+            if (!empty($_SERVER[$key])) {
+                $ip = $_SERVER[$key];
+                // If the IP is a comma-separated list, get the first one
+                if (strpos($ip, ',') !== false) {
+                    $ip = trim(explode(',', $ip)[0]);
+                }
+                
+                // Validate IP format
+                if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                    return $ip;
+                }
+            }
+        }
+        
+        return 'Unknown';
     }
 }
 ?> 
