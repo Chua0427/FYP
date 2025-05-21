@@ -23,7 +23,7 @@ body {
     padding: 10px;
     border-radius: 1px; 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 98%;
+    width: 99%;
     height: 100%;
     position: relative;
     top: 100px;
@@ -54,7 +54,7 @@ table {
 
 
 .user-table table th {
-    background: #0066ff;
+    background: #3A506B;
     color: white;
     padding: 5px 15px;
     font-size: 16px;
@@ -78,5 +78,24 @@ table {
 }
 
 .user-table table tr:hover {
-    background-color: #82d7ff77;
+    background-color: #d1e7fda2;
+}
+
+.sorting{
+    display: flex;
+    justify-content: end;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+#sortTime {
+    padding: 10px 20px;
+    background-color: white;
+    color: rgb(112, 112, 112);
+    border: 1px solid rgb(85, 85, 85);
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }

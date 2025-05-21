@@ -49,6 +49,7 @@ try {
             }
         }
     }
+    unset($order);
     
     // Count total orders
     $total_orders = count($orders);
@@ -86,7 +87,9 @@ try {
         
         .order-history-container {
             max-width: 1200px;
-            margin: 30px auto;
+            position: relative;
+            top: 100px;
+            margin: auto auto 150px auto;
             padding: 20px;
             background: #fff;
             border-radius: 8px;
@@ -408,7 +411,7 @@ try {
                         
                         <div class="order-footer">
                             <div class="order-actions">
-                                <a href="../Delivery_Status_Page/delivery.php?order_id=<?php echo htmlspecialchars((string)$order['order_id']); ?>">
+                                <a href="../Delivery_Status_Page/delivery.php?id=<?php echo htmlspecialchars((string)$order['order_id']); ?>">
                                     <i class="fas fa-truck"></i> Track Order
                                 </a>
                             </div>

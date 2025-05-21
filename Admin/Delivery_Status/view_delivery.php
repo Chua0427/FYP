@@ -29,6 +29,8 @@
                             <input type="text" name="query" id="searchInput" placeholder="Enter ID For Search...">
                             <button type="submit" id="searchButton"><i class="fa-solid fa-magnifying-glass"></i></button>
                         </form> 
+
+                        <button id="sortDeliveryStatus" onclick="triggerSort()">Sort by Status</button>
                     </div>
                 </div>
                 <table>
@@ -165,8 +167,54 @@
         .then(res => res.text())
         .then(html => {
             document.getElementById('userTableBody').innerHTML = html;
+
+            originalRows = Array.from(document.querySelector('#userTableBody').rows);
+            sortState = false;
         }); 
     });
+
+    
+    let originalRows;
+    let tbody;
+    let sorted=false;
+
+    document.addEventListener('DOMContentLoaded', function(){
+        tbody=document.getElementById("userTableBody");
+        originalRows=Array.from(tbody.rows);
+    });
+
+    function triggerSort() {
+            
+        if(!sorted){
+            const rows = Array.from(tbody.rows);
+
+            rows.sort((rowA, rowB) => {
+                let cellA = rowA.cells[5].innerText.trim();  
+                let cellB = rowB.cells[5].innerText.trim();
+
+                let cleanCellA = cellA.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase();
+                let cleanCellB = cellB.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase();
+
+                    return cleanCellA.localeCompare(cleanCellB);  
+                
+            });
+
+            
+            tbody.innerHTML = '';
+            rows.forEach(row => tbody.appendChild(row));
+
+            document.getElementById("sortDeliveryStatus").innerHTML = "Sort by Status ▲";
+            sorted=true;
+        }else{
+            tbody.innerHTML = '';
+            originalRows.forEach(row => tbody.appendChild(row));
+            document.getElementById("sortDeliveryStatus").innerHTML = "Sort by Status";
+            sorted = false;
+        }
+            
+    }
+
+
 </script>
 
 </body>

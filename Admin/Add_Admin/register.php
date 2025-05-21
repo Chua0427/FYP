@@ -30,12 +30,28 @@
             }
             else{
                 $sql = "INSERT INTO users (first_name, last_name, email, mobile_number, password, 
-                    address, postcode, state, city, birthday_date, gender, user_type, profile_image) 
-                    VALUES ('$first_name', '$last_name', '$email', '$mobile_number', '$password', 
-                    '$address', '$postcode', '$state', '$city', '$birthday_date', '$gender', 
-                    '$user_type', '$uniqueFileName')";
+                address, postcode, state, city, birthday_date, gender, user_type, profile_image) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-                $result = $conn->query($sql);
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("sssssssssssss", 
+                    $first_name, 
+                    $last_name, 
+                    $email, 
+                    $mobile_number, 
+                    $password, 
+                    $address, 
+                    $postcode, 
+                    $state, 
+                    $city, 
+                    $birthday_date, 
+                    $gender, 
+                    $user_type, 
+                    $uniqueFileName
+                );
+
+                $result = $stmt->execute();
+
 
                 if ($result) {
                     move_uploaded_file($_FILES['profile_image']['tmp_name'], $targetPath);

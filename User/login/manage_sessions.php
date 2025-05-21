@@ -159,7 +159,9 @@ $current_user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
     <style>
         .container {
             max-width: 1200px;
-            margin: 100px auto;
+            position: relative;
+            top: 100px;
+            margin: auto auto 150px auto;
             padding: 20px;
             font-family: Arial, sans-serif;
         }

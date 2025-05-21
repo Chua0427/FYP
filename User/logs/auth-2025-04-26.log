@@ -31,3 +31,4 @@
 [2025-04-26T15:37:23.079909+02:00] auth.INFO: User login without Remember Me {"user_id":52,"email":"superadmin@gmail.com","ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"} []
 [2025-04-26T15:37:23.080969+02:00] auth.INFO: User login {"user_id":52,"email":"superadmin@gmail.com","ip":"::1"} []
 [2025-04-26T15:40:14.372401+02:00] auth.INFO: User logout {"user_id":52,"email":"superadmin@gmail.com","ip":"::1"} []
+[2025-04-26T17:21:16.008058+02:00] auth.INFO: User logout {"user_id":41,"email":"chiannchua05@gmail.com","ip":"::1"} []

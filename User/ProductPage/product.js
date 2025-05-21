@@ -17,12 +17,21 @@ document.addEventListener("DOMContentLoaded", function () {
     let currentIndex=0;
 
     // Handle small image clicks
-    smallImages.forEach((img, index) => {
-        img.onclick = function() {
-            mainImage.src = img.src;
-            currentIndex = index;
-        }
-    });
+    smallImages[0].onclick = function(){
+        mainImage.src=smallImages[0].src
+    }
+
+    smallImages[1].onclick = function(){
+        mainImage.src=smallImages[1].src
+    }
+
+    smallImages[2].onclick = function(){
+        mainImage.src=smallImages[2].src
+    }
+    
+    smallImages[3].onclick = function(){
+        mainImage.src=smallImages[3].src
+    }
     
     // Handle navigation buttons
     document.getElementById("productButton").addEventListener("click", function () {

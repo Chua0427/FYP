@@ -17,7 +17,9 @@ main {
 .container {
   background: #fff;
   max-width: 1000px;
-  margin: auto;
+  position: relative;
+  top: 100px;
+  margin: auto auto 150px auto;
   padding: 2rem;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
