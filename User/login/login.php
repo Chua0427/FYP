@@ -5,9 +5,12 @@ require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/auth.php';
 
+<<<<<<< HEAD
+=======
 // PHP Mailer for OTP
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+>>>>>>> 60ef73f556d8e7e4869595625cd7c1511da8bdd7
 
 // Check if user is already authenticated with token
 if (Auth::check()) {
