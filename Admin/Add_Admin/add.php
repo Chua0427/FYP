@@ -102,7 +102,7 @@
 
                 <div class="form-group">
                     <label>Profile Image:</label>
-                    <input type="file" name="profile_image">
+                    <input type="file" name="profile_image" required>
                 </div>
 
                 <button type="submit" id="submit">Register Admin</button>

@@ -1,4 +1,0 @@
-[2025-04-25T03:09:38.543986+02:00] app.INFO: Add to cart request {"request_id":"cart_680ae0d2765459.78314825","user_id":41,"product_id":18,"product_size":"XXS","quantity":1} []
-[2025-04-25T03:09:38.624104+02:00] app.INFO: New cart item added {"request_id":"cart_680ae0d2765459.78314825","user_id":41,"product_id":18,"product_size":"XXS","quantity":1} []
-[2025-04-25T13:01:41.238943+02:00] app.INFO: Add to cart request {"request_id":"cart_680b6b95328ad3.27491735","user_id":41,"product_id":34,"product_size":"UK6.5Y","quantity":1} []
-[2025-04-25T13:01:41.247149+02:00] app.INFO: New cart item added {"request_id":"cart_680b6b95328ad3.27491735","user_id":41,"product_id":34,"product_size":"UK6.5Y","quantity":1} []
