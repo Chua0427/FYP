@@ -285,21 +285,91 @@ if ($is_authenticated) {
     background-color: #f8f8f8;
 }
 
+/* Improved cart counter that's always a perfect circle */
 .cart-counter {
     position: absolute;
     top: -8px;
     right: -8px;
     background-color: red;
     color: white;
+    /* Fixed dimensions to ensure perfect circle */
+    width: 20px;
+    height: 20px;
+    /* Use flexbox for perfect centering */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 50%;
-    padding: 2px 6px;
     font-size: 12px;
     font-weight: bold;
+    /* Prevent text wrapping or overflow */
+    text-align: center;
+    overflow: hidden;
 }
 
 .shoppingCart {
     position: relative;
 }
 </style>
+
+<!-- Search popup and related JavaScript has been removed, but the search icon in the header is maintained -->
+
+<script>
+    // Adjust cart count font size based on the number of digits
+    document.addEventListener('DOMContentLoaded', function() {
+        // Update keyframes for the pulse animation to prevent vertical shift
+        const styleSheet = document.createElement('style');
+        styleSheet.id = 'cart-counter-animations';
+        styleSheet.textContent = `
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.2); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(styleSheet);
+        
+        function adjustCartCountSize() {
+            const cartCount = document.getElementById('cartCount');
+            if (!cartCount) return;
+            
+            const count = cartCount.textContent.trim();
+            if (count.length >= 3) {
+                // For 3 or more digits (100+)
+                cartCount.style.fontSize = '8px';
+                cartCount.style.width = '22px';
+            } else if (count.length === 2) {
+                // For 2 digits (10-99)
+                cartCount.style.fontSize = '10px';
+                cartCount.style.width = '20px';
+            } else {
+                // For 1 digit (0-9)
+                cartCount.style.fontSize = '12px';
+                cartCount.style.width = '20px';
+            }
+            
+            // Ensure vertical alignment
+            cartCount.style.lineHeight = '1';
+            cartCount.style.display = 'flex';
+            cartCount.style.alignItems = 'center';
+            cartCount.style.justifyContent = 'center';
+        }
+        
+        // Run initially
+        adjustCartCountSize();
+        
+        // Set up a MutationObserver to watch for changes to the cart count
+        const cartCount = document.getElementById('cartCount');
+        if (cartCount) {
+            const observer = new MutationObserver(adjustCartCountSize);
+            observer.observe(cartCount, { childList: true, subtree: true, characterData: true });
+            
+            // Override the pulse animation to prevent vertical shifting
+            cartCount.addEventListener('animationstart', function() {
+                cartCount.style.transformOrigin = 'center center';
+            });
+        }
+    });
+</script>
 
 <!-- Search popup and related JavaScript has been removed, but the search icon in the header is maintained --> 

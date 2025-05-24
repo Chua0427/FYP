@@ -19,26 +19,57 @@ $error = null;
 $success = null;
 $csrf_token = generateCsrfToken();
 
-// Ensure the order ID is provided
-if (!isset($_GET['order_id']) || empty($_GET['order_id'])) {
-    header('Location: ../order/cart.php');
+// Ensure we have shipping address from checkout
+if (!isset($_SESSION['checkout_shipping_address']) || empty($_SESSION['checkout_shipping_address'])) {
+    header('Location: checkout.php');
     exit;
 }
 
-$order_id = $_GET['order_id'];
+// Get shipping address from session
+$shipping_address = $_SESSION['checkout_shipping_address'];
 
 try {
     // Initialize Database
     $db = new Database();
     
-    // Verify the order exists and belongs to this user
-    $order = $db->fetchOne(
-        "SELECT * FROM orders WHERE order_id = ? AND user_id = ?",
-        [$order_id, $user_id]
-    );
+    // Check if we have cart items in session
+    if (isset($_SESSION['checkout_cart_items'])) {
+        $cartItems = $_SESSION['checkout_cart_items'];
+    } else {
+        // Fetch cart items directly if not in session
+        $cartItems = $db->fetchAll(
+            "SELECT c.*, p.product_name, p.price, p.discount_price, p.product_img1, p.brand,
+             CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price
+             FROM cart c 
+             JOIN product p ON c.product_id = p.product_id 
+             WHERE c.user_id = ?",
+            [$user_id]
+        );
+        
+        if (empty($cartItems)) {
+            throw new Exception("Your cart is empty. Please add items before proceeding to checkout.");
+        }
+        
+        // Store cart items in session
+        $_SESSION['checkout_cart_items'] = $cartItems;
+    }
     
-    if (!$order) {
-        throw new Exception("Invalid order or order not found");
+    // Get total price from session or calculate
+    if (isset($_SESSION['checkout_total_price'])) {
+        $totalPrice = $_SESSION['checkout_total_price'];
+    } else {
+        // Calculate total price
+        $totalPrice = 0;
+        foreach ($cartItems as $item) {
+            $totalPrice += $item['final_price'] * $item['quantity'];
+        }
+        $_SESSION['checkout_total_price'] = $totalPrice;
+    }
+    
+    // Calculate total items
+    $totalItems = 0;
+    foreach ($cartItems as $item) {
+        $totalItems += $item['quantity'];
     }
     
     // Process form submission - payment method selection
@@ -50,74 +81,17 @@ try {
 
         $payment_method = $_POST['payment_method'];
         
-        // Now that user has selected a payment method, clear the cart items related to this order
-        require_once __DIR__ . '/../app/services/OrderService.php';
-        $orderService = new OrderService($db, $GLOBALS['logger']);
-        
-        // Get the order items to identify which products to remove from cart
-        $orderItems = $db->fetchAll(
-            "SELECT * FROM order_items WHERE order_id = ?",
-            [$order_id]
-        );
-        
-        // Start transaction for cart removal
-        $db->beginTransaction();
-        
-        try {
-            // For each order item, remove matching cart item
-            foreach ($orderItems as $orderItem) {
-                $db->execute(
-                    "DELETE FROM cart 
-                     WHERE user_id = ? 
-                     AND product_id = ? 
-                     AND product_size = ?",
-                    [$user_id, $orderItem['product_id'], $orderItem['product_size']]
-                );
-            }
-            
-            // Commit transaction
-            $db->commit();
-            
-            // Log cart clearing
-            $GLOBALS['logger']->info('Cart items cleared after payment method selection', [
-                'user_id' => $user_id,
-                'order_id' => $order_id
-            ]);
-        } catch (Exception $e) {
-            // Rollback on error
-            $db->rollback();
-            // Log error but don't stop the process
-            $GLOBALS['logger']->error('Failed to clear cart items: ' . $e->getMessage(), [
-                'user_id' => $user_id,
-                'order_id' => $order_id
-            ]);
-        }
-        
         // Currently only supporting credit card payment
         if ($payment_method === 'card') {
+            // Store payment method in session
+            $_SESSION['checkout_payment_method'] = $payment_method;
+            
             // Redirect to the payment processing page
-            header("Location: process_payment.php?order_id=" . urlencode($order_id));
+            header("Location: process_payment.php");
             exit;
         } else {
             throw new Exception("Selected payment method is not supported");
         }
-    }
-    
-    // Get order items for display
-    $orderItems = $db->fetchAll(
-        "SELECT oi.*, p.product_name, p.product_img1, p.brand 
-         FROM order_items oi 
-         JOIN product p ON oi.product_id = p.product_id 
-         WHERE oi.order_id = ?",
-        [$order_id]
-    );
-    
-    // Calculate totals
-    $totalItems = 0;
-    $totalPrice = $order['total_price'];
-    
-    foreach ($orderItems as $item) {
-        $totalItems += $item['quantity'];
     }
     
 } catch (Exception $e) {
@@ -463,7 +437,6 @@ function formatPrice($price) {
                 <?php else: ?>
                     <form method="post" id="payment-form">
                         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
-                        <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order_id); ?>">
                         
                         <div class="payment-grid">
                             <div class="payment-methods">
@@ -489,14 +462,14 @@ function formatPrice($price) {
                                 
                                 <div class="button-container">
                                     <button type="submit" class="btn btn-primary">Process Payment</button>
-                                    <a href="checkout.php?order_id=<?php echo htmlspecialchars($order_id); ?>" class="return-link">Back to Order Details</a>
+                                    <a href="checkout.php" class="return-link">Back to Order Details</a>
                                 </div>
                             </div>
                             
                             <div class="order-summary">
                                 <h2>Order Summary</h2>
                                 
-                                <?php foreach ($orderItems as $item): ?>
+                                <?php foreach ($cartItems as $item): ?>
                                     <div class="order-item">
                                         <div class="item-details">
                                             <p class="item-name"><?php echo htmlspecialchars($item['product_name']); ?></p>
@@ -504,7 +477,7 @@ function formatPrice($price) {
                                         </div>
                                         <p class="item-price">
                                             <?php 
-                                            $itemPrice = $item['price'] * $item['quantity'];
+                                            $itemPrice = $item['final_price'] * $item['quantity'];
                                             echo formatPrice($itemPrice); 
                                             ?>
                                         </p>

@@ -17,7 +17,6 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 $error = null;
 $success = null;
-$order_id = null;
 $csrf_token = generateCsrfToken();
 
 // Debug log function for stock updates
@@ -46,33 +45,18 @@ try {
     // Initialize Database
     $db = new Database();
     
-    // Check if order_id is provided (for returning to an existing order)
-    if (isset($_GET['order_id'])) {
-        $order_id = $_GET['order_id'];
-        
-        // Verify the order exists and belongs to this user
-        $order = $db->fetchOne(
-            "SELECT * FROM orders WHERE order_id = ? AND user_id = ?",
-            [$order_id, $user_id]
-        );
-        
-        if (!$order) {
-            throw new Exception("Invalid order or order not found");
-        }
-    } else {
-        // Check if cart is empty
-        $cartItems = $db->fetchAll(
-            "SELECT c.*, p.product_name, p.price, p.discount_price, p.product_img1, p.brand,
-             CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price
-             FROM cart c 
-             JOIN product p ON c.product_id = p.product_id 
-             WHERE c.user_id = ?",
-            [$user_id]
-        );
-        
-        if (empty($cartItems)) {
-            throw new Exception("Your cart is empty. Please add items before proceeding to checkout.");
-        }
+    // Check if cart is empty
+    $cartItems = $db->fetchAll(
+        "SELECT c.*, p.product_name, p.price, p.discount_price, p.product_img1, p.brand,
+         CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price
+         FROM cart c 
+         JOIN product p ON c.product_id = p.product_id 
+         WHERE c.user_id = ?",
+        [$user_id]
+    );
+    
+    if (empty($cartItems)) {
+        throw new Exception("Your cart is empty. Please add items before proceeding to checkout.");
     }
     
     // Get user details for shipping
@@ -85,7 +69,7 @@ try {
         throw new Exception("User information not found");
     }
     
-    // Process form submission - Create Order
+    // Process form submission - Collect shipping address and continue to payment methods
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_order']) && isset($_POST['csrf_token'])) {
         // Validate CSRF token
         if (!validateCsrfToken($_POST['csrf_token'])) {
@@ -98,44 +82,31 @@ try {
             throw new Exception("Shipping address is required");
         }
 
-        // Handle order creation
-        if (!isset($_POST['order_id']) || empty($_POST['order_id'])) {
-            if (empty($cartItems)) {
-                throw new Exception("Your cart is empty. Please add items before proceeding to checkout.");
-            }
-            $db->beginTransaction();
-            $totalPrice = 0;
-            foreach ($cartItems as $item) {
-                $totalPrice += $item['final_price'] * $item['quantity'];
-            }
-            $db->execute("INSERT INTO orders (user_id, total_price, shipping_address) VALUES (?, ?, ?)", [$user_id, $totalPrice, $shipping_address]);
-            $order_id = $db->getInsertId();
-            foreach ($cartItems as $item) {
-                $db->execute(
-                    "INSERT INTO order_items (order_id, product_id, product_size, quantity, price) VALUES (?, ?, ?, ?, ?)",
-                    [$order_id, $item['product_id'], $item['product_size'], $item['quantity'], $item['final_price']]
-                );
-            }
-            // Clear cart after creating the order
-            $db->execute("DELETE FROM cart WHERE user_id = ?", [$user_id]);
-            $db->commit();
-
-            // Redirect to payment selection page
-            header("Location: payment_methods.php?order_id=" . urlencode((string)$order_id));
-            exit;
-        } else {
-            // Order exists, redirect to payment method selection
-            header("Location: payment_methods.php?order_id=" . urlencode($_POST['order_id']));
-            exit;
+        // Store shipping address in session for use in payment process
+        $_SESSION['checkout_shipping_address'] = $shipping_address;
+        
+        // Calculate cart total for display on payment page
+        $totalPrice = 0;
+        foreach ($cartItems as $item) {
+            $totalPrice += $item['final_price'] * $item['quantity'];
         }
+        $_SESSION['checkout_total_price'] = $totalPrice;
+        
+        // Store selected cart items in session
+        $_SESSION['checkout_cart_items'] = $cartItems;
+        
+        // Log checkout step
+        $GLOBALS['logger']->info('User proceeded to payment selection', [
+            'user_id' => $user_id
+        ]);
+        
+        // Redirect to payment selection page
+        header("Location: payment_methods.php");
+        exit;
     }
     
 } catch (Exception $e) {
     $error = $e->getMessage();
-    
-    if (isset($db) && $db->isTransactionActive()) {
-        $db->rollback();
-    }
     
     // Log error
     error_log("Checkout error: " . $e->getMessage());
@@ -146,35 +117,14 @@ function formatPrice($price) {
     return 'RM ' . number_format((float)$price, 2);
 }
 
-// Prepare cart or order data for display
-if (isset($order_id)) {
-    // Get order details if we have an order ID
-    $orderItems = $db->fetchAll(
-        "SELECT oi.*, p.product_name, p.product_img1, p.brand 
-         FROM order_items oi 
-         JOIN product p ON oi.product_id = p.product_id 
-         WHERE oi.order_id = ?",
-        [$order_id]
-    );
-    
-    $items = $orderItems;
-    $totalItems = 0;
-    $totalPrice = 0;
-    
-    foreach ($items as $item) {
-        $totalItems += $item['quantity'];
-        $totalPrice += $item['price'] * $item['quantity'];
-    }
-} else {
-    // Use cart items since we don't have an order yet
-    $items = $cartItems;
-    $totalItems = 0;
-    $totalPrice = 0;
-    
-    foreach ($items as $item) {
-        $totalItems += $item['quantity'];
-        $totalPrice += $item['final_price'] * $item['quantity'];
-    }
+// Prepare cart data for display
+$items = $cartItems;
+$totalItems = 0;
+$totalPrice = 0;
+
+foreach ($items as $item) {
+    $totalItems += $item['quantity'];
+    $totalPrice += $item['final_price'] * $item['quantity'];
 }
 ?>
 
@@ -214,9 +164,6 @@ if (isset($order_id)) {
                 <?php else: ?>
                     <form method="post" id="checkout-form">
                         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
-                        <?php if (isset($order_id)): ?>
-                            <input type="hidden" name="order_id" value="<?php echo htmlspecialchars((string)$order_id); ?>">
-                        <?php endif; ?>
                         
                         <div class="checkout-grid">
                             <div class="checkout-details">
@@ -266,9 +213,7 @@ if (isset($order_id)) {
                                         </div>
                                         <p class="item-price">
                                             <?php 
-                                            $itemPrice = isset($item['final_price']) ? 
-                                                $item['final_price'] * $item['quantity'] : 
-                                                $item['price'] * $item['quantity'];
+                                            $itemPrice = $item['final_price'] * $item['quantity'];
                                             echo formatPrice($itemPrice); 
                                             ?>
                                         </p>

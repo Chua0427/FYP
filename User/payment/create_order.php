@@ -5,7 +5,6 @@ require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once '/xampp/htdocs/FYP/FYP/User/payment/db.php';
 require_once __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/csrf.php';
-require_once __DIR__ . '/../app/services/OrderService.php';
 
 // Set content type to JSON
 header('Content-Type: application/json');
@@ -42,11 +41,13 @@ try {
     // Initialize Database
     $db = new Database();
     
-    // Set transaction isolation level to SERIALIZABLE for strongest consistency
-    $db->execute("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE");
-    
     // Get shipping address from post data
     $shipping_address = trim($_POST['shipping_address'] ?? '');
+    
+    // Store shipping address in session for use in payment process
+    if (!empty($shipping_address)) {
+        $_SESSION['checkout_shipping_address'] = $shipping_address;
+    }
     
     // Get selected items if provided
     $selected_cart_ids = null;
@@ -63,25 +64,41 @@ try {
         $selected_cart_ids = array_map('intval', $selected_cart_ids);
     }
     
-    // Create OrderService instance
-    $orderService = new OrderService($db, $logger);
-    
-    // Create order with check_stock=true and additional request context
-    // We don't clear the cart at this point - it will be cleared only after successful payment
-    $result = $orderService->createOrderFromCart(
-        $user_id,
-        $shipping_address,
-        true, // Check stock
-        ['request_id' => $request_id], // Additional context
-        $selected_cart_ids, // Selected cart items (null = all items)
-        false // Don't clear cart items yet
+    // Get cart items
+    $cartItems = $db->fetchAll(
+        "SELECT c.*, p.product_name, p.price, p.discount_price, p.product_img1, p.brand,
+         CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price
+         FROM cart c 
+         JOIN product p ON c.product_id = p.product_id 
+         WHERE c.user_id = ?",
+        [$user_id]
     );
     
-    // Add redirect URL to the result
-    $result['redirect_url'] = '/FYP/FYP/User/payment/checkout.php?order_id=' . $result['order_id'];
+    if (empty($cartItems)) {
+        throw new Exception("Your cart is empty. Please add items before proceeding to checkout.");
+    }
     
-    // Return success response
-    echo json_encode($result);
+    // Store cart items in session
+    $_SESSION['checkout_cart_items'] = $cartItems;
+    
+    // Calculate total price
+    $totalPrice = 0;
+    foreach ($cartItems as $item) {
+        $totalPrice += $item['final_price'] * $item['quantity'];
+    }
+    $_SESSION['checkout_total_price'] = $totalPrice;
+    
+    // Log checkout step
+    $logger->info('User proceeded to payment selection', [
+        'user_id' => $user_id,
+        'request_id' => $request_id
+    ]);
+    
+    // Return success response with redirect to payment methods
+    echo json_encode([
+        'success' => true,
+        'redirect_url' => '/FYP/FYP/User/payment/payment_methods.php'
+    ]);
     exit;
     
 } catch (Exception $e) {
