@@ -18,10 +18,17 @@
     }
 
     .about-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
+            max-width: 1000px;
+            margin-right: auto;
+            margin-left: auto;
+            margin-bottom: 130px;
+            padding: 30px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            position: relative;
+            top: 98px;
+        }
 
     .hero-section {
       background: linear-gradient(to bottom right, rgba(52,152,219,0.85), rgba(41,128,185,0.85)), url('../images/about/hero-bg.jpg') center/cover no-repeat;
@@ -197,11 +204,6 @@
           <i class="fas fa-running"></i>
           <h3>Passion for Sports</h3>
           <p>We're not just sellers - we're athletes too, and we understand what you need to perform at your best.</p>
-        </div>
-        <div class="value-card">
-          <i class="fas fa-globe-asia"></i>
-          <h3>Community Building</h3>
-          <p>We sponsor local teams and events because we believe in growing Malaysia's sports culture.</p>
         </div>
       </div>
     </div>
