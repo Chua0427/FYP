@@ -16,12 +16,16 @@
         }
         
         .tracking-container {
-            max-width: 800px;
-            margin: 30px auto;
-            padding: 35px;
+            max-width: 1000px;
+            margin-right: auto;
+            margin-left: auto;
+            margin-bottom: 130px;
+            padding: 30px;
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            position: relative;
+            top: 98px;
         }
         
         h1 {
