@@ -15,3 +15,6 @@
 [2025-05-21 05:42:04] Starting stock update process for order #95 - {"payment_method":"stripe_card","stripe_id":"ch_3RR3XcQZPLk7FzRY40xBilVT"}
 [2025-05-21 05:42:05] Payment verification result - {"order_id":"95","verified":true,"stripe_id":"ch_3RR3XcQZPLk7FzRY40xBilVT"}
 [2025-05-21 05:42:05] Stock update completed - {"order_id":"95","result":true}
+[2025-05-24 11:01:59] Starting stock update process for order #40 - {"payment_method":"stripe_card","stripe_id":"ch_3RSDxqQZPLk7FzRY5qBn2rEB"}
+[2025-05-24 11:01:59] Payment verification result - {"order_id":"40","verified":true,"stripe_id":"ch_3RSDxqQZPLk7FzRY5qBn2rEB"}
+[2025-05-24 11:01:59] Stock update completed - {"order_id":"40","result":true}

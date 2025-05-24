@@ -15,7 +15,7 @@ if (isset($_GET['id'])) {
         $gender= $_POST["gender"];
         $status= $_POST["status"];
         $price= $_POST["price"];
-        $discount_price= $_POST["discount_price"];
+        $discount_price = isset($_POST["discount_price"]) && $_POST["discount_price"] !== '' ? $_POST["discount_price"] : 0;
         $description= $_POST["description"];
 
         $image1 = '';
