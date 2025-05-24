@@ -14,6 +14,11 @@ $logger = $GLOBALS['logger'];
 
 // Get the product ID from URL
 $product_id = isset($_GET['product_id']) ? (int)$_GET['product_id'] : 0;
+// Get the order ID from URL to scope reviews to this order
+$order_id = isset($_GET['order_id']) ? (int)$_GET['order_id'] : 0;
+if ($order_id <= 0) {
+    throw new Exception('Invalid order ID');
+}
 $user_id = (int)$_SESSION['user_id'];
 
 // Initialize error and success messages
@@ -35,23 +40,23 @@ try {
         throw new Exception("Product not found");
     }
     
-    // Check if the user has purchased this product
+    // Check if the user has purchased this product in this specific order
     $hasPurchased = $db->fetchOne(
         "SELECT oi.order_id FROM order_items oi 
          JOIN orders o ON oi.order_id = o.order_id 
-         WHERE o.user_id = ? AND oi.product_id = ? AND o.delivery_status = 'delivered'
+         WHERE o.user_id = ? AND oi.product_id = ? AND o.delivery_status = 'delivered' AND oi.order_id = ?
          LIMIT 1",
-        [$user_id, $product_id]
+        [$user_id, $product_id, $order_id]
     );
     
     if (!$hasPurchased) {
         throw new Exception("You can only review products you have purchased and received");
     }
     
-    // Check if user has already reviewed this product
+    // Check if user has already reviewed this product for this order
     $existingReview = $db->fetchOne(
-        "SELECT * FROM review WHERE user_id = ? AND product_id = ?",
-        [$user_id, $product_id]
+        "SELECT * FROM review WHERE user_id = ? AND product_id = ? AND order_id = ?",
+        [$user_id, $product_id, $order_id]
     );
     
     // If this is a form submission
@@ -72,18 +77,19 @@ try {
         } else {
             // If user already reviewed, update the review
             if ($existingReview) {
+                // Update existing review for this order
                 $result = $db->execute(
                     "UPDATE review SET rating = ?, review_text = ?, review_at = CURRENT_TIMESTAMP 
-                     WHERE user_id = ? AND product_id = ?",
-                    [$rating, $reviewText, $user_id, $product_id]
+                     WHERE user_id = ? AND product_id = ? AND order_id = ?",
+                    [$rating, $reviewText, $user_id, $product_id, $order_id]
                 );
                 $success = "Your review has been updated";
             } else {
-                // Insert new review
+                // Insert new review for this order
                 $result = $db->execute(
-                    "INSERT INTO review (user_id, product_id, rating, review_text) 
-                     VALUES (?, ?, ?, ?)",
-                    [$user_id, $product_id, $rating, $reviewText]
+                    "INSERT INTO review (user_id, product_id, order_id, rating, review_text) 
+                     VALUES (?, ?, ?, ?, ?)",
+                    [$user_id, $product_id, $order_id, $rating, $reviewText]
                 );
                 $success = "Thank you for your review!";
             }
