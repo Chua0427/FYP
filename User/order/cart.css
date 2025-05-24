@@ -374,3 +374,16 @@ h1 {
   transform: translateY(-50%) rotate(45deg);
 }
 
+.billing-info {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #ddd;
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.billing-info p {
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
