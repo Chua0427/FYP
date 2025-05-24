@@ -3,9 +3,9 @@
                 <div class="footerCategories">
                     <h3>COMPANY</h3>
                     <a href="../fl/AboutVeroSports.php">About VEROSPORTS</a>
-                    <a href="#">Our Location</a>
+                    <a href="../fl/OurLocation.php">Our Location</a>
                     <a href="../fl/PPen.php">Privacy Policy</a>
-                    <a href="#">Term & Condition</a>
+                    <a href="../fl/TC.php">Term & Condition</a>
                 </div>
                 <div class="footerCategories">
                     <h3>Help & Support</h3>

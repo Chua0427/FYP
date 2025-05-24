@@ -9,6 +9,7 @@ require_once __DIR__ . '/../app/auth.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+
 // Check if user is already authenticated with token
 if (Auth::check()) {
     header('Location: /FYP/FYP/User/HomePage/homePage.php');
@@ -126,6 +127,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             $auth_time = microtime(true) - $start_time;
             error_log("Password verification successful at " . date('H:i:s') . " - Time: " . number_format($auth_time, 4) . "s");
             
+            // Check if user is an admin (user_type = 2)
+            if (isset($user['user_type']) && $user['user_type'] == 2) {
+                $error = 'Admin accounts must use the admin login page.';
+                $GLOBALS['authLogger']->warning('Admin attempted to login on user page', [
+                    'email' => $email,
+                    'ip' => $_SERVER['REMOTE_ADDR']
+                ]);
+                
+                // Stop processing
+                throw new Exception('Admin accounts must use the admin login page.');
+            }
+            
             // Generate OTP
             $otp = generateOTP();
             
@@ -212,22 +225,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
                     <input type="checkbox" id="remember" name="remember">
                     <label for="remember">Remember me</label>
                 </div>
-
                 <button type="submit" name="login" class="login-btn">Login</button>
                 <a href="../ForgotPassword/forgot_password.php" class="forgot-password">Forgot Password?</a>
-
             </form>
-            
-            <div class="divider"><span>OR</span></div>
-            
-            <div class="social-buttons">
-                <button type="button">
-                    <i class="fab fa-facebook-f" style="color:#3b5998; margin-right:8px;"></i> Facebook
-                </button>
-                <button type="button">
-                    <i class="fab fa-google" style="color:#db4437; margin-right:8px;"></i> Google
-                </button>
-            </div>
             
             <div class="signup-text">
                 Don't have an account? <a href="../Registration/Register.php">Sign Up</a>
