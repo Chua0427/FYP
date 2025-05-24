@@ -5,6 +5,23 @@ require_once __DIR__ . '/db.php';
 require __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/services/OrderService.php';
 
+// Set maximum error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/logs/php_errors.log');
+
+// Create logs directory if it doesn't exist
+$logDir = __DIR__ . '/logs';
+if (!file_exists($logDir)) {
+    mkdir($logDir, 0777, true);
+}
+
+// Test mail functionality directly
+$mailWorkingFile = __DIR__ . '/logs/mail_test.log';
+$mailResult = @mail('chiannchua05@gmail.com', 'Mail Test', 'This is a test email from success.php', 'From: chiannchua05@gmail.com');
+file_put_contents($mailWorkingFile, date('[Y-m-d H:i:s]') . " Mail test result: " . ($mailResult ? "SUCCESS" : "FAILED") . PHP_EOL, FILE_APPEND);
+
 // Initialize Database
 $db = new Database();
 
@@ -136,6 +153,38 @@ try {
                                     "INSERT INTO payment_log (payment_id, log_level, log_message) VALUES (?, 'info', ?)",
                                     [$payment['payment_id'], "Stock updated after Stripe verification via success page"]
                                 );
+                                
+                                // Generate and send invoice PDF after successful payment
+                                try {
+                                    // Include the InvoiceService class
+                                    require_once __DIR__ . '/../app/services/InvoiceService.php';
+                                    
+                                    // Create an instance of the InvoiceService
+                                    $invoiceService = new \App\Services\InvoiceService($db);
+                                    
+                                    // Generate and send the invoice
+                                    $invoiceSent = $invoiceService->generateAndSendInvoice((int)$order_id);
+                                    
+                                    // Log the result
+                                    if ($invoiceSent) {
+                                        $db->execute(
+                                            "INSERT INTO payment_log (payment_id, log_level, log_message) VALUES (?, 'info', ?)",
+                                            [$payment['payment_id'], "Invoice PDF generated and sent to customer via email"]
+                                        );
+                                    } else {
+                                        $db->execute(
+                                            "INSERT INTO payment_log (payment_id, log_level, log_message) VALUES (?, 'warning', ?)",
+                                            [$payment['payment_id'], "Failed to generate and send invoice PDF"]
+                                        );
+                                    }
+                                } catch (\Exception $invoiceError) {
+                                    // Log invoice error but don't interrupt the flow
+                                    $db->execute(
+                                        "INSERT INTO payment_log (payment_id, log_level, log_message) VALUES (?, 'error', ?)",
+                                        [$payment['payment_id'], "Invoice error: " . $invoiceError->getMessage()]
+                                    );
+                                    error_log("Invoice generation error for order #$order_id: " . $invoiceError->getMessage());
+                                }
                             } catch (Exception $stockUpdateError) {
                                 debug_log("Stock update failed with exception in success.php", [
                                     'order_id' => $order_id,
@@ -170,6 +219,25 @@ try {
                                 "INSERT INTO payment_log (payment_id, log_level, log_message) VALUES (?, 'info', ?)",
                                 [$payment['payment_id'], "Stock updated via fallback after Stripe API error in success.php"]
                             );
+                            
+                            // Generate and send invoice PDF after successful payment
+                            try {
+                                require_once __DIR__ . '/../app/services/InvoiceService.php';
+                                $invoiceService = new \App\Services\InvoiceService($db);
+                                $invoiceSent = $invoiceService->generateAndSendInvoice((int)$order_id);
+                                
+                                if ($invoiceSent) {
+                                    $db->execute(
+                                        "INSERT INTO payment_log (payment_id, log_level, log_message) VALUES (?, 'info', ?)",
+                                        [$payment['payment_id'], "Invoice PDF generated and sent to customer via email (fallback)"]
+                                    );
+                                }
+                            } catch (\Exception $invoiceError) {
+                                $db->execute(
+                                    "INSERT INTO payment_log (payment_id, log_level, log_message) VALUES (?, 'error', ?)",
+                                    [$payment['payment_id'], "Invoice error (fallback): " . $invoiceError->getMessage()]
+                                );
+                            }
                         } catch (Exception $stockUpdateError) {
                             debug_log("Stock update failed with exception in success.php", [
                                 'order_id' => $order_id,
@@ -189,6 +257,15 @@ try {
                         "INSERT INTO payment_log (payment_id, log_level, log_message) VALUES (?, 'info', ?)",
                         [$payment['payment_id'], "Stock updated via success page (no Stripe verification)"]
                     );
+                    
+                    // Try to generate and send invoice as well
+                    try {
+                        require_once __DIR__ . '/../app/services/InvoiceService.php';
+                        $invoiceService = new \App\Services\InvoiceService($db);
+                        $invoiceService->generateAndSendInvoice((int)$order_id);
+                    } catch (\Exception $invoiceError) {
+                        error_log("Invoice generation error (no Stripe ID) for order #$order_id: " . $invoiceError->getMessage());
+                    }
                 }
             } catch (Exception $stockError) {
                 // Log stock update error
@@ -201,6 +278,20 @@ try {
             }
             
             $db->commit();
+            // Generate and send invoice after commit
+            try {
+                error_log("Payment success: Starting invoice generation for order #$order_id");
+                require_once __DIR__ . '/../app/services/InvoiceService.php';
+                $invoiceService = new \App\Services\InvoiceService($db);
+                $result = $invoiceService->generateAndSendInvoice((int)$order_id);
+                if ($result) {
+                    error_log("Payment success: Invoice successfully generated and emailed for order #$order_id");
+                } else {
+                    error_log("Payment success: Invoice generation completed but email sending may have failed for order #$order_id");
+                }
+            } catch (\Exception $e) {
+                error_log('Invoice generation/email error: ' . $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine());
+            }
         } catch (Exception $e) {
             if ($db->isTransactionActive()) {
                 $db->rollback();
@@ -257,6 +348,7 @@ try {
             <i class="bi bi-check-circle-fill success-icon"></i>
             <h1 class="mt-3">Payment Successful!</h1>
             <p class="lead">Thank you for your purchase. Your order has been confirmed.</p>
+            <p>A receipt has been sent to your email address.</p>
         </div>
 
         <div class="order-details">
@@ -305,4 +397,35 @@ try {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html> 
+</html>
+
+<?php
+// Direct manual test for invoice generation (only runs if there's a valid order)
+if (isset($order_id) && !empty($order_id) && is_numeric($order_id)) {
+    try {
+        // Create direct test log
+        $testLogFile = __DIR__ . '/logs/invoice_test_' . date('Y-m-d') . '.log';
+        file_put_contents($testLogFile, date('[Y-m-d H:i:s]') . " Starting direct invoice test for order #$order_id\n", FILE_APPEND);
+        
+        // Check configuration
+        file_put_contents($testLogFile, date('[Y-m-d H:i:s]') . " PHP Version: " . phpversion() . "\n", FILE_APPEND);
+        file_put_contents($testLogFile, date('[Y-m-d H:i:s]') . " SMTP: " . ini_get('SMTP') . "\n", FILE_APPEND);
+        file_put_contents($testLogFile, date('[Y-m-d H:i:s]') . " SMTP Port: " . ini_get('smtp_port') . "\n", FILE_APPEND);
+        
+        // Load dependent classes
+        require_once __DIR__ . '/../app/services/InvoiceService.php';
+        file_put_contents($testLogFile, date('[Y-m-d H:i:s]') . " InvoiceService class loaded\n", FILE_APPEND);
+        
+        // Create an instance of the invoice service
+        $invoiceService = new \App\Services\InvoiceService($db);
+        file_put_contents($testLogFile, date('[Y-m-d H:i:s]') . " InvoiceService instantiated\n", FILE_APPEND);
+        
+        // Generate and send invoice
+        $result = $invoiceService->generateAndSendInvoice((int)$order_id);
+        file_put_contents($testLogFile, date('[Y-m-d H:i:s]') . " Invoice generation result: " . ($result ? "SUCCESS" : "FAILED") . "\n", FILE_APPEND);
+    } catch (\Exception $e) {
+        file_put_contents($testLogFile, date('[Y-m-d H:i:s]') . " ERROR: " . $e->getMessage() . "\n", FILE_APPEND);
+        file_put_contents($testLogFile, date('[Y-m-d H:i:s]') . " Trace: " . $e->getTraceAsString() . "\n", FILE_APPEND);
+    }
+}
+?> 
