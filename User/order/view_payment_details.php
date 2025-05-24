@@ -15,7 +15,6 @@ $error_message = '';
 $payment = null;
 $order = null;
 $order_items = [];
-$payment_logs = [];
 
 if (!isset($_GET['order_id'])) {
     $error_message = 'Invalid request. No order ID specified.';
@@ -41,12 +40,6 @@ if (!isset($_GET['order_id'])) {
         
         if ($payment_result->num_rows > 0) {
             $payment = $payment_result->fetch_assoc();
-            
-            // Get payment logs
-            $stmt = $conn->prepare("SELECT * FROM payment_log WHERE payment_id = ? ORDER BY log_time DESC");
-            $stmt->bind_param("s", $payment['payment_id']);
-            $stmt->execute();
-            $payment_logs = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
             
             // Get order items
             $stmt = $conn->prepare("
@@ -207,67 +200,6 @@ function formatStatus(string $status): string {
             margin-right: 15px;
         }
         
-        .payment-logs {
-            margin-top: 30px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        
-        .logs-header {
-            background: #f0f0f0;
-            padding: 15px 20px;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .logs-header h3 {
-            margin: 0;
-            font-size: 18px;
-        }
-        
-        .logs-body {
-            padding: 20px;
-        }
-        
-        .log-entry {
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .log-time {
-            font-size: 12px;
-            color: #888;
-        }
-        
-        .log-level {
-            display: inline-block;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 12px;
-            margin-right: 5px;
-            text-transform: uppercase;
-        }
-        
-        .log-level-info {
-            background: #e3f2fd;
-            color: #0d47a1;
-        }
-        
-        .log-level-warning {
-            background: #fff8e1;
-            color: #ff6f00;
-        }
-        
-        .log-level-error {
-            background: #ffebee;
-            color: #b71c1c;
-        }
-        
-        .log-message {
-            margin-top: 5px;
-        }
-        
         .actions {
             margin-top: 30px;
             text-align: center;
@@ -418,23 +350,6 @@ function formatStatus(string $status): string {
                     </div>
                 <?php endforeach; ?>
             </div>
-            
-            <?php if (!empty($payment_logs)): ?>
-            <div class="payment-logs">
-                <div class="logs-header">
-                    <h3>Payment Activity Log</h3>
-                </div>
-                <div class="logs-body">
-                    <?php foreach ($payment_logs as $log): ?>
-                        <div class="log-entry">
-                            <div class="log-time"><?php echo date("Y-m-d H:i:s", strtotime($log['log_time'])); ?></div>
-                            <span class="log-level log-level-<?php echo htmlspecialchars($log['log_level']); ?>"><?php echo htmlspecialchars($log['log_level']); ?></span>
-                            <div class="log-message"><?php echo htmlspecialchars($log['log_message']); ?></div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-            <?php endif; ?>
             
             <div class="actions">
                 <a href="gen_pdf_bill.php?order_id=<?php echo htmlspecialchars((string)$order['order_id']); ?>" class="btn" target="_blank">

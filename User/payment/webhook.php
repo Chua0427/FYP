@@ -111,19 +111,72 @@ function handlePaymentIntentSucceeded(Database $db, $paymentIntent) {
         $orderId = $paymentIntent->metadata->order_id ?? null;
         $userId = $paymentIntent->metadata->user_id ?? null;
         
-        if (!$orderId) {
-            log_message('WARNING', "Payment succeeded but no order_id in metadata: {$paymentIntent->id}");
-            return;
-        }
-        
         // Begin transaction
         $db->beginTransaction();
         
-        // Update payment record
+        // Check if we have an order_id in metadata
+        if (!$orderId) {
+            // This might be a payment created from cart directly with no order yet
+            // Check if we have a payment record
+            $payment = $db->fetchOne(
+                "SELECT * FROM payment WHERE stripe_id = ?", 
+                [$paymentIntent->id]
+            );
+            
+            if ($payment && $payment['order_id']) {
+                // We have a payment with order ID, use it
+                $orderId = $payment['order_id'];
+            } else if ($userId) {
+                // No order_id exists, we need to create one from cart
+                log_message('INFO', "Payment succeeded with user_id but no order_id, creating order from cart for user: $userId");
+                
+                require_once __DIR__ . '/../app/services/OrderService.php';
+                $orderService = new OrderService($db);
+                
+                // We should get the shipping address from session or user profile
+                // For webhook, we'll use the user's default address
+                $userInfo = $db->fetchOne("SELECT * FROM users WHERE user_id = ?", [$userId]);
+                
+                if (!$userInfo) {
+                    log_message('ERROR', "User not found for webhook order creation: $userId");
+                    throw new \Exception("User not found: $userId");
+                }
+                
+                $shippingAddress = $userInfo['address'] . ', ' . $userInfo['city'] . ', ' . 
+                                  $userInfo['postcode'] . ', ' . $userInfo['state'];
+                
+                // Create order from cart
+                $result = $orderService->createOrderFromCart(
+                    $userId,
+                    $shippingAddress,
+                    true, // Check stock
+                    [
+                        'payment_method' => 'stripe_card',
+                        'stripe_id' => $paymentIntent->id,
+                        'payment_status' => 'completed'
+                    ],
+                    null, // All cart items
+                    true  // Clear cart
+                );
+                
+                $orderId = $result['order_id'];
+                
+                log_message('INFO', "Order created from cart in webhook: $orderId");
+            } else {
+                log_message('WARNING', "Payment succeeded but no order_id or user_id in metadata: {$paymentIntent->id}");
+                $db->rollback();
+                return;
+            }
+        }
+        
+        // Update payment record if it exists
         $payment = $db->fetchOne(
             "SELECT * FROM payment WHERE stripe_id = ?", 
             [$paymentIntent->id]
         );
+        
+        // Generate a payment ID if needed
+        $payment_id = $payment['payment_id'] ?? uniqid('pay_', true) . bin2hex(random_bytes(8));
         
         if ($payment) {
             // Update existing payment record
@@ -142,8 +195,22 @@ function handlePaymentIntentSucceeded(Database $db, $paymentIntent) {
                 [$payment['payment_id'], "Payment completed via webhook | Stripe ID: {$paymentIntent->id}"]
             );
         } else {
-            // Payment record not found - this could happen if webhook arrives before charge.php finishes
-            log_message('WARNING', "Payment success webhook received but no payment record found for Stripe ID: {$paymentIntent->id}");
+            // Create new payment record
+            // We need to get the amount
+            $amount = $paymentIntent->amount / 100; // Convert from cents to base currency
+            
+            $db->execute(
+                "INSERT INTO payment (payment_id, order_id, total_amount, payment_status, payment_method, stripe_id, currency) 
+                 VALUES (?, ?, ?, 'completed', 'stripe_card', ?, 'MYR')",
+                [$payment_id, $orderId, $amount, $paymentIntent->id]
+            );
+            
+            // Add log entry
+            $db->execute(
+                "INSERT INTO payment_log (payment_id, log_level, log_message) 
+                 VALUES (?, 'info', ?)",
+                [$payment_id, "Payment record created via webhook | Stripe ID: {$paymentIntent->id}"]
+            );
         }
         
         // Update order status
