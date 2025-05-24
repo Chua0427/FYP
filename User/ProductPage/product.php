@@ -222,20 +222,20 @@
         <div class="recomend-container">
             <h1>Recomended</h1>
             <div class="recomend-column">
-            <?php
-                    $sql = "SELECT * FROM product p
-                        WHERE p.product_id!='$current_product_id'
-                        AND EXISTS (
-                            SELECT 1 FROM stock s
-                            WHERE s.product_id = p.product_id AND s.stock > 0
-                            )
-                            ORDER BY RAND()
-                            LIMIT 4";
+                <?php
+                        $sql = "SELECT * FROM product p
+                            WHERE p.product_id!='$current_product_id'
+                            AND EXISTS (
+                                SELECT 1 FROM stock s
+                                WHERE s.product_id = p.product_id AND s.stock > 0
+                                )
+                                ORDER BY RAND()
+                                LIMIT 4";
 
-                $result= $conn->query($sql);
+                    $result= $conn->query($sql);
 
-                while($row= $result->fetch_assoc()){
-            ?>
+                    while($row= $result->fetch_assoc()){
+                ?>
 
                 <div class="recomend-img">
                     <?php if ($row['status'] === 'Promotion'){
