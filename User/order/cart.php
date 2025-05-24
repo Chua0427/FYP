@@ -276,9 +276,22 @@ include __DIR__ . '/../Header_and_Footer/header.php';
                             <span id="total-discount">-<?php echo formatPrice($totalDiscount); ?></span>
                         </div>
                         <?php endif; ?>
+                        <div class="row">
+                            <span>Sales Tax (6% SST)</span>
+                            <span>Included</span>
+                        </div>
+                        <div class="row">
+                            <span>Shipping</span>
+                            <span>Free</span>
+                        </div>
                         <div class="row" style="font-weight: bold; font-size: 1.1rem;">
                             <span>Total</span>
                             <span id="total-price"><?php echo formatPrice($totalPrice); ?></span>
+                        </div>
+                        <div class="billing-info">
+                            <p>* All prices are in Malaysian Ringgit (MYR)</p>
+                            <p>* Sales tax (6% SST) is included in the price</p>
+                            <p>* Free shipping for all domestic orders</p>
                         </div>
                         <button type="button" id="checkout-btn" class="checkout-btn">Checkout</button>
                     </div>

@@ -781,6 +781,19 @@ function formatPrice($price) {
             border-top: 1px solid #eee;
         }
         
+        .billing-note {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px dashed #ddd;
+            font-size: 0.8rem;
+            color: #777;
+        }
+        
+        .billing-note p {
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+        
         /* Security Info */
         .security-info {
             display: flex;
@@ -927,12 +940,22 @@ function formatPrice($price) {
                                         <span><?php echo formatPrice($totalPrice); ?></span>
                                     </div>
                                     <div class="summary-row">
+                                        <span>Sales Tax (6% SST)</span>
+                                        <span>Included</span>
+                                    </div>
+                                    <div class="summary-row">
                                         <span>Shipping</span>
                                         <span>Free</span>
                                     </div>
                                     <div class="summary-row total">
                                         <span>Total</span>
                                         <span><?php echo formatPrice($totalPrice); ?></span>
+                                    </div>
+                                    <div class="billing-note">
+                                        <p>* All prices are in Malaysian Ringgit (MYR)</p>
+                                        <p>* 6% Sales and Service Tax (SST) is included in all listed prices</p>
+                                        <p>* Free standard shipping on all domestic orders</p>
+                                        <p>* Your card will be charged: <?php echo formatPrice($totalPrice); ?></p>
                                     </div>
                                 </div>
                             </div>
