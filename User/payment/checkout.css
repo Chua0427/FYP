@@ -175,6 +175,19 @@ textarea {
     border-top: 1px solid #eee;
 }
 
+.billing-note {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px dashed #ddd;
+    font-size: 0.8rem;
+    color: #777;
+}
+
+.billing-note p {
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
 /* Buttons */
 .button-container {
     margin-top: 25px;

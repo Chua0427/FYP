@@ -138,10 +138,10 @@ class OrderService
                 $total_price += $item['final_price'] * $item['quantity'];
             }
             
-            // Create order record
+            // Create order record with pending status (will update to 'prepare' after payment success)
             $this->db->execute(
                 "INSERT INTO orders (user_id, total_price, shipping_address, delivery_status, order_at) 
-                 VALUES (?, ?, ?, 'prepare', CURRENT_TIMESTAMP)",
+                 VALUES (?, ?, ?, 'pending', CURRENT_TIMESTAMP)",
                 [$user_id, $total_price, $shipping_address]
             );
             
