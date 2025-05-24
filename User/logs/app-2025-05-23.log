@@ -1,0 +1,2 @@
+[2025-05-23T15:09:49.754739+02:00] app.INFO: Add to cart request {"request_id":"cart_6830739dafb092.74696973","user_id":54,"product_id":50,"product_size":"M","quantity":1} []
+[2025-05-23T15:09:49.767017+02:00] app.INFO: New cart item added {"request_id":"cart_6830739dafb092.74696973","user_id":54,"product_id":50,"product_size":"M","quantity":1} []
