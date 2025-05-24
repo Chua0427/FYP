@@ -102,58 +102,6 @@ body {
   text-decoration: underline;
 }
 
-.divider {
-  text-align: center;
-  margin: 25px 0;
-  position: relative;
-}
-
-.divider::before,
-.divider::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  width: 40%;
-  height: 1px;
-  background: #ccc;
-}
-
-.divider::before { left: 0; }
-.divider::after { right: 0; }
-
-.divider span {
-  background: #fff;
-  padding: 0 10px;
-  color: #666;
-  font-size: 14px;
-}
-
-.social-buttons {
-  display: flex;
-  justify-content: space-between;
-}
-
-.social-buttons button {
-  width: 48%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  background: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s;
-}
-
-.social-buttons button:hover {
-  background-color: #f5f5f5;
-}
-
-.social-buttons button img {
-  margin-right: 8px;
-}
 
 .signup-text {
   margin-top: 25px;

@@ -23,7 +23,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $city = $_POST["city"];
     $birthday_date = $_POST["birthday_date"];
     $gender = $_POST["gender"];
-    $user_type = 2;
+    
+    // Keep the existing user_type to preserve admin level (2 or 3)
+    $user_type = $admin['user_type'];
 
     $params = [$first_name, $last_name, $email, $mobile_number, $address, $postcode, $state, $city, $birthday_date, $gender, $user_type];
     $types = "sssssssssss";

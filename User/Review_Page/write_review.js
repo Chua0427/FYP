@@ -28,13 +28,11 @@ document.addEventListener("DOMContentLoaded", function() {
     // Handle browser back navigation if review already submitted
     if (sessionStorage.getItem('reviewSubmitted') === 'true') {
         window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
+            // event.persisted is true on Safari back-forward navigation
+            // performance.navigation.type === 2 indicates back/forward navigation in other browsers
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
                 showReviewSubmittedAlert();
             }
-        });
-        
-        window.addEventListener('load', function() {
-            showReviewSubmittedAlert();
         });
     }
     
