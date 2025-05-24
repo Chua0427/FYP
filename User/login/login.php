@@ -5,12 +5,10 @@ require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/auth.php';
 
-<<<<<<< HEAD
-=======
 // PHP Mailer for OTP
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
->>>>>>> 60ef73f556d8e7e4869595625cd7c1511da8bdd7
+
 
 // Check if user is already authenticated with token
 if (Auth::check()) {
@@ -228,7 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
                     <label for="remember">Remember me</label>
                 </div>
                 <button type="submit" name="login" class="login-btn">Login</button>
-                <a href="forgot_password.php" class="forgot-password">Forgot Password?</a>
+                <a href="../ForgotPassword/forgot_password.php" class="forgot-password">Forgot Password?</a>
             </form>
             
             <div class="divider"><span>OR</span></div>
