@@ -226,12 +226,22 @@ foreach ($items as $item) {
                                         <span><?php echo formatPrice($totalPrice); ?></span>
                                     </div>
                                     <div class="summary-row">
+                                        <span>Sales Tax (6% SST)</span>
+                                        <span>Included</span>
+                                    </div>
+                                    <div class="summary-row">
                                         <span>Shipping</span>
                                         <span>Free</span>
                                     </div>
                                     <div class="summary-row total">
                                         <span>Total</span>
                                         <span><?php echo formatPrice($totalPrice); ?></span>
+                                    </div>
+                                    <div class="billing-note">
+                                        <p>* All prices are in Malaysian Ringgit (MYR)</p>
+                                        <p>* 6% Sales and Service Tax (SST) is included in all listed prices</p>
+                                        <p>* Free shipping for all domestic orders</p>
+                                        <p>* International shipping rates will be calculated at checkout</p>
                                     </div>
                                 </div>
                             </div>
