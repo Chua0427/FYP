@@ -404,6 +404,38 @@ require_once __DIR__ . '/../app/restrict_admin.php';
         .quick-add-button {
             cursor: pointer;
         }
+        
+        /* Flying Animation Styles */
+        .flying-image {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        @keyframes cartShake {
+            0%, 100% { transform: translateX(0) scale(1); }
+            25% { transform: translateX(-3px) scale(1.1); }
+            75% { transform: translateX(3px) scale(1.1); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-20px); }
+        }
         </style>
         
         <script>
@@ -474,6 +506,9 @@ require_once __DIR__ . '/../app/restrict_admin.php';
                     button.disabled = true;
                     button.value = 'Adding...';
                     
+                    // Create flying image animation
+                    createFlyingImageAnimation(button, productId);
+                    
                     // Send AJAX request
                     return fetch('../api/add_to_cart.php', {
                         method: 'POST',
@@ -503,7 +538,16 @@ require_once __DIR__ . '/../app/restrict_admin.php';
                         const cartCounter = document.getElementById('cartCount');
                         if (cartCounter && data.cart_count) {
                             cartCounter.textContent = data.cart_count;
-                            cartCounter.style.display = 'block';
+                            cartCounter.style.display = 'flex';
+                            cartCounter.style.alignItems = 'center';
+                            cartCounter.style.justifyContent = 'center';
+                            cartCounter.style.lineHeight = '1';
+                            cartCounter.style.transformOrigin = 'center center';
+                            
+                            // Add pulse animation
+                            cartCounter.style.animation = 'none';
+                            void cartCounter.offsetWidth; // Force reflow
+                            cartCounter.style.animation = 'pulse 0.5s ease';
                         }
                     } else {
                         showMessage(data.error || 'Failed to add item to cart', 'error');
@@ -592,6 +636,75 @@ require_once __DIR__ . '/../app/restrict_admin.php';
                     messageEl.style.animation = 'fadeOut 0.3s';
                     setTimeout(() => messageEl.remove(), 300);
                 }, 3000);
+            }
+
+            /**
+             * Creates a flying image animation from the product to the cart
+             * @param {HTMLElement} button The clicked Quick Add button
+             * @param {string} productId The ID of the product being added
+             */
+            function createFlyingImageAnimation(button, productId) {
+                // Find the product card and image
+                const productCard = button.closest('.Newcolumn') || button.closest('.promotion') || button.closest('.Jersey');
+                if (!productCard) return;
+                
+                const productImage = productCard.querySelector('img');
+                if (!productImage) return;
+                
+                // Get position of source image and cart icon
+                const sourceRect = productImage.getBoundingClientRect();
+                const cartIcon = document.querySelector('.shoppingCart');
+                if (!cartIcon) return;
+                
+                const cartRect = cartIcon.getBoundingClientRect();
+                
+                // Create flying image element
+                const flyingImage = document.createElement('img');
+                flyingImage.src = productImage.src;
+                flyingImage.className = 'flying-image';
+                flyingImage.alt = 'Product';
+                
+                // Set initial position and size
+                flyingImage.style.left = sourceRect.left + 'px';
+                flyingImage.style.top = sourceRect.top + 'px';
+                flyingImage.style.width = sourceRect.width + 'px';
+                flyingImage.style.height = sourceRect.height + 'px';
+                
+                // Add to body
+                document.body.appendChild(flyingImage);
+                
+                // Calculate target position (cart icon)
+                const targetX = cartRect.left + cartRect.width / 2;
+                const targetY = cartRect.top + cartRect.height / 2;
+                
+                // Start animation after a small delay to ensure the element is rendered
+                setTimeout(() => {
+                    flyingImage.style.transform = `translate(${targetX - sourceRect.left - sourceRect.width/2}px, ${targetY - sourceRect.top - sourceRect.height/2}px) scale(0.1)`;
+                    flyingImage.style.opacity = '0';
+                    
+                    // Shake cart icon when animation completes
+                    setTimeout(() => {
+                        shakeCartIcon();
+                        
+                        // Remove flying image
+                        if (flyingImage.parentNode) {
+                            flyingImage.parentNode.removeChild(flyingImage);
+                        }
+                    }, 800);
+                }, 50);
+            }
+            
+            /**
+             * Shakes the cart icon for visual feedback
+             */
+            function shakeCartIcon() {
+                const cartIcon = document.querySelector('.fa-cart-shopping');
+                if (!cartIcon) return;
+                
+                cartIcon.style.animation = 'none';
+                // Force reflow to restart animation
+                void cartIcon.offsetWidth;
+                cartIcon.style.animation = 'cartShake 0.5s ease-in-out';
             }
         });
         </script>

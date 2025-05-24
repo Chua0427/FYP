@@ -1,16 +1,37 @@
 <?php
+// Set maximum error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1); 
+ini_set('display_startup_errors', 1);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/logs/success_errors.log');
+
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once '/xampp/htdocs/FYP/FYP/User/payment/secrets.php';
 require_once __DIR__ . '/db.php';
 require __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/services/OrderService.php';
 
+// Create logs directory if it doesn't exist
+$logDir = __DIR__ . '/logs';
+if (!file_exists($logDir)) {
+    mkdir($logDir, 0777, true);
+}
+
+// Log page access for debugging
+file_put_contents($logDir . '/success_page.log', date('[Y-m-d H:i:s]') . " Success page accessed with REQUEST_URI: " . $_SERVER['REQUEST_URI'] . PHP_EOL, FILE_APPEND);
+
+// Test mail functionality directly
+$mailWorkingFile = __DIR__ . '/logs/mail_test.log';
+$mailResult = @mail('chiannchua05@gmail.com', 'Mail Test', 'This is a test email from success.php', 'From: chiannchua05@gmail.com');
+file_put_contents($mailWorkingFile, date('[Y-m-d H:i:s]') . " Mail test result: " . ($mailResult ? "SUCCESS" : "FAILED") . PHP_EOL, FILE_APPEND);
+
 // Initialize Database
 $db = new Database();
 
 // Debug log function for stock updates
 function debug_log($message, $data = []) {
-    $log_file = __DIR__ . '/logs/stock_update_debug.log';
+    $log_file = __DIR__ . '/logs/success_debug.log';
     $timestamp = date('Y-m-d H:i:s');
     $log_message = "[$timestamp] $message";
     
@@ -31,12 +52,30 @@ function debug_log($message, $data = []) {
 }
 
 try {
-    // Get session_id and order_id from URL parameters
-    $session_id = $_GET['session_id'] ?? '';
+    // Get order_id from URL parameter - log all possible sources
+    debug_log("URL parameters received", [
+        'GET' => $_GET,
+        'REQUEST_URI' => $_SERVER['REQUEST_URI'],
+        'QUERY_STRING' => $_SERVER['QUERY_STRING'] ?? 'none'
+    ]);
+    
+    // Get order_id from URL parameter
     $order_id = $_GET['order_id'] ?? '';
+    
+    if (empty($order_id)) {
+        // Try to parse from query string if direct GET access failed
+        if (!empty($_SERVER['QUERY_STRING'])) {
+            parse_str($_SERVER['QUERY_STRING'], $params);
+            if (isset($params['order_id'])) {
+                $order_id = $params['order_id'];
+            }
+        }
+    }
+    
+    debug_log("Processing order", ['order_id' => $order_id]);
 
     if (empty($order_id)) {
-        throw new Exception('Missing required parameters');
+        throw new Exception('Missing required order ID parameter');
     }
 
     // Get order details
@@ -45,31 +84,11 @@ try {
         throw new Exception('Order not found');
     }
 
-    // Initialize Stripe
-    \Stripe\Stripe::setApiKey($stripeSecretKey);
-
-    // If session_id is provided, verify the session
-    if (!empty($session_id)) {
-        // Retrieve the checkout session
-        $session = \Stripe\Checkout\Session::retrieve($session_id);
-
-        // Verify the session belongs to this order
-        if ((string)$session->metadata->order_id !== (string)$order_id) {
-            throw new Exception('Invalid session');
-        }
-
-        // Get payment details by session ID
-        $payment = $db->fetchOne(
-            "SELECT * FROM payment WHERE stripe_id = ?",
-            [$session_id]
-        );
-    } else {
-        // Get payment details by order ID
-        $payment = $db->fetchOne(
-            "SELECT * FROM payment WHERE order_id = ? ORDER BY payment_at DESC LIMIT 1",
-            [$order_id]
-        );
-    }
+    // Get payment details by order ID
+    $payment = $db->fetchOne(
+        "SELECT * FROM payment WHERE order_id = ? ORDER BY payment_at DESC LIMIT 1",
+        [$order_id]
+    );
 
     if (!$payment) {
         throw new Exception('Payment record not found');
@@ -97,132 +116,71 @@ try {
                 [$payment['payment_id'], "Payment marked as completed via success page"]
             );
             
-            // In the section where stock update happens (around line 70-90), add debug logs
-            debug_log("Starting stock update check in success.php", [
-                'order_id' => $order_id,
-                'payment_id' => $payment['payment_id'] ?? 'unknown',
-                'stripe_id' => $payment['stripe_id'] ?? 'unknown'
-            ]);
+            // Generate and send invoice after commit
+            $db->commit();
 
-            // Update stock after payment confirmation if not already done
             try {
-                $orderService = new OrderService($db);
+                // Include the InvoiceService class
+                require_once __DIR__ . '/../app/services/InvoiceService.php';
                 
-                // Verify payment with Stripe API first
-                $stripe_id = $payment['stripe_id'] ?? '';
+                // Create an instance of the InvoiceService
+                $invoiceService = new \App\Services\InvoiceService($db);
                 
-                if (!empty($stripe_id)) {
-                    try {
-                        // Pass the API key directly to ensure it's available
-                        $verified = $orderService->verifyStripePayment($stripe_id, $payment['payment_id'], $stripeSecretKey);
-                        
-                        debug_log("Payment verification result in success.php", [
-                            'order_id' => $order_id,
-                            'verified' => $verified,
-                            'stripe_id' => $stripe_id
-                        ]);
-                        
-                        if ($verified) {
-                            // Update stock after verified payment
-                            try {
-                                $result = $orderService->updateStockAfterPayment((int)$order_id);
-                                debug_log("Stock update completed in success.php", [
-                                    'order_id' => $order_id,
-                                    'result' => $result
-                                ]);
-                                
-                                // Log successful stock update
-                                $db->execute(
-                                    "INSERT INTO payment_log (payment_id, log_level, log_message) VALUES (?, 'info', ?)",
-                                    [$payment['payment_id'], "Stock updated after Stripe verification via success page"]
-                                );
-                            } catch (Exception $stockUpdateError) {
-                                debug_log("Stock update failed with exception in success.php", [
-                                    'order_id' => $order_id,
-                                    'error' => $stockUpdateError->getMessage(),
-                                    'trace' => $stockUpdateError->getTraceAsString()
-                                ]);
-                                throw $stockUpdateError;
-                            }
-                        } else {
-                            // Log verification failure
-                            $db->execute(
-                                "INSERT INTO payment_log (payment_id, log_level, log_message) VALUES (?, 'warning', ?)",
-                                [$payment['payment_id'], "Payment verification failed with Stripe API - stock not updated"]
-                            );
-                        }
-                    } catch (Exception $verifyError) {
-                        debug_log("Stripe verification error in success.php", [
-                            'order_id' => $order_id,
-                            'error' => $verifyError->getMessage()
-                        ]);
-                        
-                        // Try direct stock update as fallback
-                        try {
-                            $result = $orderService->updateStockAfterPayment((int)$order_id);
-                            debug_log("Fallback stock update after verification error in success.php", [
-                                'order_id' => $order_id,
-                                'result' => $result
-                            ]);
-                            
-                            // Log fallback update
-                            $db->execute(
-                                "INSERT INTO payment_log (payment_id, log_level, log_message) VALUES (?, 'info', ?)",
-                                [$payment['payment_id'], "Stock updated via fallback after Stripe API error in success.php"]
-                            );
-                        } catch (Exception $stockUpdateError) {
-                            debug_log("Stock update failed with exception in success.php", [
-                                'order_id' => $order_id,
-                                'error' => $stockUpdateError->getMessage(),
-                                'trace' => $stockUpdateError->getTraceAsString()
-                            ]);
-                            throw $stockUpdateError;
-                        }
-                    }
-                } else {
-                    // No Stripe ID available - fallback to just updating stock
-                    // This should be a rare case
-                    $orderService->updateStockAfterPayment((int)$order_id);
-                    
-                    // Log fallback stock update
+                // Generate and send the invoice
+                $invoiceSent = $invoiceService->generateAndSendInvoice((int)$order_id);
+                
+                // Log the result
+                if ($invoiceSent) {
                     $db->execute(
                         "INSERT INTO payment_log (payment_id, log_level, log_message) VALUES (?, 'info', ?)",
-                        [$payment['payment_id'], "Stock updated via success page (no Stripe verification)"]
+                        [$payment['payment_id'], "Invoice PDF generated and sent to customer via email"]
+                    );
+                } else {
+                    $db->execute(
+                        "INSERT INTO payment_log (payment_id, log_level, log_message) VALUES (?, 'warning', ?)",
+                        [$payment['payment_id'], "Failed to generate and send invoice PDF"]
                     );
                 }
-            } catch (Exception $stockError) {
-                // Log stock update error
+            } catch (\Exception $invoiceError) {
+                // Log invoice error but don't interrupt the flow
                 $db->execute(
                     "INSERT INTO payment_log (payment_id, log_level, log_message) VALUES (?, 'error', ?)",
-                    [$payment['payment_id'], "Stock update/verification failed: " . $stockError->getMessage()]
+                    [$payment['payment_id'], "Invoice error: " . $invoiceError->getMessage()]
                 );
-                
-                error_log("Success page stock update error for order #$order_id: " . $stockError->getMessage());
+                error_log("Invoice generation error for order #$order_id: " . $invoiceError->getMessage());
             }
-            
-            $db->commit();
         } catch (Exception $e) {
             if ($db->isTransactionActive()) {
                 $db->rollback();
             }
-            throw $e;
+            
+            // Log error but continue showing the success page
+            error_log("Error updating payment status: " . $e->getMessage());
+            
+            // Still show success page even if updating payment status fails
         }
     }
-
-    // Get order items
-    $items = $db->fetchAll(
-        "SELECT oi.*, p.product_name, p.product_img1 
+    
+    // Get order items for display
+    $orderItems = $db->fetchAll(
+        "SELECT oi.*, p.product_name, p.product_img1, p.brand 
          FROM order_items oi 
          JOIN product p ON oi.product_id = p.product_id 
          WHERE oi.order_id = ?",
         [$order_id]
     );
-
+    
+    // Calculate total price (redundant with order.total_price, but for safety)
+    $totalItems = 0;
+    $totalPrice = 0;
+    foreach ($orderItems as $item) {
+        $totalItems += $item['quantity'];
+        $totalPrice += $item['price'] * $item['quantity'];
+    }
+    
 } catch (Exception $e) {
-    // Log error and redirect to error page
-    error_log("Payment success error: " . $e->getMessage());
-    header("Location: ../index.php?error=" . urlencode($e->getMessage()));
-    exit;
+    $error = $e->getMessage();
+    error_log("Payment success page error: " . $e->getMessage());
 }
 ?>
 
@@ -257,6 +215,7 @@ try {
             <i class="bi bi-check-circle-fill success-icon"></i>
             <h1 class="mt-3">Payment Successful!</h1>
             <p class="lead">Thank you for your purchase. Your order has been confirmed.</p>
+            <p>A receipt has been sent to your email address.</p>
         </div>
 
         <div class="order-details">
@@ -277,7 +236,7 @@ try {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($items as $item): ?>
+                        <?php foreach ($orderItems as $item): ?>
                         <tr>
                             <td>
                                 <?php if (!empty($item['product_img1'])): ?>
@@ -305,4 +264,35 @@ try {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html> 
+</html>
+
+<?php
+// Direct manual test for invoice generation (only runs if there's a valid order)
+if (isset($order_id) && !empty($order_id) && is_numeric($order_id)) {
+    try {
+        // Create direct test log
+        $testLogFile = __DIR__ . '/logs/invoice_test_' . date('Y-m-d') . '.log';
+        file_put_contents($testLogFile, date('[Y-m-d H:i:s]') . " Starting direct invoice test for order #$order_id\n", FILE_APPEND);
+        
+        // Check configuration
+        file_put_contents($testLogFile, date('[Y-m-d H:i:s]') . " PHP Version: " . phpversion() . "\n", FILE_APPEND);
+        file_put_contents($testLogFile, date('[Y-m-d H:i:s]') . " SMTP: " . ini_get('SMTP') . "\n", FILE_APPEND);
+        file_put_contents($testLogFile, date('[Y-m-d H:i:s]') . " SMTP Port: " . ini_get('smtp_port') . "\n", FILE_APPEND);
+        
+        // Load dependent classes
+        require_once __DIR__ . '/../app/services/InvoiceService.php';
+        file_put_contents($testLogFile, date('[Y-m-d H:i:s]') . " InvoiceService class loaded\n", FILE_APPEND);
+        
+        // Create an instance of the invoice service
+        $invoiceService = new \App\Services\InvoiceService($db);
+        file_put_contents($testLogFile, date('[Y-m-d H:i:s]') . " InvoiceService instantiated\n", FILE_APPEND);
+        
+        // Generate and send invoice
+        $result = $invoiceService->generateAndSendInvoice((int)$order_id);
+        file_put_contents($testLogFile, date('[Y-m-d H:i:s]') . " Invoice generation result: " . ($result ? "SUCCESS" : "FAILED") . "\n", FILE_APPEND);
+    } catch (\Exception $e) {
+        file_put_contents($testLogFile, date('[Y-m-d H:i:s]') . " ERROR: " . $e->getMessage() . "\n", FILE_APPEND);
+        file_put_contents($testLogFile, date('[Y-m-d H:i:s]') . " Trace: " . $e->getTraceAsString() . "\n", FILE_APPEND);
+    }
+}
+?> 

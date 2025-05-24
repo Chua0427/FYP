@@ -111,19 +111,72 @@ function handlePaymentIntentSucceeded(Database $db, $paymentIntent) {
         $orderId = $paymentIntent->metadata->order_id ?? null;
         $userId = $paymentIntent->metadata->user_id ?? null;
         
-        if (!$orderId) {
-            log_message('WARNING', "Payment succeeded but no order_id in metadata: {$paymentIntent->id}");
-            return;
-        }
-        
         // Begin transaction
         $db->beginTransaction();
         
-        // Update payment record
+        // Check if we have an order_id in metadata
+        if (!$orderId) {
+            // This might be a payment created from cart directly with no order yet
+            // Check if we have a payment record
+            $payment = $db->fetchOne(
+                "SELECT * FROM payment WHERE stripe_id = ?", 
+                [$paymentIntent->id]
+            );
+            
+            if ($payment && $payment['order_id']) {
+                // We have a payment with order ID, use it
+                $orderId = $payment['order_id'];
+            } else if ($userId) {
+                // No order_id exists, we need to create one from cart
+                log_message('INFO', "Payment succeeded with user_id but no order_id, creating order from cart for user: $userId");
+                
+                require_once __DIR__ . '/../app/services/OrderService.php';
+                $orderService = new OrderService($db);
+                
+                // We should get the shipping address from session or user profile
+                // For webhook, we'll use the user's default address
+                $userInfo = $db->fetchOne("SELECT * FROM users WHERE user_id = ?", [$userId]);
+                
+                if (!$userInfo) {
+                    log_message('ERROR', "User not found for webhook order creation: $userId");
+                    throw new \Exception("User not found: $userId");
+                }
+                
+                $shippingAddress = $userInfo['address'] . ', ' . $userInfo['city'] . ', ' . 
+                                  $userInfo['postcode'] . ', ' . $userInfo['state'];
+                
+                // Create order from cart
+                $result = $orderService->createOrderFromCart(
+                    $userId,
+                    $shippingAddress,
+                    true, // Check stock
+                    [
+                        'payment_method' => 'stripe_card',
+                        'stripe_id' => $paymentIntent->id,
+                        'payment_status' => 'completed'
+                    ],
+                    null, // All cart items
+                    true  // Clear cart
+                );
+                
+                $orderId = $result['order_id'];
+                
+                log_message('INFO', "Order created from cart in webhook: $orderId");
+            } else {
+                log_message('WARNING', "Payment succeeded but no order_id or user_id in metadata: {$paymentIntent->id}");
+                $db->rollback();
+                return;
+            }
+        }
+        
+        // Update payment record if it exists
         $payment = $db->fetchOne(
             "SELECT * FROM payment WHERE stripe_id = ?", 
             [$paymentIntent->id]
         );
+        
+        // Generate a payment ID if needed
+        $payment_id = $payment['payment_id'] ?? uniqid('pay_', true) . bin2hex(random_bytes(8));
         
         if ($payment) {
             // Update existing payment record
@@ -142,8 +195,22 @@ function handlePaymentIntentSucceeded(Database $db, $paymentIntent) {
                 [$payment['payment_id'], "Payment completed via webhook | Stripe ID: {$paymentIntent->id}"]
             );
         } else {
-            // Payment record not found - this could happen if webhook arrives before charge.php finishes
-            log_message('WARNING', "Payment success webhook received but no payment record found for Stripe ID: {$paymentIntent->id}");
+            // Create new payment record
+            // We need to get the amount
+            $amount = $paymentIntent->amount / 100; // Convert from cents to base currency
+            
+            $db->execute(
+                "INSERT INTO payment (payment_id, order_id, total_amount, payment_status, payment_method, stripe_id, currency) 
+                 VALUES (?, ?, ?, 'completed', 'stripe_card', ?, 'MYR')",
+                [$payment_id, $orderId, $amount, $paymentIntent->id]
+            );
+            
+            // Add log entry
+            $db->execute(
+                "INSERT INTO payment_log (payment_id, log_level, log_message) 
+                 VALUES (?, 'info', ?)",
+                [$payment_id, "Payment record created via webhook | Stripe ID: {$paymentIntent->id}"]
+            );
         }
         
         // Update order status
@@ -198,30 +265,89 @@ function handlePaymentIntentSucceeded(Database $db, $paymentIntent) {
                     $db->execute(
                         "INSERT INTO payment_log (payment_id, log_level, log_message) 
                          VALUES (?, 'info', ?)",
-                        [$payment['payment_id'], "Stock updated via fallback after Stripe API error"]
+                        [$payment['payment_id'], "Stock updated via fallback after Stripe API error in webhook"]
                     );
+                    
+                    // Generate and send invoice PDF as a fallback
+                    try {
+                        require_once __DIR__ . '/../app/services/InvoiceService.php';
+                        $invoiceService = new \App\Services\InvoiceService($db);
+                        $invoiceSent = $invoiceService->generateAndSendInvoice((int)$orderId);
+                        
+                        if ($invoiceSent) {
+                            $db->execute(
+                                "INSERT INTO payment_log (payment_id, log_level, log_message) 
+                                 VALUES (?, 'info', ?)",
+                                [$payment['payment_id'], "Invoice PDF generated and sent to customer via webhook (fallback)"]
+                            );
+                        }
+                    } catch (\Exception $invoiceError) {
+                        log_message('ERROR', "Invoice generation error (fallback) for order #{$orderId}: " . $invoiceError->getMessage());
+                        $db->execute(
+                            "INSERT INTO payment_log (payment_id, log_level, log_message) 
+                             VALUES (?, 'error', ?)",
+                            [$payment['payment_id'], "Invoice error (fallback): " . $invoiceError->getMessage()]
+                        );
+                    }
                 }
             } else {
-                // No payment record, can't verify with API, but webhook should be trusted
-                // This is a fallback case
+                // No payment record - just try to update stock directly
                 $orderService->updateStockAfterPayment((int)$orderId);
-                log_message('INFO', "Stock updated via webhook without verification for order ID: {$orderId}");
+                log_message('INFO', "Stock updated directly for order ID: {$orderId} (no payment record)");
             }
-        } catch (Exception $stockError) {
-            // Log stock update error, but don't fail the payment processing
-            log_message('ERROR', "Failed to verify/update stock for order: {$orderId} | Error: {$stockError->getMessage()}");
+        } catch (Exception $e) {
+            log_message('ERROR', "Stock update error: " . $e->getMessage());
             
-            // Add a more detailed log entry if payment record exists
             if ($payment) {
+                // Add error log
                 $db->execute(
                     "INSERT INTO payment_log (payment_id, log_level, log_message) 
                      VALUES (?, 'error', ?)",
-                    [$payment['payment_id'], "Stock update/verification failed: {$stockError->getMessage()}"]
+                    [$payment['payment_id'], "Stock update error: " . $e->getMessage()]
                 );
             }
         }
         
-        // Commit the transaction
+        // Generate and send invoice PDF after successful payment
+        if ($payment) {
+            try {
+                // Include the InvoiceService class
+                require_once __DIR__ . '/../app/services/InvoiceService.php';
+                
+                // Create an instance of the InvoiceService
+                $invoiceService = new \App\Services\InvoiceService($db);
+                
+                // Generate and send the invoice
+                $invoiceSent = $invoiceService->generateAndSendInvoice((int)$orderId);
+                
+                // Log the result
+                if ($invoiceSent) {
+                    $db->execute(
+                        "INSERT INTO payment_log (payment_id, log_level, log_message) 
+                         VALUES (?, 'info', ?)",
+                        [$payment['payment_id'], "Invoice PDF generated and sent to customer via webhook"]
+                    );
+                    log_message('INFO', "Invoice generated and emailed for order ID: {$orderId}");
+                } else {
+                    $db->execute(
+                        "INSERT INTO payment_log (payment_id, log_level, log_message) 
+                         VALUES (?, 'warning', ?)",
+                        [$payment['payment_id'], "Failed to generate and send invoice PDF via webhook"]
+                    );
+                    log_message('WARNING', "Failed to generate and email invoice for order ID: {$orderId}");
+                }
+            } catch (\Exception $invoiceError) {
+                // Log invoice error but don't interrupt the flow
+                $db->execute(
+                    "INSERT INTO payment_log (payment_id, log_level, log_message) 
+                     VALUES (?, 'error', ?)",
+                    [$payment['payment_id'], "Invoice error via webhook: " . $invoiceError->getMessage()]
+                );
+                log_message('ERROR', "Invoice generation error for order #{$orderId}: " . $invoiceError->getMessage());
+            }
+        }
+        
+        // Commit all changes
         $db->commit();
         
         log_message('INFO', "Payment success processed: Order ID: {$orderId}, Stripe ID: {$paymentIntent->id}");
@@ -406,52 +532,130 @@ function handleChargeRefunded(Database $db, $charge) {
  */
 function handleCheckoutSessionCompleted(Database $db, $session) {
     try {
-        // This handles Stripe Checkout integration if you're using it
-        $paymentIntentId = $session->payment_intent;
+        // Get metadata from the session
+        $orderId = $session->metadata->order_id ?? null;
+        $userId = $session->metadata->user_id ?? null;
         
-        if (!$paymentIntentId) {
-            log_message('WARNING', "Checkout session completed but no payment_intent found: {$session->id}");
+        if (!$orderId) {
+            log_message('WARNING', "Checkout session completed but no order_id in metadata: {$session->id}");
             return;
         }
         
-        // Find the payment by payment intent ID
+        // Begin transaction
+        $db->beginTransaction();
+        
+        // Update payment record - first try with session ID
         $payment = $db->fetchOne(
             "SELECT * FROM payment WHERE stripe_id = ?", 
-            [$paymentIntentId]
+            [$session->id]
         );
         
+        if (!$payment && $session->payment_intent) {
+            // If not found by session ID, try with payment intent ID
+            $payment = $db->fetchOne(
+                "SELECT * FROM payment WHERE stripe_id = ?", 
+                [$session->payment_intent]
+            );
+        }
+        
         if ($payment) {
-            // Begin transaction
-            $db->beginTransaction();
-            
-            // Update payment record
+            // Update existing payment record
             $db->execute(
                 "UPDATE payment 
-                 SET payment_status = 'completed' 
+                 SET payment_status = 'completed', 
+                     stripe_id = ? 
                  WHERE payment_id = ?",
-                [$payment['payment_id']]
-            );
-            
-            // Update order status
-            $db->execute(
-                "UPDATE orders SET delivery_status = 'prepare' WHERE order_id = ?",
-                [$payment['order_id']]
+                [$session->id, $payment['payment_id']]
             );
             
             // Add log entry
             $db->execute(
                 "INSERT INTO payment_log (payment_id, log_level, log_message) 
                  VALUES (?, 'info', ?)",
-                [$payment['payment_id'], "Checkout session completed | Session ID: {$session->id}"]
+                [$payment['payment_id'], "Payment completed via checkout session webhook | Session ID: {$session->id}"]
             );
-            
-            // Commit the transaction
-            $db->commit();
-            
-            log_message('INFO', "Checkout session completed: Payment ID: {$payment['payment_id']}, Session ID: {$session->id}");
         } else {
-            log_message('WARNING', "Checkout session completed but no payment record found for Payment Intent: {$paymentIntentId}");
+            // Payment record not found - this could happen if webhook arrives before checkout completes
+            log_message('WARNING', "Checkout session webhook received but no payment record found: {$session->id}");
         }
+        
+        // Update order status
+        $db->execute(
+            "UPDATE orders SET delivery_status = 'prepare' WHERE order_id = ?",
+            [$orderId]
+        );
+        
+        // Update stock levels after confirmed payment
+        try {
+            $orderService = new OrderService($db);
+            $orderService->updateStockAfterPayment((int)$orderId);
+            
+            log_message('INFO', "Stock updated for checkout session: {$session->id}, Order ID: {$orderId}");
+            
+            if ($payment) {
+                // Add detailed log entry
+                $db->execute(
+                    "INSERT INTO payment_log (payment_id, log_level, log_message) 
+                     VALUES (?, 'info', ?)",
+                    [$payment['payment_id'], "Stock updated via checkout session webhook"]
+                );
+            }
+            
+            // Generate and send invoice PDF after successful payment
+            if ($payment) {
+                try {
+                    // Include the InvoiceService class
+                    require_once __DIR__ . '/../app/services/InvoiceService.php';
+                    
+                    // Create an instance of the InvoiceService
+                    $invoiceService = new \App\Services\InvoiceService($db);
+                    
+                    // Generate and send the invoice
+                    $invoiceSent = $invoiceService->generateAndSendInvoice((int)$orderId);
+                    
+                    // Log the result
+                    if ($invoiceSent) {
+                        $db->execute(
+                            "INSERT INTO payment_log (payment_id, log_level, log_message) 
+                             VALUES (?, 'info', ?)",
+                            [$payment['payment_id'], "Invoice PDF generated and sent via checkout session webhook"]
+                        );
+                        log_message('INFO', "Invoice generated and emailed for checkout session: {$session->id}, Order ID: {$orderId}");
+                    } else {
+                        $db->execute(
+                            "INSERT INTO payment_log (payment_id, log_level, log_message) 
+                             VALUES (?, 'warning', ?)",
+                            [$payment['payment_id'], "Failed to generate and send invoice PDF via checkout session webhook"]
+                        );
+                        log_message('WARNING', "Failed to generate invoice for checkout session: {$session->id}, Order ID: {$orderId}");
+                    }
+                } catch (\Exception $invoiceError) {
+                    // Log invoice error but don't interrupt the flow
+                    $db->execute(
+                        "INSERT INTO payment_log (payment_id, log_level, log_message) 
+                         VALUES (?, 'error', ?)",
+                        [$payment['payment_id'], "Invoice error via checkout session webhook: " . $invoiceError->getMessage()]
+                    );
+                    log_message('ERROR', "Invoice generation error for checkout session: {$session->id}, Order ID: {$orderId}: " . $invoiceError->getMessage());
+                }
+            }
+        } catch (Exception $e) {
+            log_message('ERROR', "Stock update error for checkout session: " . $e->getMessage());
+            
+            if ($payment) {
+                // Add error log
+                $db->execute(
+                    "INSERT INTO payment_log (payment_id, log_level, log_message) 
+                     VALUES (?, 'error', ?)",
+                    [$payment['payment_id'], "Stock update error via checkout session: " . $e->getMessage()]
+                );
+            }
+        }
+        
+        // Commit the transaction
+        $db->commit();
+        
+        log_message('INFO', "Checkout session completed: Payment ID: {$payment['payment_id']}, Session ID: {$session->id}");
     } catch (Exception $e) {
         if ($db->isTransactionActive()) {
             $db->rollback();

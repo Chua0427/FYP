@@ -58,30 +58,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Helper function to get device name from user agent
 function getDeviceInfo($user_agent) {
     if (empty($user_agent)) {
-        return 'Unknown device';
+        return ['device' => 'Unknown device', 'icon' => 'fas fa-question-circle'];
     }
     
     $device = 'Unknown device';
+    $icon = 'fas fa-question-circle';
     
     // Detect browser
     if (preg_match('/MSIE|Trident/i', $user_agent)) {
         $browser = 'Internet Explorer';
+        $icon = 'fab fa-internet-explorer';
     } elseif (preg_match('/Firefox/i', $user_agent)) {
         $browser = 'Firefox';
+        $icon = 'fab fa-firefox-browser';
     } elseif (preg_match('/Chrome/i', $user_agent)) {
         if (preg_match('/Edge/i', $user_agent)) {
             $browser = 'Microsoft Edge';
+            $icon = 'fab fa-edge';
         } elseif (preg_match('/Edg/i', $user_agent)) {
             $browser = 'Microsoft Edge';
+            $icon = 'fab fa-edge';
         } else {
             $browser = 'Chrome';
+            $icon = 'fab fa-chrome';
         }
     } elseif (preg_match('/Safari/i', $user_agent)) {
         $browser = 'Safari';
+        $icon = 'fab fa-safari';
     } elseif (preg_match('/Opera|OPR/i', $user_agent)) {
         $browser = 'Opera';
+        $icon = 'fab fa-opera';
     } else {
         $browser = 'Unknown browser';
+        $icon = 'fas fa-globe';
     }
     
     // Detect OS
@@ -93,8 +102,10 @@ function getDeviceInfo($user_agent) {
         $os = 'Linux';
     } elseif (preg_match('/Android/i', $user_agent)) {
         $os = 'Android';
+        $icon = 'fab fa-android';
     } elseif (preg_match('/iPhone|iPad|iPod/i', $user_agent)) {
         $os = 'iOS';
+        $icon = 'fab fa-apple';
     } else {
         $os = 'Unknown OS';
     }
@@ -102,7 +113,17 @@ function getDeviceInfo($user_agent) {
     // Detect if mobile
     $device_type = preg_match('/Mobile|Android|iPhone|iPad|iPod/i', $user_agent) ? 'Mobile' : 'Desktop';
     
-    return "$browser on $os ($device_type)";
+    // Override icon for mobile devices
+    if ($device_type === 'Mobile') {
+        $icon = 'fas fa-mobile-alt';
+    } elseif ($device_type === 'Desktop') {
+        $icon = 'fas fa-desktop';
+    }
+    
+    return [
+        'device' => "$browser on $os ($device_type)",
+        'icon' => $icon
+    ];
 }
 
 /**
@@ -157,92 +178,178 @@ $current_user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
     <link rel="stylesheet" href="../Header_and_Footer/footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
+            margin: 0px auto 80px auto;
+            padding: 0 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             position: relative;
-            top: 100px;
-            margin: auto auto 150px auto;
-            padding: 20px;
-            font-family: Arial, sans-serif;
+            top: 120px;
         }
         
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: #333;
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
         }
         
-        .message {
-            padding: 10px 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
+        .page-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .page-subtitle {
+            color: #7f8c8d;
+            font-size: 16px;
+            line-height: 1.5;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
-        .success-message {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+        .alert-success {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
         }
         
-        .error-message {
+        .alert-error {
             background-color: #f8d7da;
             color: #721c24;
-            border: 1px solid #f5c6cb;
+            border-left: 4px solid #dc3545;
         }
         
-        .sessions-table {
-            width: 100%;
-            border-collapse: collapse;
+        .sessions-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
             margin-bottom: 30px;
         }
         
-        .sessions-table th {
-            text-align: left;
-            padding: 12px 15px;
-            background-color: #f3f3f3;
-            border-bottom: 2px solid #ddd;
+        .sessions-header {
+            background: linear-gradient(135deg, orange 0%, orangered 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .sessions-header h2 {
+            margin: 0;
+            font-size: 20px;
             font-weight: 600;
         }
         
-        .sessions-table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #ddd;
+        .sessions-count {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
         }
         
-        .sessions-table tr:hover {
-            background-color: #f5f5f5;
+        .session-card {
+            border-bottom: 1px solid #e9ecef;
+            padding: 20px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .session-card:last-child {
+            border-bottom: none;
+        }
+        
+        .session-card:hover {
+            background-color: #f8f9fa;
         }
         
         .current-session {
-            background-color: #e8f4fd;
-        }
-        
-        .current-session td:first-child {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
             position: relative;
         }
         
-        .current-session td:first-child::before {
-            content: "Current";
+        .current-session::before {
+            content: "Current Session";
             position: absolute;
-            top: -8px;
-            left: 15px;
-            background-color: #0275d8;
+            top: 10px;
+            right: 20px;
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
             color: white;
             font-size: 12px;
-            padding: 2px 8px;
-            border-radius: 10px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .session-info {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .session-icon {
+            font-size: 24px;
+            color: #6c757d;
+            margin-top: 5px;
+            min-width: 30px;
+        }
+        
+        .session-details {
+            flex: 1;
+        }
+        
+        .device-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .session-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .session-actions {
+            margin-top: 15px;
         }
         
         .btn {
-            display: inline-block;
-            padding: 8px 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 500;
             text-decoration: none;
-            transition: background-color 0.3s;
+            transition: all 0.2s ease;
+            line-height: 1;
         }
         
         .btn-danger {
@@ -252,34 +359,139 @@ $current_user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
         
         .btn-danger:hover {
             background-color: #c82333;
+            transform: translateY(-1px);
         }
         
         .btn-secondary {
             background-color: #6c757d;
             color: white;
+            cursor: not-allowed;
+            opacity: 0.7;
         }
         
-        .btn-secondary:hover {
-            background-color: #5a6268;
+        .btn-outline-danger {
+            background-color: transparent;
+            color: #dc3545;
+            border: 2px solid #dc3545;
         }
         
-        .form-group {
+        .btn-outline-danger:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .logout-all-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logout-all-section h3 {
+            color: #e74c3c;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .logout-all-section p {
+            color: #6c757d;
             margin-bottom: 20px;
+            line-height: 1.5;
         }
         
-        .logout-all-form {
-            margin-top: 20px;
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #495057;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 40px;
         }
         
         .back-link {
-            display: block;
-            margin-top: 20px;
-            color: #007bff;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #667eea;
             text-decoration: none;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
         }
         
         .back-link:hover {
-            text-decoration: underline;
+            background-color: #f8f9fa;
+            color: #5a67d8;
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                margin: 0px auto 60px auto;
+                position: relative;
+                top: 100px;
+                padding: 0 15px;
+            }
+            
+            .page-title {
+                font-size: 24px;
+            }
+            
+            .session-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .session-icon {
+                align-self: flex-start;
+            }
+            
+            .session-meta {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .current-session::before {
+                position: static;
+                display: inline-block;
+                margin-bottom: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 20px;
+            }
+            
+            .session-card {
+                padding: 15px;
+            }
+            
+            .sessions-header {
+                padding: 15px;
+            }
         }
     </style>
 </head>
@@ -287,75 +499,121 @@ $current_user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
     <?php include __DIR__ . '/../Header_and_Footer/header.php'; ?>
     
     <div class="container">
-        <h1>Manage Your Login Sessions</h1>
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-shield-alt" style="color: orangered; margin-right: 10px;"></i>
+                Manage Device
+            </h1>
+            <p class="page-subtitle">
+                Manage your active login sessions across all devices. Keep your account secure by logging out from devices you don't recognize or no longer use.
+            </p>
+        </div>
         
         <?php if (!empty($message)): ?>
-            <div class="message success-message"><?php echo htmlspecialchars($message); ?></div>
-        <?php endif; ?>
-        
-        <?php if (!empty($error)): ?>
-            <div class="message error-message"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
-        
-        <p>Here you can see all devices where you're currently logged in. You can logout from any device you don't recognize or aren't using anymore.</p>
-        
-        <?php if (empty($sessions)): ?>
-            <p>You don't have any active login sessions with the "Remember Me" option.</p>
-        <?php else: ?>
-            <table class="sessions-table">
-                <thead>
-                    <tr>
-                        <th>Device</th>
-                        <th>Location</th>
-                        <th>Last Active</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($sessions as $session): 
-                        $is_current = ($cookie_token && isset($session['token']) && $cookie_token === $session['token']) ||
-                                     (!$cookie_token && $current_user_agent === $session['user_agent']);
-                    ?>
-                        <tr class="<?php echo $is_current ? 'current-session' : ''; ?>">
-                            <td><?php echo htmlspecialchars(getDeviceInfo($session['user_agent'])); ?></td>
-                            <td><?php echo htmlspecialchars($session['ip_address'] ?? 'Unknown'); ?></td>
-                            <td>
-                                <?php 
-                                    if (!empty($session['last_used_at'])) {
-                                        $last_used = new DateTime($session['last_used_at']);
-                                        echo $last_used->format('M j, Y g:i A');
-                                    } else {
-                                        echo 'Unknown';
-                                    }
-                                ?>
-                            </td>
-                            <td>
-                                <?php if (!$is_current): ?>
-                                    <form method="POST" action="" style="display: inline;">
-                                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-                                        <input type="hidden" name="token_id" value="<?php echo (int)$session['token_id']; ?>">
-                                        <button type="submit" name="revoke_session" class="btn btn-danger">Logout</button>
-                                    </form>
-                                <?php else: ?>
-                                    <span class="btn btn-secondary" disabled>Current</span>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-            
-            <div class="logout-all-form">
-                <form method="POST" action="">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-                    <button type="submit" name="revoke_all_other_sessions" class="btn btn-danger">Logout from all other devices</button>
-                </form>
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <?php echo htmlspecialchars($message); ?>
             </div>
         <?php endif; ?>
         
-        <a href="../HomePage/homePage.php" class="back-link">&larr; Back to Homepage</a>
+        <?php if (!empty($error)): ?>
+            <div class="alert alert-error">
+                <i class="fas fa-exclamation-triangle"></i>
+                <?php echo htmlspecialchars($error); ?>
+            </div>
+        <?php endif; ?>
+        
+        <?php if (empty($sessions)): ?>
+            <div class="sessions-container">
+                <div class="empty-state">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>No Active Sessions Found</h3>
+                    <p>You don't have any active login sessions with the "Remember Me" option enabled.</p>
+                </div>
+            </div>
+        <?php else: ?>
+            <div class="sessions-container">
+                <div class="sessions-header">
+                    <h2><i class="fas fa-devices"></i> Active Login Sessions</h2>
+                    <div class="sessions-count">
+                        <?php echo count($sessions); ?> active session<?php echo count($sessions) > 1 ? 's' : ''; ?>
+                    </div>
+                </div>
+                
+                <?php foreach ($sessions as $session): 
+                    $is_current = ($cookie_token && isset($session['token']) && $cookie_token === $session['token']) ||
+                                 (!$cookie_token && $current_user_agent === $session['user_agent']);
+                    $device_info = getDeviceInfo($session['user_agent']);
+                ?>
+                    <div class="session-card <?php echo $is_current ? 'current-session' : ''; ?>">
+                        <div class="session-info">
+                            <div class="session-icon">
+                                <i class="<?php echo $device_info['icon']; ?>"></i>
+                            </div>
+                            <div class="session-details">
+                                <div class="device-name"><?php echo htmlspecialchars($device_info['device']); ?></div>
+                                <div class="session-meta">
+                                    <div class="meta-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span><?php echo htmlspecialchars($session['ip_address'] ?? 'Unknown Location'); ?></span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>
+                                            <?php 
+                                                if (!empty($session['last_used_at'])) {
+                                                    $last_used = new DateTime($session['last_used_at']);
+                                                    echo 'Last active ' . $last_used->format('M j, Y \a\t g:i A');
+                                                } else {
+                                                    echo 'Last activity unknown';
+                                                }
+                                            ?>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <?php if (!$is_current): ?>
+                                    <div class="session-actions">
+                                        <form method="POST" action="" style="display: inline;">
+                                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                                            <input type="hidden" name="token_id" value="<?php echo (int)$session['token_id']; ?>">
+                                            <button type="submit" name="revoke_session" class="btn btn-danger">
+                                                <i class="fas fa-sign-out-alt"></i>
+                                                Logout Device
+                                            </button>
+                                        </form>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            
+            <?php if (count($sessions) > 1): ?>
+                <div class="logout-all-section">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Security Action</h3>
+                    <p>If you notice any suspicious activity or want to secure your account, you can logout from all other devices with one click.</p>
+                    
+                    <form method="POST" action="">
+                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                        <button type="submit" name="revoke_all_other_sessions" class="btn btn-outline-danger">
+                            <i class="fas fa-power-off"></i>
+                            Logout All Other Devices
+                        </button>
+                    </form>
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
+        
+        <div class="navigation">
+            <a href="../HomePage/homePage.php" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Homepage
+            </a>
+        </div>
     </div>
     
     <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
 </body>
-</html> 
+</html>
