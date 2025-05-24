@@ -276,9 +276,22 @@ include __DIR__ . '/../Header_and_Footer/header.php';
                             <span id="total-discount">-<?php echo formatPrice($totalDiscount); ?></span>
                         </div>
                         <?php endif; ?>
+                        <div class="row">
+                            <span>Sales Tax (6% SST)</span>
+                            <span>Included</span>
+                        </div>
+                        <div class="row">
+                            <span>Shipping</span>
+                            <span>Free</span>
+                        </div>
                         <div class="row" style="font-weight: bold; font-size: 1.1rem;">
                             <span>Total</span>
                             <span id="total-price"><?php echo formatPrice($totalPrice); ?></span>
+                        </div>
+                        <div class="billing-info">
+                            <p>* All prices are in Malaysian Ringgit (MYR)</p>
+                            <p>* Sales tax (6% SST) is included in the price</p>
+                            <p>* Free shipping for all domestic orders</p>
                         </div>
                         <button type="button" id="checkout-btn" class="checkout-btn">Checkout</button>
                     </div>
@@ -534,73 +547,20 @@ include __DIR__ . '/../Header_and_Footer/header.php';
         // Handle checkout button click
         if (checkoutBtn) {
             checkoutBtn.addEventListener('click', function() {
+                // Ensure at least one item is selected
+                const selectedItems = document.querySelectorAll('.product-select:checked');
+                if (selectedItems.length === 0) {
+                    alert('Please select at least one item to checkout.');
+                    return;
+                }
+
                 // Show loading state
                 const originalText = this.textContent;
                 this.disabled = true;
                 this.textContent = 'Processing...';
-                
-                // Get shipping address
-                const shippingAddress = '<?php echo addslashes(htmlspecialchars($user['address'] . ', ' . $user['city'] . ', ' . $user['postcode'] . ', ' . $user['state'])); ?>';
-                
-                // Get selected item IDs
-                const selectedItems = Array.from(document.querySelectorAll('.product-select:checked')).map(checkbox => checkbox.value);
-                
-                // If no items selected, show error
-                if (selectedItems.length === 0) {
-                    alert('Please select at least one item to checkout.');
-                    this.disabled = false;
-                    this.textContent = originalText;
-                    return;
-                }
-                
-                // Create form data
-                const formData = new FormData();
-                formData.append('csrf_token', csrfToken);
-                formData.append('shipping_address', shippingAddress);
-                formData.append('selected_items', JSON.stringify(selectedItems));
-                
-                // Call the create order API
-                fetch('/FYP/FYP/User/payment/create_order.php', {
-                    method: 'POST',
-                    body: formData,
-                    credentials: 'same-origin'
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        if (response.status === 401) {
-                            // Redirect to login if unauthorized
-                            window.location.href = '/FYP/User/login/login.php?redirect=' + encodeURIComponent(window.location.href);
-                            throw new Error('Please login to complete your order');
-                        } else if (response.status === 403) {
-                            // Handle CSRF token errors by refreshing the page
-                            window.location.reload();
-                            throw new Error('Session expired. Please try again.');
-                        }
-                        return response.json().then(err => {
-                            throw new Error(err.error || 'Error processing request');
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        // Redirect to checkout page
-                        window.location.href = data.redirect_url;
-                    } else {
-                        alert(data.error || 'An error occurred while creating your order.');
-                        // Reset button state
-                        this.disabled = false;
-                        this.textContent = originalText;
-                    }
-                })
-                .catch(error => {
-                    alert(error.message || 'Error processing your order. Please try again.');
-                    console.error('Checkout error:', error);
-                    
-                    // Reset button state
-                    this.disabled = false;
-                    this.textContent = originalText;
-                });
+
+                // Redirect to checkout page for shipping info
+                window.location.href = '/FYP/FYP/User/payment/checkout.php';
             });
         }
     });
