@@ -1,7 +1,0 @@
-[2025-05-24T03:03:31.693489+02:00] auth.WARNING: Failed login attempt {"email":"sohxj0802@gmail.com","ip":"::1","reason":"invalid_password"} []
-[2025-05-24T03:03:38.942365+02:00] auth.WARNING: Failed login attempt {"email":"sohxj0802@gmail.com","ip":"::1","reason":"invalid_password"} []
-[2025-05-24T03:03:43.995643+02:00] auth.WARNING: Failed login attempt {"email":"sohxj0802@gmail.com","ip":"::1","reason":"invalid_password"} []
-[2025-05-24T03:04:25.519470+02:00] auth.WARNING: Failed login attempt {"email":"sohxj0802@gmail.com","ip":"::1","reason":"invalid_password"} []
-[2025-05-24T03:05:17.154540+02:00] auth.INFO: OTP generated for login {"user_id":60,"email":"sohxj0802@gmail.com","ip":"::1","auth_time":"0.1132"} []
-[2025-05-24T03:05:20.595746+02:00] auth.INFO: OTP sent after redirect {"user_id":60,"email":"sohxj0802@gmail.com","ip":"::1","send_time":"3.3207"} []
-[2025-05-24T03:06:09.331434+02:00] auth.INFO: User successfully verified OTP and logged in {"email":"sohxj0802@gmail.com","user_id":60} []
