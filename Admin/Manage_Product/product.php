@@ -114,7 +114,7 @@
 
                 <div class="form-group">
                     <label>Size Chart:</label>
-                    <input type="file" name="size_chart" required>
+                    <input type="file" name="size_chart">
                 </div>
 
                 <button type="submit" id="submit">Add</button>
