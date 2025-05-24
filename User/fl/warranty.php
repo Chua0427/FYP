@@ -17,13 +17,16 @@
     }
 
     .warranty-wrapper {
-      max-width: 1100px;
-      margin: 50px auto;
-      padding: 30px 25px;
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-      animation: fadeIn 0.6s ease-in-out;
+      max-width: 1000px;
+            margin-right: auto;
+            margin-left: auto;
+            margin-bottom: 130px;
+            padding: 30px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            position: relative;
+            top: 98px;
     }
 
     @keyframes fadeIn {
@@ -57,27 +60,6 @@
     p {
       line-height: 1.8;
       margin: 15px 0;
-    }
-
-    ul {
-      padding-left: 20px;
-      margin: 10px 0 20px;
-    }
-
-    li {
-      margin-bottom: 10px;
-      position: relative;
-      padding-left: 20px;
-    }
-
-    li::before {
-      content: "\f058";
-      font-family: "Font Awesome 6 Free";
-      font-weight: 900;
-      position: absolute;
-      left: 0;
-      top: 2px;
-      color: #2ecc71;
     }
 
     a {
