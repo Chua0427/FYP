@@ -1,1 +1,3 @@
 [2025-05-24T06:35:30.985920+02:00] app.INFO: User submitted product review {"user_id":54,"product_id":27,"rating":5,"action":"new"} []
+[2025-05-24T08:28:47.320807+02:00] app.INFO: Add to cart request {"request_id":"cart_6831671f37c040.74723887","user_id":60,"product_id":80,"product_size":"UK13.5C","quantity":1} []
+[2025-05-24T08:28:47.436379+02:00] app.INFO: New cart item added {"request_id":"cart_6831671f37c040.74723887","user_id":60,"product_id":80,"product_size":"UK13.5C","quantity":1} []
