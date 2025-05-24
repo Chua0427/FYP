@@ -228,17 +228,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
                 <a href="forgot_password.php" class="forgot-password">Forgot Password?</a>
             </form>
             
-            <div class="divider"><span>OR</span></div>
-            
-            <div class="social-buttons">
-                <button type="button">
-                    <i class="fab fa-facebook-f" style="color:#3b5998; margin-right:8px;"></i> Facebook
-                </button>
-                <button type="button">
-                    <i class="fab fa-google" style="color:#db4437; margin-right:8px;"></i> Google
-                </button>
-            </div>
-            
             <div class="signup-text">
                 Don't have an account? <a href="../Registration/Register.php">Sign Up</a>
             </div>
