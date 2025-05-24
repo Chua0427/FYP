@@ -17,6 +17,7 @@
     background-position: center;
     height: 90vh;
     margin: 0;
+    position: ;
 }
 
     .container {
