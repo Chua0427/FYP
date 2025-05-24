@@ -31,14 +31,16 @@
         }
         
         .terms-container {
-            max-width: 1100px;
-            margin: 40px auto;
-            padding: 40px;
+            max-width: 1000px;
+            margin-right: auto;
+            margin-left: auto;
+            margin-bottom: 130px;
+            padding: 30px;
             background: white;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
-            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
             position: relative;
-            overflow: hidden;
+            top: 98px;
         }
         
         .terms-container::before {
