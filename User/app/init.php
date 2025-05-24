@@ -5,14 +5,59 @@ declare(strict_types=1);
  * Application initialization file
  */
 
-require_once '/xampp/htdocs/FYP/vendor/autoload.php';
-
-// Initialize Monolog for logging
-$logDir = __DIR__ . '/../logs';
+// Set error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+ini_set('log_errors', '1');
 
 // Create logs directory if it doesn't exist
-if (!is_dir($logDir)) {
-    mkdir($logDir, 0755, true);
+$logDir = __DIR__ . '/../logs';
+if (!file_exists($logDir)) {
+    mkdir($logDir, 0777, true);
+}
+
+// Set up error log location
+ini_set('error_log', $logDir . '/php_errors.log');
+
+// Import necessary libraries
+require_once '/xampp/htdocs/FYP/vendor/autoload.php';
+
+// Initialize Monolog for structured logging
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Formatter\LineFormatter;
+
+// Create logger instance
+$logger = new Logger('app');
+
+// File handler that rotates daily, keeps 7 days of logs
+$handler = new RotatingFileHandler($logDir . '/app.log', 7, \Monolog\Level::Debug);
+$formatter = new LineFormatter(
+    "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n",
+    "Y-m-d H:i:s"
+);
+$handler->setFormatter($formatter);
+$logger->pushHandler($handler);
+
+// Make logger available globally
+$GLOBALS['logger'] = $logger;
+
+// Log application startup
+$logger->info('Application initialized', ['php_version' => phpversion()]);
+
+// Test email functionality at startup
+if (!isset($GLOBALS['email_test_done'])) {
+    $GLOBALS['email_test_done'] = true;
+    $testEmailLog = $logDir . '/email_test.log';
+    $mailResult = @mail('chiannchua05@gmail.com', 'PHP Init Email Test', 'This is a test from app/init.php', 'From: chiannchua05@gmail.com');
+    $logger->info('Email test at initialization', ['result' => $mailResult ? 'SUCCESS' : 'FAILED']);
+    file_put_contents($testEmailLog, date('[Y-m-d H:i:s]') . " Init mail test: " . ($mailResult ? "SUCCESS" : "FAILED") . PHP_EOL, FILE_APPEND);
+}
+
+// Session handling
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
 // Set up the main application logger
