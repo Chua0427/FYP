@@ -30,12 +30,15 @@
         
         .policy-container {
             max-width: 1000px;
-            margin: 40px auto;
-            padding: 40px;
+            margin-right: auto;
+            margin-left: auto;
+            margin-bottom: 130px;
+            padding: 30px;
             background: white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
             position: relative;
+            top: 98px;
         }
         
         .policy-container::before {
@@ -51,8 +54,8 @@
         h1 {
             color: var(--secondary-color);
             text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.2em;
+            margin-bottom: 35px;
+            font-size: 2.4em;
             font-weight: 700;
             position: relative;
             padding-bottom: 15px;
@@ -73,10 +76,17 @@
         h2 {
             color: var(--primary-color);
             margin-top: 35px;
-            font-size: 1.5em;
+            font-size: 1.6em;
             font-weight: 600;
             padding-bottom: 10px;
             border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        
+        h2 i {
+            margin-right: 12px;
+            color: var(--primary-color);
         }
         
         p, li {
@@ -89,8 +99,8 @@
             padding: 20px;
             border-left: 4px solid var(--highlight-color);
             margin: 25px 0;
-            border-radius: 4px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         
         .warning {
@@ -98,15 +108,16 @@
             padding: 20px;
             border-left: 4px solid var(--warning-color);
             margin: 25px 0;
-            border-radius: 4px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         
         .warning p, .highlight p {
             margin: 0;
             font-weight: 500;
         }
-       
+        
+        
         .link {
             color: var(--primary-color);
             text-decoration: none;
@@ -131,9 +142,9 @@
             display: inline-flex;
             align-items: center;
             padding: 8px 15px;
-            border-radius: 4px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
             border: 1px solid var(--primary-color);
-            transition: all 0.2s ease;
         }
         
         .language-switcher a:hover {
@@ -150,20 +161,27 @@
             .policy-container {
                 padding: 25px;
                 margin: 20px;
+                border-radius: 8px;
             }
             
             h1 {
                 font-size: 1.8em;
+                padding-bottom: 10px;
             }
             
             h1::after {
                 width: 70px;
+                height: 3px;
+            }
+            
+            h2 {
+                font-size: 1.4em;
             }
         }
         
         @media (max-width: 480px) {
             .policy-container {
-                padding: 20px;
+                padding: 20px 15px;
             }
             
             h1 {
@@ -187,10 +205,10 @@
         <h1>Polisi Pembatalan</h1>
         
         <div class="warning">
-            <p><strong>Penting:</strong> Tiada pembatalan pesanan atau bayaran balik akan dilayan.</p>
+            <p><i class="fas fa-exclamation-triangle"></i><strong>Penting:</strong> Tiada pembatalan pesanan atau bayaran balik akan dilayan.</p>
         </div>
         
-        <h2>Pilihan Penukaran</h2>
+        <h2><i class="fas fa-exchange-alt"></i>Pilihan Penukaran</h2>
         <p>Sebagai ganti pembatalan, anda boleh memilih untuk menukar barang yang dipulangkan di bawah syarat-syarat berikut:</p>
         
         <div class="highlight">
@@ -204,7 +222,7 @@
             </ul>
         </div>
         
-        <h2>Nota Penting</h2>
+        <h2><i class="fas fa-info-circle"></i>Nota Penting</h2>
         <ul>
             <li>Tiada bayaran balik akan dikeluarkan untuk sebarang pesanan yang dibatalkan</li>
             <li>Barang promosi mungkin mempunyai polisi penukaran yang berbeza</li>
@@ -215,7 +233,7 @@
         <p>Untuk maklumat lebih terperinci tentang proses penukaran kami, sila rujuk <a href="RPen.php" class="link"><b>Polisi Pulangan</b></a> kami.</p>
         
         <div class="warning">
-            <p><strong>Nota:</strong> Polisi ini terpakai untuk semua pembelian yang dibuat melalui laman web kami, aplikasi mudah alih, dan kedai fizikal.</p>
+            <p><i class="fas fa-exclamation-circle"></i><strong>Nota:</strong> Polisi ini terpakai untuk semua pembelian yang dibuat melalui laman web kami, aplikasi mudah alih, dan kedai fizikal.</p>
         </div>
     </div>
     
