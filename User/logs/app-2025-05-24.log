@@ -1,1 +1,2 @@
 [2025-05-24T06:35:30.985920+02:00] app.INFO: User submitted product review {"user_id":54,"product_id":27,"rating":5,"action":"new"} []
+[2025-05-24T08:35:25.112164+02:00] app.INFO: Item added to cart from order history {"user_id":54,"product_id":56,"product_size":"One Size","quantity":1} []
