@@ -193,7 +193,7 @@
                                 <a href="../ProductPage/product.php?id='.$row['product_id'].'">
                                     <img src="../../upload/'.$row['product_img1'].'" alt="">
                                     <p class="product-name">'.$row['product_name'].'</p>
-                                    <div class="price">RM'.$row['price'].'</div>
+                                    <div class="price">RM '.$row['price'].'</div>
                                 </a>
                                 </div>';
                         }

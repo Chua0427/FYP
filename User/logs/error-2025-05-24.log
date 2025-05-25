@@ -1,6 +1,1 @@
-[2025-05-24T21:50:48.697384+02:00] app.ERROR: PHP Error {"message":"session_start(): Ignoring session_start() because a session is already active","file":"C:\\xampp\\htdocs\\FYP\\FYP\\User\\order\\cart.php","line":9,"severity":8} []
-[2025-05-24T21:50:56.931859+02:00] app.ERROR: PHP Error {"message":"session_start(): Ignoring session_start() because a session is already active","file":"C:\\xampp\\htdocs\\FYP\\FYP\\User\\payment\\checkout.php","line":9,"severity":8} []
-[2025-05-24T21:51:02.055088+02:00] app.ERROR: PHP Error {"message":"session_start(): Ignoring session_start() because a session is already active","file":"C:\\xampp\\htdocs\\FYP\\FYP\\User\\payment\\checkout.php","line":9,"severity":8} []
-[2025-05-24T21:51:06.708331+02:00] app.ERROR: PHP Error {"message":"session_start(): Ignoring session_start() because a session is already active","file":"C:\\xampp\\htdocs\\FYP\\FYP\\User\\payment\\checkout.php","line":9,"severity":8} []
-[2025-05-24T21:51:12.821567+02:00] app.ERROR: PHP Error {"message":"session_start(): Ignoring session_start() because a session is already active","file":"C:\\xampp\\htdocs\\FYP\\FYP\\User\\order\\cart.php","line":9,"severity":8} []
-[2025-05-24T21:51:25.735923+02:00] app.ERROR: PHP Error {"message":"session_start(): Ignoring session_start() because a session is already active","file":"C:\\xampp\\htdocs\\FYP\\FYP\\User\\payment\\checkout.php","line":9,"severity":8} []
+

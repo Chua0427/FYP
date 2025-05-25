@@ -48,7 +48,7 @@
 
                 <div class="column1">
                     <div class="form-group">
-                        <label style="display: flex; justify-content:space-between;">Password: <i class="fa-solid fa-eye" id="Password"></i></label>
+                        <label style="display: flex; justify-content:space-between;">Password: (1 lower, 1 upper, 1 digit, 1 symbol, at least 8)<i class="fa-solid fa-eye" id="Password"></i></label>
                         <input type="password" name="password" id="password" required >
                         <div id="strength" style="display:block; font-size:14px; font-size:14px; text-align:center;"></div>
                     </div>
@@ -102,7 +102,7 @@
 
                 <div class="form-group">
                     <label>Profile Image:</label>
-                    <input type="file" name="profile_image">
+                    <input type="file" name="profile_image" required>
                 </div>
 
                 <button type="submit" id="submit">Register Admin</button>

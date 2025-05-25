@@ -9,66 +9,89 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f5f5f5;
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
             margin: 0;
             padding: 0;
         }
         
         .tracking-container {
-            max-width: 800px;
-            margin: 30px auto;
+            max-width: 1000px;
+            margin-right: auto;
+            margin-left: auto;
+            margin-bottom: 130px;
             padding: 30px;
             background: white;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             border-radius: 8px;
+            position: relative;
+            top: 98px;
         }
         
         h1 {
-            color: #2c3e50;
+            color: #2a4365;
             text-align: center;
-            margin-bottom: 30px;
-            font-size: 2em;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            position: relative;
+        }
+        
+        h1:after {
+            content: "";
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: #3182ce;
+            margin: 10px auto 0;
         }
         
         h2 {
-            color: #3498db;
-            margin-top: 25px;
-            font-size: 1.3em;
+            color: #3182ce;
+            margin: 25px 0 15px;
+            font-size: 1.3rem;
         }
         
         p {
+            color: #4a5568;
+            line-height: 1.7;
             margin-bottom: 15px;
         }
         
         .info-box {
-            background-color: #e3f2fd;
-            padding: 15px;
-            border-radius: 5px;
+            background: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            padding: 18px;
+            border-radius: 0 6px 6px 0;
             margin: 20px 0;
-            border-left: 4px solid #3498db;
+        }
+        
+        ul {
+            padding-left: 20px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            color: #4a5568;
         }
         
         .note {
+            background: #fffaf0;
+            padding: 12px;
+            border-left: 4px solid #dd6b20;
             font-style: italic;
-            color: #666;
+            color: #718096;
         }
         
         @media (max-width: 768px) {
             .tracking-container {
-                padding: 20px;
-                margin: 15px;
-            }
-            
-            h1 {
-                font-size: 1.6em;
+                padding: 25px 20px;
+                margin: 20px 15px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Header remains COMPLETELY UNCHANGED -->
     <?php include __DIR__ . '/../Header_and_Footer/header.php'; ?>
     
     <div class="tracking-container">
@@ -107,6 +130,7 @@
         <p class="note">Note: We reserve the right to re-charge any delivery costs for re-delivery attempts.</p>
     </div>
     
+    <!-- Footer remains COMPLETELY UNCHANGED -->
     <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
 </body>
 </html>

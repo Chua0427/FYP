@@ -258,8 +258,9 @@ input{
     background-color: rgba(255, 255, 255, 0.527);
     justify-content: center;
     top: 55%;
-    left: 50%;
+    left: 55%;
     transform: translate(-55%, -50%);
+    overflow: auto;
 }
 
 .modal-content{
