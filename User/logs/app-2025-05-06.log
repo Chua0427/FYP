@@ -1,2 +1,0 @@
-[2025-05-06T04:28:36.528457+02:00] app.INFO: Add to cart request {"request_id":"cart_681973d47a6a33.56780126","user_id":54,"product_id":18,"product_size":"XXS","quantity":1} []
-[2025-05-06T04:28:36.545119+02:00] app.INFO: New cart item added {"request_id":"cart_681973d47a6a33.56780126","user_id":54,"product_id":18,"product_size":"XXS","quantity":1} []

@@ -6,7 +6,12 @@ require_once '/xampp/htdocs/FYP/FYP/User/payment/db.php';
 require __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/csrf.php';
 
-session_start();
+// Start session if not already started
+if (isset($GLOBALS['session_started']) || session_status() === PHP_SESSION_ACTIVE) {
+    // Session already started in init.php
+} else {
+    session_start();
+}
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -198,11 +203,6 @@ $pageTitle = "Shopping Cart - VeroSports";
 </head>
 <body>
 <?php 
-// Start session if not already started
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-    
 include __DIR__ . '/../Header_and_Footer/header.php'; 
 ?>
     
@@ -514,24 +514,42 @@ include __DIR__ . '/../Header_and_Footer/header.php';
             })
             .then(response => {
                 if (!response.ok) {
-                    return response.json().then(err => {
-                        throw new Error(err.error || 'Error removing item');
+                    return response.text().then(text => {
+                        try {
+                            const data = JSON.parse(text);
+                            throw new Error(data.error || 'Error removing item');
+                        } catch (jsonError) {
+                            console.error('Server returned non-JSON response:', text.substring(0, 100));
+                            throw new Error('Error communicating with server. Please try again.');
+                        }
                     });
                 }
                 return response.json();
             })
             .then(data => {
                 if (data.success) {
-                    // Remove the item from the DOM
-                    const productElement = document.querySelector(`.product-select[value="${cartId}"]`).closest('.product');
-                    productElement.remove();
-                    
-                    // Update cart totals
-                    updateCartTotals();
-                    
-                    // If no more items in cart, reload page to show empty cart message
-                    const remainingItems = document.querySelectorAll('.product').length;
-                    if (remainingItems === 0) {
+                    // Find and remove the item from the DOM with error handling
+                    try {
+                        const productElement = document.querySelector(`.product-select[value="${cartId}"]`);
+                        if (productElement && productElement.closest('.product')) {
+                            productElement.closest('.product').remove();
+                            
+                            // Update cart totals
+                            updateCartTotals();
+                            
+                            // If no more items in cart, reload page to show empty cart message
+                            const remainingItems = document.querySelectorAll('.product').length;
+                            if (remainingItems === 0) {
+                                location.reload();
+                            }
+                        } else {
+                            console.error('Product element not found for cartId:', cartId);
+                            // Reload page to reflect the updated state
+                            location.reload();
+                        }
+                    } catch (error) {
+                        console.error('Error removing product from DOM:', error);
+                        // Reload page to reflect the updated state
                         location.reload();
                     }
                 } else {

@@ -26,7 +26,12 @@ require __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/csrf.php';
 require_once __DIR__ . '/../app/services/OrderService.php';
 
-session_start();
+// Initialize session if not already started
+if (isset($GLOBALS['session_started']) || session_status() === PHP_SESSION_ACTIVE) {
+    // Session already started in init.php or elsewhere
+} else if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {

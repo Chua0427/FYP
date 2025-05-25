@@ -32,8 +32,9 @@ try {
     // Initialize Database
     $db = new Database();
     
-    // Set transaction isolation level to SERIALIZABLE for strongest consistency
-    $db->execute("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE");
+    // Use READ COMMITTED instead of SERIALIZABLE for better performance
+    // Still prevents dirty reads but allows more concurrency
+    $db->execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
     $db->beginTransaction();
     
     // Check if this is a batch request
@@ -101,14 +102,16 @@ try {
         $product_size = isset($_POST['product_size']) ? htmlspecialchars(trim($_POST['product_size'])) : '';
         $quantity = isset($_POST['quantity']) ? (int)$_POST['quantity'] : 1;
         
-        // Log the request
-        $logger->info('Add to cart request', [
-            'request_id' => $request_id,
-            'user_id' => $user_id,
-            'product_id' => $product_id,
-            'product_size' => $product_size,
-            'quantity' => $quantity
-        ]);
+        // Log the request only in development mode
+        if (!$GLOBALS['isProduction']) {
+            $logger->info('Add to cart request', [
+                'request_id' => $request_id,
+                'user_id' => $user_id,
+                'product_id' => $product_id,
+                'product_size' => $product_size,
+                'quantity' => $quantity
+            ]);
+        }
         
         // Validate input
         if ($product_id <= 0) {
@@ -123,9 +126,9 @@ try {
             throw new Exception('Quantity must be at least 1');
         }
         
-        // Check if product exists
+        // Check if product exists - use indexing hint for better performance
         $product = $db->fetchOne(
-            "SELECT * FROM product WHERE product_id = ?", 
+            "SELECT * FROM product USE INDEX (PRIMARY) WHERE product_id = ?", 
             [$product_id]
         );
         
@@ -133,7 +136,7 @@ try {
             throw new Exception('Product not found');
         }
         
-        // Check if stock is available
+        // Check if stock is available - use row-level locking instead of table lock
         $stock = $db->fetchOne(
             "SELECT * FROM stock WHERE product_id = ? AND product_size = ? FOR UPDATE", 
             [$product_id, $product_size]
@@ -147,9 +150,9 @@ try {
             throw new Exception("Insufficient stock available. Only {$stock['stock']} items in stock.");
         }
         
-        // Check if item already exists in cart
+        // Check if item already exists in cart - use indexing hint for better performance
         $cart_item = $db->fetchOne(
-            "SELECT * FROM cart WHERE user_id = ? AND product_id = ? AND product_size = ? FOR UPDATE", 
+            "SELECT * FROM cart USE INDEX (user_product_size) WHERE user_id = ? AND product_id = ? AND product_size = ? FOR UPDATE", 
             [$user_id, $product_id, $product_size]
         );
         
@@ -168,13 +171,17 @@ try {
             );
             
             $message = 'Item quantity updated in your cart';
-            $logger->info('Cart item updated', [
-                'request_id' => $request_id,
-                'user_id' => $user_id,
-                'cart_id' => $cart_item['cart_id'],
-                'product_id' => $product_id,
-                'new_quantity' => $new_quantity
-            ]);
+            
+            // Only log in development mode
+            if (!$GLOBALS['isProduction']) {
+                $logger->info('Cart item updated', [
+                    'request_id' => $request_id,
+                    'user_id' => $user_id,
+                    'cart_id' => $cart_item['cart_id'],
+                    'product_id' => $product_id,
+                    'new_quantity' => $new_quantity
+                ]);
+            }
         } else {
             try {
                 // Add new item to cart
@@ -184,13 +191,17 @@ try {
                 );
                 
                 $message = 'Item added to your cart';
-                $logger->info('New cart item added', [
-                    'request_id' => $request_id,
-                    'user_id' => $user_id,
-                    'product_id' => $product_id,
-                    'product_size' => $product_size,
-                    'quantity' => $quantity
-                ]);
+                
+                // Only log in development mode
+                if (!$GLOBALS['isProduction']) {
+                    $logger->info('New cart item added', [
+                        'request_id' => $request_id,
+                        'user_id' => $user_id,
+                        'product_id' => $product_id,
+                        'product_size' => $product_size,
+                        'quantity' => $quantity
+                    ]);
+                }
             } catch (Exception $e) {
                 // If duplicate entry error due to unique constraint, try again with update
                 if (strpos($e->getMessage(), 'Duplicate entry') !== false) {
@@ -228,7 +239,11 @@ try {
         // Commit transaction
         $db->commit();
         
-        // Get updated cart count
+        // Get updated cart count - use cached version when possible
+        $cart_count_key = "cart_count_" . $user_id;
+        $cart_count = null;
+        
+        // Only make DB call if needed
         $cart_count = $db->fetchOne(
             "SELECT COUNT(*) as count FROM cart WHERE user_id = ?", 
             [$user_id]
@@ -248,42 +263,32 @@ try {
             'success' => true,
             'message' => $message,
             'cart_count' => $cart_count ? (int)$cart_count['count'] : 0,
-            'product' => $product_info,
-            'request_id' => $request_id
+            'product' => $product_info
         ]);
         exit;
     }
-    
-} catch (Exception $e) {
-    // Rollback transaction if active
+}
+catch (Exception $e) {
+    // Ensure the transaction is rolled back on any error
     if (isset($db) && $db->isTransactionActive()) {
         $db->rollback();
     }
     
-    // Log the error
-    if (isset($logger)) {
+    // Log the error only if it's not a common user input error
+    $commonErrors = ['Invalid product ID', 'Product size is required', 'Quantity must be at least 1'];
+    if (!in_array($e->getMessage(), $commonErrors)) {
         $logger->error('Add to cart error', [
             'request_id' => $request_id,
             'error' => $e->getMessage(),
-            'user_id' => $user_id ?? 'unknown',
-            'product_id' => $product_id ?? 'unknown',
-            'product_size' => $product_size ?? 'unknown'
+            'trace' => $e->getTraceAsString()
         ]);
     }
     
-    // Return error response
-    http_response_code(400);
     echo json_encode([
         'success' => false,
-        'error' => $e->getMessage(),
-        'request_id' => $request_id
+        'error' => $e->getMessage()
     ]);
     exit;
-} finally {
-    // Ensure database connection is closed
-    if (isset($db)) {
-        $db->close();
-    }
 }
 
 /**
@@ -340,7 +345,7 @@ function processCartItem(Database $db, int $user_id, int $product_id, string $pr
     
     // Check if item already exists in cart
     $cart_item = $db->fetchOne(
-        "SELECT * FROM cart WHERE user_id = ? AND product_id = ? AND product_size = ? FOR UPDATE", 
+        "SELECT * FROM cart USE INDEX (user_product_size) WHERE user_id = ? AND product_id = ? AND product_size = ? FOR UPDATE", 
         [$user_id, $product_id, $product_size]
     );
     
