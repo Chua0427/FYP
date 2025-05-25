@@ -7,7 +7,15 @@ declare(strict_types=1);
 
 // Set error reporting
 error_reporting(E_ALL);
-ini_set('display_errors', '1');
+
+// Determine environment (production or development)
+$isProduction = false;
+if (isset($_SERVER['SERVER_NAME'])) {
+    $isProduction = !in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1']);
+}
+
+// Configure error display based on environment
+ini_set('display_errors', $isProduction ? '0' : '1');
 ini_set('log_errors', '1');
 
 // Create logs directory if it doesn't exist
@@ -28,11 +36,14 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Formatter\LineFormatter;
 
-// Create logger instance
+// Default log level based on environment
+$defaultLogLevel = $isProduction ? \Monolog\Level::Warning : \Monolog\Level::Debug;
+
+// Create logger instance with optimized configuration
 $logger = new Logger('app');
 
 // File handler that rotates daily, keeps 7 days of logs
-$handler = new RotatingFileHandler($logDir . '/app.log', 7, \Monolog\Level::Debug);
+$handler = new RotatingFileHandler($logDir . '/app.log', 7, $defaultLogLevel);
 $formatter = new LineFormatter(
     "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n",
     "Y-m-d H:i:s"
@@ -43,11 +54,16 @@ $logger->pushHandler($handler);
 // Make logger available globally
 $GLOBALS['logger'] = $logger;
 
-// Log application startup
-$logger->info('Application initialized', ['php_version' => phpversion()]);
+// Log application startup - only in development or at most once per day in production
+if (!$isProduction || !file_exists($logDir . '/startup_' . date('Y-m-d') . '.flag')) {
+    $logger->info('Application initialized', ['php_version' => phpversion()]);
+    if ($isProduction) {
+        touch($logDir . '/startup_' . date('Y-m-d') . '.flag');
+    }
+}
 
-// Test email functionality at startup
-if (!isset($GLOBALS['email_test_done'])) {
+// Test email functionality at startup - only in development
+if (!$isProduction && !isset($GLOBALS['email_test_done'])) {
     $GLOBALS['email_test_done'] = true;
     $testEmailLog = $logDir . '/email_test.log';
     $mailResult = @mail('chiannchua05@gmail.com', 'PHP Init Email Test', 'This is a test from app/init.php', 'From: chiannchua05@gmail.com');
@@ -57,31 +73,20 @@ if (!isset($GLOBALS['email_test_done'])) {
 
 // Session handling
 if (session_status() === PHP_SESSION_NONE) {
+    // Configure session for better performance
+    ini_set('session.use_strict_mode', '1');
+    ini_set('session.use_cookies', '1');
+    ini_set('session.use_only_cookies', '1');
+    ini_set('session.cache_limiter', $isProduction ? 'nocache' : 'private');
     session_start();
 }
 
-// Set up the main application logger
-$logger = new \Monolog\Logger('app');
+// Store that we've already started a session in a global
+$GLOBALS['session_started'] = true;
 
-// Add a daily rotating file handler for application logs
-$logger->pushHandler(
-    new \Monolog\Handler\RotatingFileHandler(
-        $logDir . '/app.log',
-        7, // Keep logs for 7 days
-        \Monolog\Level::Debug
-    )
-);
+// Set up specialized loggers with optimized settings
 
-// Add a separate handler for errors
-$logger->pushHandler(
-    new \Monolog\Handler\RotatingFileHandler(
-        $logDir . '/error.log',
-        14, // Keep error logs for 14 days
-        \Monolog\Level::Error
-    )
-);
-
-// Set up authentication logger
+// Auth logger - critical for security, keep at INFO level
 $authLogger = new \Monolog\Logger('auth');
 $authLogger->pushHandler(
     new \Monolog\Handler\RotatingFileHandler(
@@ -91,17 +96,17 @@ $authLogger->pushHandler(
     )
 );
 
-// Set up payment logger
+// Payment logger - only log important payment events in production
 $paymentLogger = new \Monolog\Logger('payment');
 $paymentLogger->pushHandler(
     new \Monolog\Handler\RotatingFileHandler(
         $logDir . '/payment.log',
         90, // Keep payment logs for 90 days
-        \Monolog\Level::Info
+        $isProduction ? \Monolog\Level::Notice : \Monolog\Level::Info
     )
 );
 
-// Set up an audit logger for sensitive operations
+// Audit logger - keep at INFO level for compliance
 $auditLogger = new \Monolog\Logger('audit');
 $auditLogger->pushHandler(
     new \Monolog\Handler\RotatingFileHandler(
@@ -116,15 +121,21 @@ $GLOBALS['logger'] = $logger;
 $GLOBALS['authLogger'] = $authLogger;
 $GLOBALS['paymentLogger'] = $paymentLogger;
 $GLOBALS['auditLogger'] = $auditLogger;
+$GLOBALS['isProduction'] = $isProduction;
 
-// Configure error handling
-set_error_handler(function($severity, $message, $file, $line) use ($logger) {
+// Configure error handling - only log detailed info in development
+set_error_handler(function($severity, $message, $file, $line) use ($logger, $isProduction) {
+    if ($isProduction && ($severity == E_NOTICE || $severity == E_USER_NOTICE)) {
+        return true; // Don't log notices in production
+    }
+    
     $logger->error('PHP Error', [
         'message' => $message,
         'file' => $file,
         'line' => $line,
         'severity' => $severity
     ]);
+    return false;
 });
 
 // Configure exception handling

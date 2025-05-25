@@ -1,6 +1,12 @@
 <?php
 declare(strict_types=1);
 
+// Clear any previous output and restart buffer
+while (ob_get_level()) {
+    ob_end_clean();
+}
+ob_start();
+
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once '/xampp/htdocs/FYP/FYP/User/payment/db.php';
 require_once __DIR__ . '/../app/init.php';
@@ -8,8 +14,17 @@ require_once __DIR__ . '/../app/csrf.php';
 
 // For AJAX requests
 header('Content-Type: application/json');
+// Prevent caching
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
 
-session_start();
+// Initialize session if not already started
+if (isset($GLOBALS['session_started']) || session_status() === PHP_SESSION_ACTIVE) {
+    // Session already started in init.php or elsewhere
+} else if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -78,16 +93,28 @@ try {
     $db->commit();
     
     // Return success response
-    echo json_encode([
-        'success' => true,
-        'message' => 'Cart updated successfully',
-        'item' => [
-            'cart_id' => $cart_id,
-            'quantity' => $quantity,
-            'price' => $updatedItem ? (float)$updatedItem['final_price'] : 0,
-            'total' => $updatedItem ? (float)$updatedItem['final_price'] * $quantity : 0
-        ]
-    ]);
+    try {
+        $response = [
+            'success' => true,
+            'message' => 'Cart updated successfully',
+            'item' => [
+                'cart_id' => $cart_id,
+                'quantity' => $quantity,
+                'price' => $updatedItem ? (float)$updatedItem['final_price'] : 0,
+                'total' => $updatedItem ? (float)$updatedItem['final_price'] * $quantity : 0
+            ]
+        ];
+        echo json_encode($response);
+    } catch (Exception $jsonEx) {
+        // Log JSON error
+        if (isset($GLOBALS['logger'])) {
+            $GLOBALS['logger']->error('JSON encoding error', [
+                'error' => $jsonEx->getMessage()
+            ]);
+        }
+        // Fallback response
+        echo '{"success":true,"message":"Cart updated successfully","item":{"cart_id":'.$cart_id.',"quantity":'.$quantity.'}}';
+    }
     
 } catch (Exception $e) {
     if (isset($db) && $db->isTransactionActive()) {
@@ -95,7 +122,18 @@ try {
     }
     
     http_response_code(400);
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    
+    // Ensure clean JSON error response
+    try {
+        $errorResponse = [
+            'success' => false, 
+            'error' => $e->getMessage()
+        ];
+        echo json_encode($errorResponse);
+    } catch (Exception $jsonEx) {
+        // Fallback plain error if JSON encoding fails
+        echo '{"success":false,"error":"An error occurred while processing your request"}';
+    }
     
     // Log the error
     if (isset($GLOBALS['logger'])) {

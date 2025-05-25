@@ -8,10 +8,12 @@ require_once __DIR__ . '/db.php';
 require __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/services/OrderService.php';
 
-// Remove UUID import since we're now using auto-increment IDs
-
-
-session_start();
+// Initialize session if not already started
+if (isset($GLOBALS['session_started']) || session_status() === PHP_SESSION_ACTIVE) {
+    // Session already started in init.php or elsewhere
+} else if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Ensure logs directory exists
 $log_dir = __DIR__ . '/logs';
