@@ -287,7 +287,7 @@ include __DIR__ . '/../Header_and_Footer/header.php';
 
             <!-- Add link to track orders -->
             <div style="margin: 20px 0; text-align: right;">
-                <a href="../View_Order/view_order.php" class="btn btn-secondary">Track My Orders</a>
+                <a href="../View_Order/order.php" class="btn btn-secondary">Track My Orders</a>
             </div>
         </div>
     </main>
