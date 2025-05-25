@@ -5,7 +5,9 @@ declare(strict_types=1);
 require_once __DIR__ . '/../app/restrict_admin.php';
 
 // Initialize session if not already started
-if (session_status() == PHP_SESSION_NONE) {
+if (isset($GLOBALS['session_started']) || session_status() === PHP_SESSION_ACTIVE) {
+    // Session already started in init.php or elsewhere
+} else if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
