@@ -19,11 +19,15 @@
         
         .faq-container {
             max-width: 1000px;
-            margin: 20px auto;
+            margin-right: auto;
+            margin-left: auto;
+            margin-bottom: 130px;
             padding: 30px;
             background: white;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             border-radius: 8px;
+            position: relative;
+            top: 98px;
         }
         
         h1 {

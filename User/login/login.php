@@ -9,6 +9,7 @@ require_once __DIR__ . '/../app/auth.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+
 // Check if user is already authenticated with token
 if (Auth::check()) {
     header('Location: /FYP/FYP/User/HomePage/homePage.php');
@@ -225,7 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
                     <label for="remember">Remember me</label>
                 </div>
                 <button type="submit" name="login" class="login-btn">Login</button>
-                <a href="forgot_password.php" class="forgot-password">Forgot Password?</a>
+                <a href="../ForgotPassword/forgot_password.php" class="forgot-password">Forgot Password?</a>
             </form>
             
             <div class="signup-text">

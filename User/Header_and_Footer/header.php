@@ -167,7 +167,7 @@ if ($is_authenticated) {
                             <h3>Apparel</h3>
                             <a href="../All_Product_Page/all_product.php?gender=Kid&product_categories=Jacket">Jackets</a>
                             <a href="../All_Product_Page/all_product.php?gender=Kid&product_categories=Jersey">Jerseys</a>
-                            <a href="../All_Product_Page/all_product.php?gender=Kid&product_categories=Paint">Paints</a>
+                            <a href="../All_Product_Page/all_product.php?gender=Kid&product_categories=Pant">Paints</a>
                         </div>
                         <div class="category">
                             <h3>Equipment</h3>
