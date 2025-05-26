@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h3>Login Required</h3>
             </div>
             <div class="login-modal-body">
-                <p>Please log in to continue with this action.</p>
+                <p>Please login to continue with this action.</p>
                 <div class="login-modal-buttons">
                     <a href="/FYP/FYP/User/login/login.php?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}" class="login-button">Login</a>
                     <button class="cancel-button">Cancel</button>
