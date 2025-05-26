@@ -24,8 +24,12 @@ main {
 
 .checkout-container {
     max-width: 1140px;
-    margin: 0 auto;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 100px;
     padding: 0 15px;
+    position: relative;
+    top: 80px;
 }
 
 h1 {
