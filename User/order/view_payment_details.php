@@ -2,7 +2,10 @@
 declare(strict_types=1);
 
 include __DIR__ . '/../../connect_db/config.php';
-session_start();
+require __DIR__ . '/../app/init.php';
+
+// Initialize session if not already started
+ensure_session_started();
 
 // Ensure user is logged in
 if (!isset($_SESSION['user_id'])) {

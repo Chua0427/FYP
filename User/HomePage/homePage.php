@@ -1,6 +1,9 @@
 <?php
 // Restrict admin access to user pages
 require_once __DIR__ . '/../app/restrict_admin.php';
+
+// Include authentication check and notification system
+require_once __DIR__ . '/../app/auth-check.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -19,6 +22,9 @@ require_once __DIR__ . '/../app/restrict_admin.php';
     require_once __DIR__ . '/../app/csrf.php';
     // Generate CSRF token and add it to meta tag
     $csrf_token = generateCsrfToken();
+    
+    // Add auth notification resources
+    add_auth_notification_resources();
     ?>
     <meta name="csrf-token" content="<?php echo htmlspecialchars($csrf_token); ?>">
 </head>
@@ -142,7 +148,7 @@ require_once __DIR__ . '/../app/restrict_admin.php';
                                     <p class="NewArrivalPrice">RM '.$row['price'].'</p>
                                 </div>
                             </a>
-                            <input type="button" class="quick-add-button cartButton" value="Quick Add" data-product-id="'.$row['product_id'].'">
+                            <input type="button" class="quick-add-button cartButton" value="Quick Add" data-product-id="'.$row['product_id'].'" '.(!isset($_SESSION['user_id']) ? requires_auth_attr(false) : '').'>
                         </div>';
                 }
             ?>
@@ -191,7 +197,7 @@ require_once __DIR__ . '/../app/restrict_admin.php';
                                 <span class="discountPrice">RM '.$row['price'].'</span>
                                 </div>  
                             </a>
-                            <input type="button" class="quick-add-button cartButton" value="Quick Add" data-product-id="'.$row['product_id'].'">
+                            <input type="button" class="quick-add-button cartButton" value="Quick Add" data-product-id="'.$row['product_id'].'" '.(!isset($_SESSION['user_id']) ? requires_auth_attr(false) : '').'>
                            </div>';
                 }
             ?>
@@ -265,7 +271,7 @@ require_once __DIR__ . '/../app/restrict_admin.php';
                                 <div class="jerseyPrice">RM '.$row['price'].'</div>
                             </div>
                         </a>
-                        <input type="button" class="quick-add-button cartButton" value="Quick Add" data-product-id="'.$row['product_id'].'">
+                        <input type="button" class="quick-add-button cartButton" value="Quick Add" data-product-id="'.$row['product_id'].'" '.(!isset($_SESSION['user_id']) ? requires_auth_attr(false) : '').'>
                     </div>';
                 }
             ?> 
@@ -446,24 +452,21 @@ require_once __DIR__ . '/../app/restrict_admin.php';
             quickAddButtons.forEach(button => {
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const productId = this.getAttribute('data-product-id');
-                    quickAddToCart(productId);
+                    // If the button has data-requires-auth="true", the auth-notification.js will handle it
+                    // Only proceed with adding to cart if authentication is not required
+                    if (!this.hasAttribute('data-requires-auth')) {
+                        const productId = this.getAttribute('data-product-id');
+                        quickAddToCart(productId, this);
+                    }
                 });
             });
             
-            function quickAddToCart(productId) {
-                // Check if user is logged in
-                <?php if(!isset($_SESSION['user_id'])): ?>
-                    window.location.href = '../login/login.php?redirect=' + encodeURIComponent(window.location.href);
-                    return;
-                <?php endif; ?>
-                
-                // Get the button element that was clicked
-                const button = event.target;
+            function quickAddToCart(productId, button) {
+                // Get the original button text
                 const originalText = button.value;
                 
                 // First, fetch product sizes to handle products like shoes that require specific sizes
-                fetch('../api/product_sizes.php?product_id=' + encodeURIComponent(productId))
+                fetch('../api/product_sizes.php?product_id=' + encodeURIComponent(productId) + '&add_to_cart=true')
                 .then(response => response.json())
                 .then(data => {
                     if (!data.success) {
@@ -519,9 +522,16 @@ require_once __DIR__ . '/../app/restrict_admin.php';
                 .then(response => {
                     if (!response.ok) {
                         if (response.status === 401) {
-                            // Redirect to login if unauthorized
-                            window.location.href = '../login/login.php?redirect=' + encodeURIComponent(window.location.href);
-                            throw new Error('Please login to add items to your cart');
+                            // Show login modal instead of redirecting
+                            const loginModal = document.querySelector('.login-modal');
+                            if (loginModal) {
+                                loginModal.style.display = 'block';
+                                throw new Error('Please login to add items to your cart');
+                            } else {
+                                // Fallback to redirect if modal not found
+                                window.location.href = '../login/login.php?redirect=' + encodeURIComponent(window.location.href);
+                                throw new Error('Please login to add items to your cart');
+                            }
                         } else if (response.status === 403) {
                             // Handle CSRF token errors by refreshing the page
                             window.location.reload();

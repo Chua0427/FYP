@@ -6,12 +6,10 @@ require_once __DIR__ . '/db.php';
 require __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/csrf.php';
 
+
 // Initialize session if not already started
-if (isset($GLOBALS['session_started']) || session_status() === PHP_SESSION_ACTIVE) {
-    // Session already started in init.php or elsewhere
-} else if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+ensure_session_started();
+
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -19,61 +17,70 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+
 $user_id = $_SESSION['user_id'];
 $error = null;
 $success = null;
 $csrf_token = generateCsrfToken();
+
 
 // Debug log function for stock updates
 function debug_log($message, $data = []) {
     $log_file = __DIR__ . '/logs/stock_update_debug.log';
     $timestamp = date('Y-m-d H:i:s');
     $log_message = "[$timestamp] $message";
-    
+   
     if (!empty($data)) {
         $log_message .= " - " . json_encode($data);
     }
-    
+   
     $log_message .= PHP_EOL;
-    
+   
     // Create logs directory if it doesn't exist
     $log_dir = dirname($log_file);
     if (!file_exists($log_dir)) {
         mkdir($log_dir, 0777, true);
     }
-    
+   
     // Append to log file
     file_put_contents($log_file, $log_message, FILE_APPEND);
 }
 
+
 try {
     // Initialize Database
     $db = new Database();
-    
-    // Check if cart is empty
+   
+    // Clear any previous checkout data to ensure fresh totals
+    unset($_SESSION['checkout_cart_items'], $_SESSION['checkout_total_price']);
+   
+    // Fetch fresh cart items - Fix the cart fetching issue
     $cartItems = $db->fetchAll(
         "SELECT c.*, p.product_name, p.price, p.discount_price, p.product_img1, p.brand,
-         CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price
-         FROM cart c 
-         JOIN product p ON c.product_id = p.product_id 
-         WHERE c.user_id = ?",
+         CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price,
+         s.stock
+         FROM cart c
+         JOIN product p ON c.product_id = p.product_id
+         JOIN stock s ON c.product_id = s.product_id AND c.product_size = s.product_size
+         WHERE c.user_id = ?
+         ORDER BY c.added_at DESC",
         [$user_id]
     );
-    
+   
     if (empty($cartItems)) {
         throw new Exception("Your cart is empty. Please add items before proceeding to checkout.");
     }
-    
+   
     // Get user details for shipping
     $user = $db->fetchOne(
         "SELECT * FROM users WHERE user_id = ?",
         [$user_id]
     );
-    
+   
     if (!$user) {
         throw new Exception("User information not found");
     }
-    
+   
     // Process form submission - Collect shipping address and continue to payment methods
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_order']) && isset($_POST['csrf_token'])) {
         // Validate CSRF token
@@ -81,57 +88,70 @@ try {
             throw new Exception("Invalid form submission. Please try again.");
         }
 
+
         // Validate shipping address
         $shipping_address = isset($_POST['shipping_address']) ? trim($_POST['shipping_address']) : '';
         if (empty($shipping_address)) {
             throw new Exception("Shipping address is required");
         }
 
+
         // Store shipping address in session for use in payment process
         $_SESSION['checkout_shipping_address'] = $shipping_address;
-        
+       
         // Calculate cart total for display on payment page
         $totalPrice = 0;
         foreach ($cartItems as $item) {
             $totalPrice += $item['final_price'] * $item['quantity'];
         }
         $_SESSION['checkout_total_price'] = $totalPrice;
-        
+       
         // Store selected cart items in session
         $_SESSION['checkout_cart_items'] = $cartItems;
-        
+       
         // Log checkout step
-        $GLOBALS['logger']->info('User proceeded to payment selection', [
-            'user_id' => $user_id
-        ]);
-        
+        if (isset($GLOBALS['logger'])) {
+            $GLOBALS['logger']->info('User proceeded to payment selection', [
+                'user_id' => $user_id
+            ]);
+        }
+       
         // Redirect to payment selection page
         header("Location: payment_methods.php");
         exit;
     }
-    
+   
 } catch (Exception $e) {
     $error = $e->getMessage();
-    
+   
     // Log error
     error_log("Checkout error: " . $e->getMessage());
 }
+
 
 // Function to format price
 function formatPrice($price) {
     return 'RM ' . number_format((float)$price, 2);
 }
 
-// Prepare cart data for display
-$items = $cartItems;
+
+// Prepare cart data for display - Fix the display issue
+$items = $cartItems ?? [];
 $totalItems = 0;
 $totalPrice = 0;
+$totalOriginalPrice = 0;
+
 
 foreach ($items as $item) {
     $totalItems += $item['quantity'];
     $totalPrice += $item['final_price'] * $item['quantity'];
+    $totalOriginalPrice += $item['price'] * $item['quantity'];
 }
+
+
+$totalDiscount = $totalOriginalPrice - $totalPrice;
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -145,21 +165,89 @@ foreach ($items as $item) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
+
     <meta name="csrf-token" content="<?php echo htmlspecialchars($csrf_token); ?>">
+    <style>
+        /* Empty cart styling */
+        .empty-cart-message {
+            text-align: center;
+            padding: 40px 20px;
+            border: 1px dashed #ddd;
+            border-radius: 8px;
+            margin: 20px 0;
+            background-color: #f9f9f9;
+        }
+       
+        .empty-cart-message p {
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #555;
+        }
+       
+        .empty-cart-message a.return-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #116dfa;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+       
+        .empty-cart-message a.return-link:hover {
+            background-color: #0056b3;
+        }
+       
+        .error-message {
+            text-align: center;
+            padding: 30px;
+            margin: 20px 0;
+            background-color: #fff;
+            border: 1px solid #f8d7da;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+       
+        .error-message p {
+            margin-top: 20px;
+        }
+       
+        .btn.btn-primary {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #116dfa;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+       
+        .btn.btn-primary:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
     <div class="page-container">
         <?php include __DIR__ . '/../Header_and_Footer/header.php'; ?>
-        
+       
         <main>
             <div class="checkout-container">
                 <h1>Checkout</h1>
-                
+               
                 <?php if ($error): ?>
                     <div class="error-message">
                         <?php echo htmlspecialchars($error); ?>
-                        <p style="margin-top: 10px;">
-                            <a href="../order/cart.php" class="return-link">Return to Cart</a>
+                        <p style="margin-top: 20px;">
+                            <?php if (stripos($error, "cart is empty") !== false): ?>
+                                <a href="../HomePage/homePage.php" class="btn btn-primary">Continue Shopping</a>
+                            <?php else: ?>
+                                <a href="../order/cart.php" class="return-link">Return to Cart</a>
+                            <?php endif; ?>
                         </p>
                     </div>
                 <?php elseif ($success): ?>
@@ -167,9 +255,9 @@ foreach ($items as $item) {
                         <?php echo htmlspecialchars($success); ?>
                     </div>
                 <?php else: ?>
-                    <form method="post" id="checkout-form">
+                    <form method="post" id="checkout-form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" onsubmit="return validateCheckoutForm(this);">
                         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
-                        
+                       
                         <div class="checkout-grid">
                             <div class="checkout-details">
                                 <section class="shipping-section">
@@ -178,58 +266,91 @@ foreach ($items as $item) {
                                         <label for="full_name">Full Name</label>
                                         <input type="text" id="full_name" name="full_name" value="<?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?>" readonly>
                                     </div>
-                                    
+                                   
                                     <div class="form-group">
                                         <label for="email">Email</label>
                                         <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" readonly>
                                     </div>
-                                    
+                                   
                                     <div class="form-group">
                                         <label for="phone">Phone</label>
-                                        <input type="tel" id="phone" name="phone" value="<?php echo htmlspecialchars($user['mobile_number']); ?>" readonly>
+                                        <input type="tel" id="phone" name="phone" value="<?php echo htmlspecialchars($user['mobile_number'] ?? ''); ?>" readonly>
                                     </div>
-                                    
+                                   
                                     <div class="form-group">
                                         <label for="shipping_address">Shipping Address</label>
-                                        <textarea id="shipping_address" name="shipping_address" required><?php echo htmlspecialchars($user['address'] . ', ' . $user['city'] . ', ' . $user['postcode'] . ', ' . $user['state']); ?></textarea>
+                                        <textarea id="shipping_address" name="shipping_address" required><?php
+                                            $address_parts = array_filter([
+                                                $user['address'] ?? '',
+                                                $user['city'] ?? '',
+                                                $user['postcode'] ?? '',
+                                                $user['state'] ?? ''
+                                            ]);
+                                            echo htmlspecialchars(implode(', ', $address_parts));
+                                        ?></textarea>
                                         <p class="help-text">You can edit your shipping address if needed</p>
                                     </div>
                                 </section>
-                                
+                               
                                 <section class="payment-section">
                                     <h2>Next Step: Payment</h2>
                                     <p>After confirming your order, you will be directed to select your payment method.</p>
                                 </section>
-                                
+                               
                                 <div class="button-container">
                                     <button type="submit" name="create_order" class="btn btn-primary">Continue to Payment</button>
                                     <a href="../order/cart.php" class="return-link">Return to Cart</a>
                                 </div>
                             </div>
-                            
+                           
                             <div class="order-summary">
                                 <h2>Order Summary</h2>
-                                
-                                <?php foreach ($items as $item): ?>
-                                    <div class="order-item">
-                                        <div class="item-details">
-                                            <p class="item-name"><?php echo htmlspecialchars($item['product_name']); ?></p>
-                                            <p class="item-quantity">Size: <?php echo htmlspecialchars($item['product_size']); ?> | Qty: <?php echo htmlspecialchars((string)$item['quantity']); ?></p>
+                               
+                                <div id="order-items-container">
+                                    <?php if (!empty($items)): ?>
+                                        <?php foreach ($items as $item): ?>
+                                            <div class="order-item" data-cart-id="<?php echo htmlspecialchars((string)$item['cart_id']); ?>">
+                                                <div class="item-image">
+                                                    <img src="<?php echo '../../upload/' . htmlspecialchars($item['product_img1']); ?>"
+                                                         alt="<?php echo htmlspecialchars($item['product_name']); ?>"
+                                                         style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
+                                                </div>
+                                                <div class="item-details">
+                                                    <p class="item-name"><?php echo htmlspecialchars($item['product_name']); ?></p>
+                                                    <p class="item-brand"><?php echo htmlspecialchars($item['brand']); ?></p>
+                                                    <p class="item-quantity">Size: <?php echo htmlspecialchars($item['product_size']); ?> | Qty: <?php echo htmlspecialchars((string)$item['quantity']); ?></p>
+                                                </div>
+                                                <div class="item-price">
+                                                    <?php
+                                                    $itemPrice = $item['final_price'] * $item['quantity'];
+                                                    echo formatPrice($itemPrice);
+                                                    ?>
+                                                    <?php if (isset($item['discount_price']) && $item['discount_price'] > 0 && $item['discount_price'] < $item['price']): ?>
+                                                        <div class="original-price">
+                                                            <?php echo formatPrice($item['price'] * $item['quantity']); ?>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <div class="empty-cart-message">
+                                            <p>No items in cart</p>
                                         </div>
-                                        <p class="item-price">
-                                            <?php 
-                                            $itemPrice = $item['final_price'] * $item['quantity'];
-                                            echo formatPrice($itemPrice); 
-                                            ?>
-                                        </p>
-                                    </div>
-                                <?php endforeach; ?>
-                                
+                                    <?php endif; ?>
+                                </div>
+                               
                                 <div class="summary-totals">
                                     <div class="summary-row">
-                                        <span>Subtotal (<?php echo $totalItems; ?> items)</span>
-                                        <span><?php echo formatPrice($totalPrice); ?></span>
+                                        <span>Subtotal (<span id="checkout-item-count"><?php echo $totalItems; ?></span> items)</span>
+                                        <span id="checkout-subtotal"><?php echo formatPrice($totalOriginalPrice); ?></span>
                                     </div>
+                                    <?php if ($totalDiscount > 0): ?>
+                                    <div class="summary-row discount">
+                                        <span>Total Discount</span>
+                                        <span id="checkout-discount">-<?php echo formatPrice($totalDiscount); ?></span>
+                                    </div>
+                                    <?php endif; ?>
                                     <div class="summary-row">
                                         <span>Sales Tax (6% SST)</span>
                                         <span>Included</span>
@@ -240,13 +361,12 @@ foreach ($items as $item) {
                                     </div>
                                     <div class="summary-row total">
                                         <span>Total</span>
-                                        <span><?php echo formatPrice($totalPrice); ?></span>
+                                        <span id="checkout-total"><?php echo formatPrice($totalPrice); ?></span>
                                     </div>
                                     <div class="billing-note">
                                         <p>* All prices are in Malaysian Ringgit (MYR)</p>
                                         <p>* 6% Sales and Service Tax (SST) is included in all listed prices</p>
                                         <p>* Free shipping for all domestic orders</p>
-                                        <p>* International shipping rates will be calculated at checkout</p>
                                     </div>
                                 </div>
                             </div>
@@ -255,8 +375,200 @@ foreach ($items as $item) {
                 <?php endif; ?>
             </div>
         </main>
-        
+       
         <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
     </div>
+   
+    <script>
+      // Enhanced cart data fetching with robust error handling
+      function fetchCheckoutSummary() {
+        fetch('../api/get_cart_data.php', {
+          credentials: 'same-origin',
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+          }
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data && data.success) {
+            updateCheckoutDisplay(data);
+          } else {
+            console.error('Failed to fetch cart data:', data?.error || 'Unknown error');
+            showErrorMessage('Failed to update cart summary. Please refresh the page.');
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching cart summary:', error);
+          showErrorMessage('Network error while updating cart. Please refresh the page.');
+        });
+      }
+
+
+      function updateCheckoutDisplay(data) {
+        // Ensure we have valid data
+        if (!data || !data.items || !data.summary) {
+          console.error('Invalid cart data structure received');
+          return;
+        }
+
+
+        const items = data.items || [];
+        const summary = data.summary || {};
+       
+        // Destructure summary fields with defaults
+        const totalItems = typeof summary.totalItems === 'number' ? summary.totalItems : 0;
+        const totalOriginalPrice = typeof summary.totalOriginalPrice === 'number' ? summary.totalOriginalPrice : 0;
+        const totalDiscount = typeof summary.totalDiscount === 'number' ? summary.totalDiscount : 0;
+        const totalPrice = typeof summary.totalPrice === 'number' ? summary.totalPrice : 0;
+       
+        // Update cart count in localStorage for header synchronization
+        localStorage.setItem('cartCount', totalItems);
+        // Also update the header cart count if the function exists
+        if (typeof updateCartCountDisplay === 'function') {
+          updateCartCountDisplay(totalItems);
+        }
+       
+        // Update order items container
+        const itemsContainer = document.getElementById('order-items-container');
+        if (!itemsContainer) {
+          console.error('Order items container not found');
+          return;
+        }
+
+
+        if (items.length > 0) {
+          itemsContainer.innerHTML = items.map(item => `
+            <div class="order-item" data-cart-id="${item.cart_id}">
+              <div class="item-image">
+                <img src="../../upload/${item.product_img1}"
+                     alt="${item.product_name}"
+                     style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
+              </div>
+              <div class="item-details">
+                <p class="item-name">${item.product_name}</p>
+                <p class="item-brand">${item.brand}</p>
+                <p class="item-quantity">Size: ${item.product_size} | Qty: ${item.quantity}</p>
+              </div>
+              <div class="item-price">
+                RM ${(item.item_total).toFixed(2)}
+                ${item.discount_price && item.discount_price < item.price ? `
+                  <div class="original-price">RM ${(item.item_original_total).toFixed(2)}</div>
+                ` : ''}
+              </div>
+            </div>
+          `).join('');
+        } else {
+          itemsContainer.innerHTML = '<div class="empty-cart-message"><p>Your cart is empty. Please add items before checkout.</p><p><a href="../HomePage/index.php" class="return-link">Continue Shopping</a></p></div>';
+         
+          // Also disable the checkout button if cart is empty
+          const checkoutButton = document.querySelector('button[name="create_order"]');
+          if (checkoutButton) {
+            checkoutButton.disabled = true;
+          }
+        }
+       
+        // Update summary totals
+        const countEl = document.getElementById('checkout-item-count');
+        const subtotalEl = document.getElementById('checkout-subtotal');
+        const discountEl = document.getElementById('checkout-discount');
+        const discountRow = discountEl ? discountEl.closest('.summary-row') : null;
+        const totalEl = document.getElementById('checkout-total');
+       
+        if (countEl) countEl.textContent = totalItems;
+        if (subtotalEl) subtotalEl.textContent = `RM ${totalOriginalPrice.toFixed(2)}`;
+       
+        if (discountEl && discountRow) {
+          if (totalDiscount > 0) {
+            discountEl.textContent = `-RM ${totalDiscount.toFixed(2)}`;
+            discountRow.style.display = 'flex';
+          } else {
+            discountRow.style.display = 'none';
+          }
+        }
+       
+        if (totalEl) totalEl.textContent = `RM ${totalPrice.toFixed(2)}`;
+      }
+
+
+      function showErrorMessage(message) {
+        // Create or update error message display
+        let errorDiv = document.getElementById('checkout-error-message');
+        if (!errorDiv) {
+          errorDiv = document.createElement('div');
+          errorDiv.id = 'checkout-error-message';
+          errorDiv.className = 'error-message';
+          errorDiv.style.cssText = 'margin: 10px 0; padding: 10px; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 4px;';
+         
+          const container = document.querySelector('.checkout-container');
+          if (container) {
+            container.insertBefore(errorDiv, container.firstChild.nextSibling);
+          }
+        }
+       
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+       
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+          if (errorDiv) {
+            errorDiv.style.display = 'none';
+          }
+        }, 5000);
+      }
+
+
+      // Listen for cart updates from other tabs/windows
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'cartUpdated') {
+          fetchCheckoutSummary();
+        }
+      });
+
+
+      // Refresh cart data when page becomes visible again or after navigation
+      window.addEventListener('pageshow', function(e) {
+        // Always refresh on pageshow as this catches both loads and back/forward navigation
+        fetchCheckoutSummary();
+       
+        // Clear the localStorage flag
+        if (localStorage.getItem('cartUpdated')) {
+          localStorage.removeItem('cartUpdated');
+        }
+      });
+
+
+      // Initial load
+      document.addEventListener('DOMContentLoaded', function() {
+        // Always fetch cart data, even if the server-side HTML shows empty
+        // This ensures we have the latest data and corrects any session inconsistencies
+        fetchCheckoutSummary();
+      });
+
+
+      // Basic form validation and button feedback
+      function validateCheckoutForm(form) {
+        const shippingAddress = document.getElementById('shipping_address');
+        if (!shippingAddress || !shippingAddress.value.trim()) {
+          showErrorMessage('Please enter a shipping address');
+          return false;
+        }
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+
+          submitBtn.textContent = 'Processing...';
+        }
+        return true;
+      
+      }
+    </script>
 </body>
-</html> 
+</html>
+
