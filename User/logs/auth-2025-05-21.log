@@ -1,5 +1,0 @@
-[2025-05-21T01:47:47.344137+02:00] auth.INFO: User login without Remember Me {"user_id":53,"email":"sohxj0802@gmail.com","ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"} []
-[2025-05-21T01:47:47.467347+02:00] auth.INFO: User login {"user_id":53,"email":"sohxj0802@gmail.com","ip":"::1"} []
-[2025-05-21T01:47:52.103511+02:00] auth.INFO: User logout {"user_id":53,"email":"sohxj0802@gmail.com","ip":"::1"} []
-[2025-05-21T05:55:44.523643+02:00] auth.INFO: User login without Remember Me {"user_id":53,"email":"sohxj0802@gmail.com","ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"} []
-[2025-05-21T05:55:44.528204+02:00] auth.INFO: User login {"user_id":53,"email":"sohxj0802@gmail.com","ip":"::1"} []

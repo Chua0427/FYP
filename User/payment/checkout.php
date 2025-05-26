@@ -310,11 +310,6 @@ $totalDiscount = $totalOriginalPrice - $totalPrice;
                                     <?php if (!empty($items)): ?>
                                         <?php foreach ($items as $item): ?>
                                             <div class="order-item" data-cart-id="<?php echo htmlspecialchars((string)$item['cart_id']); ?>">
-                                                <div class="item-image">
-                                                    <img src="<?php echo '../../upload/' . htmlspecialchars($item['product_img1']); ?>"
-                                                         alt="<?php echo htmlspecialchars($item['product_name']); ?>"
-                                                         style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
-                                                </div>
                                                 <div class="item-details">
                                                     <p class="item-name"><?php echo htmlspecialchars($item['product_name']); ?></p>
                                                     <p class="item-brand"><?php echo htmlspecialchars($item['brand']); ?></p>
@@ -447,11 +442,6 @@ $totalDiscount = $totalOriginalPrice - $totalPrice;
         if (items.length > 0) {
           itemsContainer.innerHTML = items.map(item => `
             <div class="order-item" data-cart-id="${item.cart_id}">
-              <div class="item-image">
-                <img src="../../upload/${item.product_img1}"
-                     alt="${item.product_name}"
-                     style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
-              </div>
               <div class="item-details">
                 <p class="item-name">${item.product_name}</p>
                 <p class="item-brand">${item.brand}</p>
