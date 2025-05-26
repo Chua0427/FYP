@@ -29,6 +29,7 @@ ini_set('error_log', $logDir . '/php_errors.log');
 
 // Import necessary libraries
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
+require_once __DIR__ . '/session_helper.php';
 
 // Initialize Monolog for structured logging
 use Monolog\Logger;
@@ -83,6 +84,22 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Store that we've already started a session in a global
 $GLOBALS['session_started'] = true;
+
+/**
+ * Helper function to safely ensure a session is started.
+ * Can be called multiple times safely.
+ */
+function ensure_session_started(): void {
+    if (!isset($GLOBALS['session_started']) && session_status() === PHP_SESSION_NONE) {
+        // Configure session for better performance
+        ini_set('session.use_strict_mode', '1');
+        ini_set('session.use_cookies', '1');
+        ini_set('session.use_only_cookies', '1');
+        ini_set('session.cache_limiter', $GLOBALS['isProduction'] ? 'nocache' : 'private');
+        session_start();
+        $GLOBALS['session_started'] = true;
+    }
+}
 
 // Set up specialized loggers with optimized settings
 
