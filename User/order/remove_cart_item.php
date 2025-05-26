@@ -20,11 +20,7 @@ header('Cache-Control: post-check=0, pre-check=0', false);
 header('Pragma: no-cache');
 
 // Initialize session if not already started
-if (isset($GLOBALS['session_started']) || session_status() === PHP_SESSION_ACTIVE) {
-    // Session already started in init.php or elsewhere
-} else if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+ensure_session_started();
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -111,10 +107,16 @@ try {
         [$cart_id, $user_id]
     );
     
-    // Get updated cart count after removal
+    // Get updated cart total quantity after removal
     $cartCount = $db->fetchOne(
-        "SELECT COUNT(*) as count FROM cart WHERE user_id = ?", 
+        "SELECT COALESCE(SUM(quantity), 0) as count FROM cart WHERE user_id = ?", 
         [$user_id]
+    );
+    
+    // Clear any stored checkout session data so summaries reload correctly
+    unset(
+        $_SESSION['checkout_cart_items'],
+        $_SESSION['checkout_total_price']
     );
     
     $db->commit();

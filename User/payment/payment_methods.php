@@ -6,7 +6,8 @@ require_once __DIR__ . '/db.php';
 require __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/csrf.php';
 
-session_start();
+// Ensure session is started safely
+ensure_session_started();
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -19,11 +20,8 @@ $error = null;
 $success = null;
 $csrf_token = generateCsrfToken();
 
-// Ensure we have shipping address from checkout
-if (!isset($_SESSION['checkout_shipping_address']) || empty($_SESSION['checkout_shipping_address'])) {
-    header('Location: checkout.php');
-    exit;
-}
+// Clear any previous checkout cart data to stay in sync
+unset($_SESSION['checkout_cart_items'], $_SESSION['checkout_total_price']);
 
 // Get shipping address from session
 $shipping_address = $_SESSION['checkout_shipping_address'];
