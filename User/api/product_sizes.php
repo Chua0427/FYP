@@ -5,8 +5,22 @@ require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once '/xampp/htdocs/FYP/FYP/User/payment/db.php';
 require_once __DIR__ . '/../app/init.php';
 
+// Start session if not already started
+if (!isset($GLOBALS['session_started']) && session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Set content type to JSON
 header('Content-Type: application/json');
+
+// Check authentication if add_to_cart parameter is present
+if (isset($_GET['add_to_cart']) && $_GET['add_to_cart'] === 'true') {
+    if (!isset($_SESSION['user_id'])) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'error' => 'User not logged in']);
+        exit;
+    }
+}
 
 try {
     // Validate product ID

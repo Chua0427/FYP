@@ -16,6 +16,13 @@ header('Content-Type: application/json');
 // Initialize request ID for logging
 $request_id = uniqid('cart_', true);
 
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'error' => 'User not logged in']);
+    exit;
+}
+
 // Verify user authentication and CSRF token
 try {
     $user = requireApiAuth(); // This will exit with 401 if not authenticated
@@ -73,7 +80,7 @@ try {
             
             // Get updated cart count
             $cart_count = $db->fetchOne(
-                "SELECT COUNT(*) as count FROM cart WHERE user_id = ?", 
+                "SELECT COALESCE(SUM(quantity), 0) as count FROM cart WHERE user_id = ?", 
                 [$user_id]
             );
             
@@ -245,7 +252,7 @@ try {
         
         // Only make DB call if needed
         $cart_count = $db->fetchOne(
-            "SELECT COUNT(*) as count FROM cart WHERE user_id = ?", 
+            "SELECT COALESCE(SUM(quantity), 0) as count FROM cart WHERE user_id = ?", 
             [$user_id]
         );
         
