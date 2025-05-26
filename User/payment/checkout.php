@@ -167,69 +167,6 @@ $totalDiscount = $totalOriginalPrice - $totalPrice;
 
 
     <meta name="csrf-token" content="<?php echo htmlspecialchars($csrf_token); ?>">
-    <style>
-        /* Empty cart styling */
-        .empty-cart-message {
-            text-align: center;
-            padding: 40px 20px;
-            border: 1px dashed #ddd;
-            border-radius: 8px;
-            margin: 20px 0;
-            background-color: #f9f9f9;
-        }
-       
-        .empty-cart-message p {
-            margin-bottom: 15px;
-            font-size: 16px;
-            color: #555;
-        }
-       
-        .empty-cart-message a.return-link {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #116dfa;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: 500;
-            transition: background-color 0.3s;
-        }
-       
-        .empty-cart-message a.return-link:hover {
-            background-color: #0056b3;
-        }
-       
-        .error-message {
-            text-align: center;
-            padding: 30px;
-            margin: 20px 0;
-            background-color: #fff;
-            border: 1px solid #f8d7da;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-       
-        .error-message p {
-            margin-top: 20px;
-        }
-       
-        .btn.btn-primary {
-            display: inline-block;
-            padding: 12px 24px;
-            background-color: #116dfa;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: 500;
-            transition: background-color 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-       
-        .btn.btn-primary:hover {
-            background-color: #0056b3;
-        }
-    </style>
 </head>
 <body>
     <div class="page-container">
