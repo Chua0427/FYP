@@ -178,7 +178,7 @@
         <p>VeroSports has the right to change this policy at any time. This policy is not a contract, nor does it suggest any obligation on our party with another party. In the event of any conflict of interpretation between English and Bahasa Malaysia Policy, the English version shall prevail.</p>
         
         <h2>12. Contact</h2>
-        <p>You may contact VeroSports in connection with this Policy at our customer service Department at: <a href="mailto:verosports11@gmail.com">verosports11@gmail.com</a>.</p>
+        <p>You may contact VeroSports in connection with this Policy at our customer service Department at: support@verosports.com.</p>
         
         <p><strong>END OF POLICY</strong></p>
     </div>

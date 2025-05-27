@@ -124,7 +124,7 @@
         
         <div class="highlight">
             <p><strong>Hubungan Khidmat Pelanggan:</strong><br>
-            Emel: verosports11@gmail.com<br>
+            Emel: support@verosports.com<br>
             Tol Percuma: 1800-22-8188<br>
             Waktu Operasi: Isnin hingga Jumaat 9.00 PG - 6.00 PTG<br>
             Masa Respon: 3-4 hari bekerja</p>
