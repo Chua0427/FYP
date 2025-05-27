@@ -184,7 +184,7 @@ $current_user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
         
         .container {
             max-width: 1000px;
-            margin: 0px auto 80px auto;
+            margin: 0px auto 150px auto;
             padding: 0 20px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             position: relative;
