@@ -13,45 +13,69 @@ if (isset($_POST['reset'])) {
     $new_password = $_POST['new_password'];
     $confirm_password = $_POST['confirm_password'];
     
+    // 新增密码复杂度验证
+    $passwordError = [];
+    
     if ($new_password !== $confirm_password) {
+        $passwordError[] = "Passwords do not match";
+    }
+    if (strlen($new_password) < 8) {
+        $passwordError[] = "Password must be at least 8 characters";
+    }
+    if (!preg_match('/[A-Z]/', $new_password)) {
+        $passwordError[] = "Password must contain at least one uppercase letter";
+    }
+    if (!preg_match('/[0-9]/', $new_password)) {
+        $passwordError[] = "Password must contain at least one number";
+    }
+    if (!preg_match('/[!@#$%^&*(),.?":{}|<>]/', $new_password)) {
+        $passwordError[] = "Password must contain at least one special character";
+    }
+
+    if (!empty($passwordError)) {
+        $errorList = implode("<br>", $passwordError);
         $message = '<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="fas fa-exclamation-circle me-2"></i> Passwords do not match.
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>';
-    } else if (strlen($new_password) < 8) {
-        $message = '<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="fas fa-exclamation-circle me-2"></i> Password must be at least 8 characters long.
+                        <i class="fas fa-exclamation-circle me-2"></i>'.$errorList.'
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>';
     } else {
         // Hash the new password
         $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
         
-        // Update password in database
+        // 使用预处理语句防止SQL注入
         $servername = "localhost";
         $username = "root";
         $password = "";
         $dbname = "verosports";
         
-        $connect = new mysqli($servername, $username, $password, $dbname);
-        
-        $sql = "UPDATE users SET password = '$hashed_password' WHERE email = '$email'";
-        
-        if ($connect->query($sql)) {
-            // Clear session and redirect to login
-            session_unset();
-            session_destroy();
-            header("Location: ../login/login.php?reset=success");
-            exit();
-        } else {
+        try {
+            $connect = new mysqli($servername, $username, $password, $dbname);
+            
+            $sql = "UPDATE users SET password = ? WHERE email = ?";
+            $stmt = $connect->prepare($sql);
+            $stmt->bind_param("ss", $hashed_password, $email);
+            
+            if ($stmt->execute()) {
+                session_unset();
+                session_destroy();
+                header("Location: ../login/login.php?reset=success");
+                exit();
+            } else {
+                $message = '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i> Error updating password
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>';
+            }
+        } catch (Exception $e) {
             $message = '<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="fas fa-exclamation-circle me-2"></i> Error updating password. Please try again.
+                            <i class="fas fa-exclamation-circle me-2"></i> Database error
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>';
         }
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -477,6 +501,20 @@ if (isset($_POST['reset'])) {
                 matchText.style.color = 'var(--danger-color)';
             }
         });
+        document.querySelector('form').addEventListener('submit', function(e) {
+    const password = document.getElementById('new_password').value;
+    const errors = [];
+    
+    if (password.length < 8) errors.push("Minimum 8 characters");
+    if (!/[A-Z]/.test(password)) errors.push("At least one uppercase letter");
+    if (!/[0-9]/.test(password)) errors.push("At least one number");
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) errors.push("At least one special character");
+    
+    if (errors.length > 0) {
+        e.preventDefault();
+        alert("Password requirements not met:\n" + errors.join('\n'));
+    }
+});
     </script>
 </body>
 </html>

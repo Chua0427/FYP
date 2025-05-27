@@ -11,6 +11,28 @@ if ($conn->connect_error) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // 新增密码复杂度验证
+    $raw_password = $_POST["password"];
+    $passwordError = null;
+    
+    if (strlen($raw_password) < 8) {
+        $passwordError = "Password must be at least 8 characters";
+    } elseif (!preg_match("/[A-Z]/", $raw_password)) {
+        $passwordError = "Password must contain at least one uppercase letter";
+    } elseif (!preg_match("/\d/", $raw_password)) {
+        $passwordError = "Password must contain at least one number";
+    } elseif (!preg_match("/[!@#$%^&*(),.?\":{}|<>]/", $raw_password)) {
+        $passwordError = "Password must contain at least one special character";
+    }
+
+    if ($passwordError) {
+        die("<script>
+            alert('Password Error: $passwordError');
+            window.history.back();
+            </script>");
+    }
+}
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $first_name = $_POST["first_name"];
     $last_name = $_POST["last_name"];
     $email = $_POST["email"];

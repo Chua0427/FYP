@@ -14,81 +14,88 @@ function togglePassword(inputId, icon) {
 // Password strength checker with requirement icons
 document.getElementById('new_password').addEventListener('input', function() {
     const password = this.value;
+    const strengthContainer = document.querySelector('.password-strength');
     const strengthText = document.getElementById('strengthText');
     const bars = document.querySelectorAll('.strength-bar');
     
-    // Reset all bars
+    // Get requirement icons
+    const lengthIcon = document.querySelector('#lengthReq i');
+    const uppercaseIcon = document.querySelector('#uppercaseReq i'); 
+    const numberIcon = document.querySelector('#numberReq i');
+    const specialIcon = document.querySelector('#specialReq i');
+    
+    // Reset all states
+    [lengthIcon, uppercaseIcon, numberIcon, specialIcon].forEach(icon => {
+        icon.className = 'fas fa-circle';
+    });
     bars.forEach(bar => {
         bar.style.width = '0%';
         bar.className = 'strength-bar';
     });
-    
-    // Get requirement icons
-    const lengthIcon = document.querySelector('#lengthReq i');
-    const numberIcon = document.querySelector('#numberReq i');
-    const specialIcon = document.querySelector('#specialReq i');
-    
+
     if (password.length === 0) {
-        strengthText.textContent = 'Password Strength: ';
-        // Reset all icons to circle
-        lengthIcon.className = 'fas fa-circle';
-        numberIcon.className = 'fas fa-circle';
-        specialIcon.className = 'fas fa-circle';
+        strengthContainer.style.display = 'none';
         return;
+    } else {
+        strengthContainer.style.display = 'block';
     }
-    
-    // Check requirements and update icons
+
+    // Update requirement icons
     // Length requirement
     if (password.length >= 8) {
         lengthIcon.className = 'fas fa-check';
-    } else {
-        lengthIcon.className = 'fas fa-circle';
     }
+    
+    // Uppercase requirement
+    if (/[A-Z]/.test(password)) {
+    console.log('检测到大写字母'); // 调试用
+    uppercaseIcon.className = 'fas fa-check';
+}
     
     // Number requirement
     if (/\d/.test(password)) {
         numberIcon.className = 'fas fa-check';
-    } else {
-        numberIcon.className = 'fas fa-circle';
     }
     
     // Special character requirement
     if (/[^A-Za-z0-9]/.test(password)) {
         specialIcon.className = 'fas fa-check';
-    } else {
-        specialIcon.className = 'fas fa-circle';
     }
-    
-    // Calculate strength
+
+    // Calculate strength (0-4)
     let strength = 0;
-    if (password.length >= 8) strength += 1;
-    if (/[A-Z]/.test(password)) strength += 1;
-    if (/[0-9]/.test(password)) strength += 1;
-    if (/[^A-Za-z0-9]/.test(password)) strength += 1;
-    
-    // Update UI
+    if (password.length >= 8) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/\d/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+    // Update strength meter
     let strengthLabel = '';
     let strengthClass = '';
     
     if (strength <= 1) {
         strengthLabel = 'Weak';
         strengthClass = 'weak';
-        bars[0].style.width = '33%';
+        bars[0].style.width = '25%';
     } else if (strength <= 2) {
         strengthLabel = 'Medium';
         strengthClass = 'medium';
-        bars[0].style.width = '33%';
-        bars[1].style.width = '33%';
-    } else {
+        bars[0].style.width = '25%';
+        bars[1].style.width = '25%';
+    } else if (strength <= 3) {
         strengthLabel = 'Strong';
         strengthClass = 'strong';
-        bars[0].style.width = '33%';
-        bars[1].style.width = '33%';
-        bars[2].style.width = '33%';
+        bars[0].style.width = '25%';
+        bars[1].style.width = '25%';
+        bars[2].style.width = '25%';
+    } else {
+        strengthLabel = 'Very Strong';
+        strengthClass = 'very-strong';
+        bars.forEach(bar => bar.style.width = '25%');
     }
-    
+
     strengthText.textContent = `Password Strength: ${strengthLabel}`;
-    bars.forEach(bar => {
+    bars.forEach((bar, index) => {
         if (bar.style.width !== '0%') {
             bar.classList.add(strengthClass);
         }
@@ -113,21 +120,32 @@ document.getElementById('confirm_password').addEventListener('input', function()
     }
 });
 
-// Form validation
+// Enhanced form validation
 document.getElementById('passwordForm').addEventListener('submit', function(e) {
     const newPassword = document.getElementById('new_password').value;
     const confirmPassword = document.getElementById('confirm_password').value;
+    const errorMessages = [];
     
-    if (newPassword !== confirmPassword) {
-        alert('Passwords do not match');
-        e.preventDefault();
-        return;
-    }
-    
+    // Validation checks
     if (newPassword.length < 8) {
-        alert('Password must be at least 8 characters long');
+        errorMessages.push('Password must be at least 8 characters');
+    }
+    if (!/[A-Z]/.test(newPassword)) {
+        errorMessages.push('Must contain at least one uppercase letter');
+    }
+    if (!/\d/.test(newPassword)) {
+        errorMessages.push('Must contain at least one number');
+    }
+    if (!/[^A-Za-z0-9]/.test(newPassword)) {
+        errorMessages.push('Must contain at least one special character');
+    }
+    if (newPassword !== confirmPassword) {
+        errorMessages.push('Passwords do not match');
+    }
+
+    // Prevent submission if errors
+    if (errorMessages.length > 0) {
         e.preventDefault();
-        return;
+        alert('Please fix the following issues:\n\n- ' + errorMessages.join('\n- '));
     }
 });
-

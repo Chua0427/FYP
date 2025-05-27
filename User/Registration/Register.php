@@ -25,7 +25,7 @@
                 <div class="form-group">
                     <label for="email">Email Address</label>
                     <input type="email" id="email" name="email" required placeholder="your.email@example.com">
-                    <span id="emailError" class="password-feedback invalid">Please enter a valid email address</span>
+                    <span id="emailError" class="email-feedback invalid">Please enter a valid email address</span>
                 </div>
                 <div class="form-group">
                     <label for="mobile_number">Mobile Number</label>
@@ -38,6 +38,7 @@
                         <input type="password" id="password" name="password" minlength="8" required placeholder="Create a strong password">
                         <i class="fa-solid fa-eye" id="togglePassword"></i>
                     </div>
+                    <span class="password-feedback" id="passwordFeedback"></span>
                     <div class="password-strength">
                         <span class="strength-text">Password Strength:</span>
                         <div class="strength-bars">
@@ -138,24 +139,6 @@
     <script src="Registration.js"></script>
 
     <script>
-        // Password visibility toggle
-        const togglePassword = document.querySelector('#togglePassword');
-        const toggleConfirmPassword = document.querySelector('#toggleConfirmPassword');
-        const password = document.querySelector('#password');
-        const confirmPassword = document.querySelector('#confirmPassword');
-
-        togglePassword.addEventListener('click', function() {
-            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-            password.setAttribute('type', type);
-            this.classList.toggle('fa-eye-slash');
-        });
-
-        toggleConfirmPassword.addEventListener('click', function() {
-            const type = confirmPassword.getAttribute('type') === 'password' ? 'text' : 'password';
-            confirmPassword.setAttribute('type', type);
-            this.classList.toggle('fa-eye-slash');
-        });
-
         // Password strength checker
         password.addEventListener('input', function() {
             const value = this.value;
