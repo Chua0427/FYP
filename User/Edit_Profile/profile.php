@@ -44,12 +44,12 @@ $user_type_label = $user_types[$user['user_type']] ?? 'Unknown';
             <div class="profile-image-container">
             <?php
 
-             $upload_dir = '../upload/';
+             $upload_dir = '../../upload/';
     
             if (!empty($user['profile_image']) && file_exists($upload_dir . $user['profile_image'])) {
             echo '<img src="' . $upload_dir . htmlspecialchars($user['profile_image']) . '" alt="Profile Image" class="profile-image">';
             } else {
-            echo '<div class="default-profile"><i class="fas fa-user"></i></div>';}
+            echo '<div><img src="../../upload/default.jpg" class="profile-image"></div>';}
             ?>
             </div>
             <div class="profile-info">

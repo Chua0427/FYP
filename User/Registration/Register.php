@@ -124,11 +124,6 @@
                         </label>
                     </div>
                 </div>
-
-                <div class="form-group full-width">
-                    <label for="profile_image">Profile Picture (Optional)</label>
-                    <input type="file" id="profile_image" name="profile_image" accept="image/*">
-                </div>
             </div>
             <div class="form-actions">
                 <a href="../login/login.php" class="return-btn"><i class="fas fa-arrow-left"></i> Back to Login</a>
