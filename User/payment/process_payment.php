@@ -27,11 +27,7 @@ require_once __DIR__ . '/../app/csrf.php';
 require_once __DIR__ . '/../app/services/OrderService.php';
 
 // Initialize session if not already started
-if (isset($GLOBALS['session_started']) || session_status() === PHP_SESSION_ACTIVE) {
-    // Session already started in init.php or elsewhere
-} else if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+ensure_session_started();
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {

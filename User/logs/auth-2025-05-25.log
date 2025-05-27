@@ -1,7 +1,0 @@
-[2025-05-25T10:35:25.596512+02:00] auth.INFO: OTP generated for login {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1","auth_time":"0.1144"} []
-[2025-05-25T10:35:30.983216+02:00] auth.INFO: OTP sent after redirect {"user_id":44,"email":"kaiwen211105@gmail.com","ip":"::1","send_time":"3.3200"} []
-[2025-05-25T10:36:10.430627+02:00] auth.INFO: User successfully verified OTP and logged in {"email":"kaiwen211105@gmail.com","user_id":44} []
-[2025-05-25T15:46:57.352670+02:00] auth.INFO: OTP generated for login {"user_id":62,"email":"deadhunter0802@gmail.com","ip":"::1","auth_time":"0.1018"} []
-[2025-05-25T15:47:03.309002+02:00] auth.INFO: OTP sent after redirect {"user_id":62,"email":"deadhunter0802@gmail.com","ip":"::1","send_time":"3.8129"} []
-[2025-05-25T15:47:46.419029+02:00] auth.INFO: User successfully verified OTP and logged in {"email":"deadhunter0802@gmail.com","user_id":62} []
-[2025-05-25T15:47:55.576980+02:00] auth.INFO: User logout {"user_id":62,"email":"deadhunter0802@gmail.com","ip":"::1"} []
