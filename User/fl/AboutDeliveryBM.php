@@ -269,8 +269,8 @@
             <div class="contact-box">
                 <p><i class="fas fa-headset"></i><strong>Sila hubungi kami segera:</strong></p>
                 <ul>
-                    <li><i class="fas fa-phone"></i> Telefon/WhatsApp: [Nombor Telefon]</li>
-                    <li><i class="fas fa-envelope"></i> Emel: verosports11@gmail.com</li>
+                    <li><i class="fas fa-phone"></i> Telefon: [012-3456789]</li>
+                    <li><i class="fas fa-envelope"></i> Emel: support@verosports        .com</li>
                 </ul>
             </div>
             
