@@ -30,6 +30,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = "New passwords do not match";
     } elseif (strlen($new_password) < 8) {
         $error_message = "Password must be at least 8 characters long";
+    } elseif (!preg_match('/[A-Z]/', $new_password)) {
+    $error_message = "Password must contain at least one uppercase letter";
+    } elseif (!preg_match('/[0-9]/', $new_password)) {
+        $error_message = "Password must contain at least one number";
+    } elseif (!preg_match('/[^A-Za-z0-9]/', $new_password)) {
+        $error_message = "Password must contain at least one special character";
     } else {
         // Update password
         $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
@@ -99,6 +105,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="requirement" id="lengthReq">
                         <i class="fas fa-circle"></i>
                         <span>At least 8 characters</span>
+                    </div>
+                    <div class="requirement" id="uppercaseReq"> <!-- 新增 -->
+                        <i class="fas fa-circle"></i>
+                        <span>Contains an uppercase letter</span>
                     </div>
                     <div class="requirement" id="numberReq">
                         <i class="fas fa-circle"></i>

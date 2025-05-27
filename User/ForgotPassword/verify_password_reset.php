@@ -1,6 +1,9 @@
 <?php
 session_start();
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 // Database connection
 $servername = "localhost";
 $username = "root";
@@ -17,11 +20,13 @@ try {
     $message = "";
     $email = isset($_SESSION['reset_email']) ? $_SESSION['reset_email'] : '';
 
+    // Redirect if no email in session
     if (empty($email)) {
         header("Location: forgot_password.php");
         exit();
     }
 
+    // Handle OTP verification
     if (isset($_POST['verify'])) {
         $otp = trim($_POST['otp']);
         
@@ -32,7 +37,7 @@ try {
             $ip_address = $_SERVER['REMOTE_ADDR'];
             $current_time = date("Y-m-d H:i:s");
             
-            // Use prepared statement to prevent SQL injection
+            // Verify OTP with prepared statement
             $stmt = $connect->prepare("SELECT * FROM password_resets 
                                      WHERE email = ? 
                                      AND otp = ? 
@@ -49,13 +54,91 @@ try {
                 $update_stmt->bind_param("ss", $email, $otp);
                 $update_stmt->execute();
                 
-                // Redirect to password reset page
+                // Set verification flag
                 $_SESSION['verified_for_reset'] = true;
                 header("Location: reset_password.php");
                 exit();
             } else {
                 $message = "Invalid or expired OTP. Please try again.";
             }
+        }
+    }
+
+    // Handle OTP resend request
+    if (isset($_POST['resend'])) {
+        // Delete existing unused OTPs
+        $delete_stmt = $connect->prepare("DELETE FROM password_resets WHERE email = ? AND used = 0");
+        $delete_stmt->bind_param("s", $email);
+        $delete_stmt->execute();
+
+        // Generate new OTP
+        $new_otp = rand(100000, 999999);
+        $expiry_time = date("Y-m-d H:i:s", strtotime("+15 minutes"));
+        $ip_address = $_SERVER['REMOTE_ADDR'];
+
+        // Insert new OTP record
+        $insert_stmt = $connect->prepare("INSERT INTO password_resets (email, otp, ip, expiry_time) VALUES (?, ?, ?, ?)");
+        $insert_stmt->bind_param("siss", $email, $new_otp, $ip_address, $expiry_time);
+        
+        if ($insert_stmt->execute()) {
+            // Send email with new OTP
+            require 'phpmailer/src/Exception.php';
+            require 'phpmailer/src/PHPMailer.php';
+            require 'phpmailer/src/SMTP.php';
+
+            $mail = new PHPMailer(true);
+            try {
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com';
+                $mail->SMTPAuth = true;
+                $mail->Username = 'chiannchua05@gmail.com';
+                $mail->Password = 'niiwzkwxnqlecaww';
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+                $mail->Port = 465;
+
+                $mail->setFrom('chiannchua05@gmail.com', 'Password Reset');
+                $mail->addAddress($email);
+                $mail->isHTML(true);
+                $mail->Subject = 'New Password Reset OTP';
+
+                $mail->Body = "
+                <html>
+                <head>
+                    <style>
+                        body { font-family: Arial, sans-serif; }
+                        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                        .header { background-color: #007bff; color: white; padding: 10px; text-align: center; }
+                        .content { padding: 20px; }
+                        .otp { font-size: 24px; font-weight: bold; color: #007bff; }
+                        .footer { margin-top: 20px; font-size: 12px; color: #777; }
+                    </style>
+                </head>
+                <body>
+                    <div class='container'>
+                        <div class='header'>
+                            <h2>New Verification Code</h2>
+                        </div>
+                        <div class='content'>
+                            <p>Your new verification code is:</p>
+                            <p class='otp'>$new_otp</p>
+                            <p>This code is valid for 15 minutes.</p>
+                            <p>If you didn't request this, please ignore this email.</p>
+                        </div>
+                        <div class='footer'>
+                            <p>© " . date('Y') . " VeroSports. All rights reserved.</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                ";
+
+                $mail->send();
+                $message = "New verification code has been sent to your email!";
+            } catch (Exception $e) {
+                $message = "Error sending email: " . $e->getMessage();
+            }
+        } else {
+            $message = "Error generating new verification code.";
         }
     }
 } catch (Exception $e) {
@@ -70,11 +153,8 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verify OTP | VeroSports</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -111,19 +191,12 @@ try {
             box-shadow: var(--box-shadow);
             overflow: hidden;
             transition: var(--transition);
-            border: none;
             animation: fadeInUp 0.6s ease-out;
         }
         
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .auth-header {
@@ -132,15 +205,6 @@ try {
             padding: 25px;
             text-align: center;
             position: relative;
-            overflow: hidden;
-        }
-        
-        .auth-header h3 {
-            margin: 0;
-            font-weight: 600;
-            font-size: 1.8rem;
-            position: relative;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .auth-body {
@@ -157,24 +221,7 @@ try {
         .form-control {
             height: 50px;
             border-radius: var(--border-radius);
-            border: 1px solid #e0e0e0;
             transition: var(--transition);
-            font-size: 0.95rem;
-        }
-        
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.2);
-        }
-        
-        .input-group-text {
-            background-color: white;
-            border-right: none;
-            color: var(--light-text);
-        }
-        
-        .input-group .form-control {
-            border-left: none;
         }
         
         .btn-primary {
@@ -183,64 +230,20 @@ try {
             height: 50px;
             border-radius: var(--border-radius);
             font-weight: 600;
-            letter-spacing: 0.5px;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
         }
         
-        .btn-primary:hover {
-            background: linear-gradient(to right, var(--primary-light), var(--primary-color));
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 107, 0, 0.3);
-        }
-        
-        .alert-info {
-            background-color: #E8F4FD;
-            border-color: #B8DAF9;
-            color: #0C63E4;
-        }
-        
-        .alert-danger {
-            background-color: #FCE8E6;
-            border-color: #F5C2C7;
-            color: var(--error-color);
+        .alert {
+            border-radius: var(--border-radius);
         }
         
         .resend-link {
             color: var(--primary-color);
-            font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
         }
         
-        .resend-link:hover {
-            color: var(--secondary-color);
-            text-decoration: underline;
-        }
-        
         .countdown {
             color: var(--light-text);
-            font-size: 0.9rem;
-        }
-        
-        /* Responsive adjustments */
-        @media (max-width: 576px) {
-            .auth-card {
-                max-width: 100%;
-            }
-            
-            .auth-header {
-                padding: 20px;
-            }
-            
-            .auth-body {
-                padding: 25px;
-            }
-            
-            .auth-header h3 {
-                font-size: 1.5rem;
-            }
         }
     </style>
 </head>
@@ -252,47 +255,44 @@ try {
         
         <div class="auth-body">
             <?php if (!empty($message)): ?>
-                <div class="alert alert-danger mb-4">
-                    <i class="fas fa-exclamation-circle me-2"></i><?php echo htmlspecialchars($message); ?>
+                <div class="alert alert-<?= strpos($message, 'Error') !== false ? 'danger' : 'success' ?> mb-4">
+                    <?= $message ?>
                 </div>
             <?php endif; ?>
-            
+
             <div class="alert alert-info mb-4">
                 <i class="fas fa-info-circle me-2"></i>
-                We've sent a 6-digit verification code to <strong><?php echo htmlspecialchars($email); ?></strong>.
-                Please enter it below to continue.
+                Verification code sent to <strong><?= htmlspecialchars($email) ?></strong>
             </div>
             
             <form method="POST" autocomplete="off">
                 <div class="mb-4">
-                    <label for="otp" class="form-label">Verification Code</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                        <input type="text" name="otp" id="otp" class="form-control otp-input" 
-                               placeholder="••••••" maxlength="6" pattern="\d{6}" required
-                               oninput="this.value = this.value.replace(/[^0-9]/g, '');">
-                    </div>
-                    <div class="form-text">Enter the 6-digit code sent to your email</div>
+                    <label class="form-label">Enter 6-digit Code</label>
+                    <input type="text" name="otp" class="form-control otp-input" 
+                           placeholder="••••••" maxlength="6" required
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
                 
                 <button type="submit" name="verify" class="btn btn-primary w-100 mb-3">
-                    <i class="fas fa-check-circle me-2"></i> Verify & Continue
+                    <i class="fas fa-check-circle me-2"></i> Verify
                 </button>
                 
                 <div class="text-center mt-3">
-                    <span class="countdown" id="countdown">02:00</span> | 
-                    <span class="resend-link" id="resendLink">Resend Code</span>
+                    <form method="POST">
+                        <span class="countdown" id="countdown">02:00</span> | 
+                        <button type="submit" name="resend" class="resend-link" id="resendLink">
+                            Resend Code
+                        </button>
+                    </form>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script>
         // Countdown timer
-        let timeLeft = 120; // 2 minutes in seconds
+        let timeLeft = 120;
         const countdownElement = document.getElementById('countdown');
         const resendLink = document.getElementById('resendLink');
         
@@ -304,7 +304,8 @@ try {
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
             
-            countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            countdownElement.textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             
             if (timeLeft <= 0) {
                 clearInterval(timer);
@@ -312,53 +313,6 @@ try {
                 resendLink.style.display = 'inline';
             }
         }, 1000);
-        
-        // Resend functionality
-        resendLink.addEventListener('click', function() {
-            fetch('resend_otp.php')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('A new verification code has been sent to your email.');
-                        timeLeft = 120;
-                        countdownElement.style.display = 'inline';
-                        resendLink.style.display = 'none';
-                        
-                        const timer = setInterval(() => {
-                            timeLeft--;
-                            
-                            const minutes = Math.floor(timeLeft / 60);
-                            const seconds = timeLeft % 60;
-                            
-                            countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                            
-                            if (timeLeft <= 0) {
-                                clearInterval(timer);
-                                countdownElement.style.display = 'none';
-                                resendLink.style.display = 'inline';
-                            }
-                        }, 1000);
-                    } else {
-                        alert('Failed to resend code. Please try again.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred. Please try again.');
-                });
-        });
-        
-        // Auto-focus OTP input
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('otp').focus();
-        });
-        
-        // Auto move to next input (for multi-input OTP fields if you change to that)
-        function moveToNext(current, nextFieldID) {
-            if (current.value.length >= current.maxLength) {
-                document.getElementById(nextFieldID).focus();
-            }
-        }
     </script>
 </body>
 </html>
