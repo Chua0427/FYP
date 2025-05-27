@@ -4,6 +4,9 @@ declare(strict_types=1);
 // Restrict admin access to user pages
 require_once __DIR__ . '/../app/restrict_admin.php';
 
+// Load auth check and notification system
+require_once __DIR__ . '/../app/auth-check.php';
+
 // Initialize session if not already started
 if (isset($GLOBALS['session_started']) || session_status() === PHP_SESSION_ACTIVE) {
     // Session already started in init.php or elsewhere
@@ -54,7 +57,7 @@ if ($is_authenticated) {
     try {
         $db = new Database();
         $result = $db->fetchOne(
-            "SELECT COUNT(*) as count FROM cart WHERE user_id = ?",
+            "SELECT COALESCE(SUM(quantity), 0) as count FROM cart WHERE user_id = ?",
             [$_SESSION['user_id']]
         );
         
@@ -68,6 +71,9 @@ if ($is_authenticated) {
         error_log("Cart count error: " . $e->getMessage());
     }
 }
+
+// Add auth notification resources
+add_auth_notification_resources();
 ?>
 
 <header>
@@ -227,20 +233,14 @@ if ($is_authenticated) {
                 <?php endif; ?>
             </div>
             <div class="shoppingCart">
-                <?php if ($is_authenticated): ?>
-                <a href="../order/cart.php">
+                <a href="../order/cart.php" <?php if (!$is_authenticated) echo requires_auth_attr(false); ?>>
                     <i class="fa-solid fa-cart-shopping"></i>
-                    <?php if ($cartCount > 0): ?>
+                    <?php if ($is_authenticated && $cartCount > 0): ?>
                         <span id="cartCount" class="cart-counter"><?php echo $cartCount; ?></span>
                     <?php else: ?>
                         <span id="cartCount" class="cart-counter" style="display:none;">0</span>
                     <?php endif; ?>
                 </a>
-                <?php else: ?>
-                <a href="../login/login.php?redirect=<?php echo urlencode('/FYP/FYP/User/order/cart.php'); ?>">
-                    <i class="fa-solid fa-cart-shopping"></i>
-                </a>
-                <?php endif; ?>
             </div>
         </div>
     </div>

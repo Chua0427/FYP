@@ -3,7 +3,13 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 include __DIR__ . '/../../connect_db/config.php';
-session_start();
+
+// Initialize session if not already started
+if (isset($GLOBALS['session_started']) || session_status() === PHP_SESSION_ACTIVE) {
+    // Session already started in init.php or elsewhere
+} else if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Ensure user is logged in
 if (!isset($_SESSION['user_id'])) {

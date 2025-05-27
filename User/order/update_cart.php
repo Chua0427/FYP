@@ -92,10 +92,24 @@ try {
     
     $db->commit();
     
-    // Return success response
+    // Clear stored checkout session data so summaries reload correctly
+    unset(
+        $_SESSION['checkout_cart_items'],
+        $_SESSION['checkout_total_price']
+    );
+    
+    // Fetch updated cart total quantity for response
+    $cartCountRes = $db->fetchOne(
+        "SELECT COALESCE(SUM(quantity), 0) as count FROM cart WHERE user_id = ?",
+        [$user_id]
+    );
+    $cartCount = $cartCountRes ? (int)$cartCountRes['count'] : 0;
+    
+    // Return success response including updated cart_count
     try {
         $response = [
             'success' => true,
+            'cart_count' => $cartCount,
             'message' => 'Cart updated successfully',
             'item' => [
                 'cart_id' => $cart_id,

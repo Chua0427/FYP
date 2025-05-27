@@ -1,6 +1,9 @@
 <?php
 // Restrict admin access to user pages
 require_once __DIR__ . '/../app/restrict_admin.php';
+
+// Include authentication check and notification system
+require_once __DIR__ . '/../app/auth-check.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -19,6 +22,9 @@ require_once __DIR__ . '/../app/restrict_admin.php';
     require_once __DIR__ . '/../app/csrf.php';
     // Generate CSRF token and add it to meta tag
     $csrf_token = generateCsrfToken();
+    
+    // Add auth notification resources
+    add_auth_notification_resources();
     ?>
     <meta name="csrf-token" content="<?php echo htmlspecialchars($csrf_token); ?>">
 </head>
@@ -142,7 +148,7 @@ require_once __DIR__ . '/../app/restrict_admin.php';
                                     <p class="NewArrivalPrice">RM '.$row['price'].'</p>
                                 </div>
                             </a>
-                            <input type="button" class="quick-add-button cartButton" value="Quick Add" data-product-id="'.$row['product_id'].'">
+                            <input type="button" class="quick-add-button cartButton" value="Quick Add" data-product-id="'.$row['product_id'].'" '.(!isset($_SESSION['user_id']) ? requires_auth_attr(false) : '').'>
                         </div>';
                 }
             ?>
@@ -191,7 +197,7 @@ require_once __DIR__ . '/../app/restrict_admin.php';
                                 <span class="discountPrice">RM '.$row['price'].'</span>
                                 </div>  
                             </a>
-                            <input type="button" class="quick-add-button cartButton" value="Quick Add" data-product-id="'.$row['product_id'].'">
+                            <input type="button" class="quick-add-button cartButton" value="Quick Add" data-product-id="'.$row['product_id'].'" '.(!isset($_SESSION['user_id']) ? requires_auth_attr(false) : '').'>
                            </div>';
                 }
             ?>
@@ -265,7 +271,7 @@ require_once __DIR__ . '/../app/restrict_admin.php';
                                 <div class="jerseyPrice">RM '.$row['price'].'</div>
                             </div>
                         </a>
-                        <input type="button" class="quick-add-button cartButton" value="Quick Add" data-product-id="'.$row['product_id'].'">
+                        <input type="button" class="quick-add-button cartButton" value="Quick Add" data-product-id="'.$row['product_id'].'" '.(!isset($_SESSION['user_id']) ? requires_auth_attr(false) : '').'>
                     </div>';
                 }
             ?> 
@@ -368,75 +374,6 @@ require_once __DIR__ . '/../app/restrict_admin.php';
 
         <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
         <script src="homePage.js"></script>
-
-        <style>
-        .welcome-banner {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-            color: white;
-            padding: 20px;
-            margin-bottom: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        
-        .welcome-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 10px;
-        }
-        
-        .welcome-content h2 {
-            margin-bottom: 10px;
-            font-size: 24px;
-        }
-        
-        .welcome-content p {
-            margin-bottom: 0;
-            font-size: 16px;
-        }
-        
-        .last-visit {
-            font-size: 14px !important;
-            opacity: 0.8;
-            margin-top: 5px !important;
-        }
-        
-        .quick-add-button {
-            cursor: pointer;
-        }
-        
-        /* Flying Animation Styles */
-        .flying-image {
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            border-radius: 8px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-        
-        @keyframes cartShake {
-            0%, 100% { transform: translateX(0) scale(1); }
-            25% { transform: translateX(-3px) scale(1.1); }
-            75% { transform: translateX(3px) scale(1.1); }
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes fadeOut {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(-20px); }
-        }
-        </style>
         
         <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -446,24 +383,21 @@ require_once __DIR__ . '/../app/restrict_admin.php';
             quickAddButtons.forEach(button => {
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const productId = this.getAttribute('data-product-id');
-                    quickAddToCart(productId);
+                    // If the button has data-requires-auth="true", the auth-notification.js will handle it
+                    // Only proceed with adding to cart if authentication is not required
+                    if (!this.hasAttribute('data-requires-auth')) {
+                        const productId = this.getAttribute('data-product-id');
+                        quickAddToCart(productId, this);
+                    }
                 });
             });
             
-            function quickAddToCart(productId) {
-                // Check if user is logged in
-                <?php if(!isset($_SESSION['user_id'])): ?>
-                    window.location.href = '../login/login.php?redirect=' + encodeURIComponent(window.location.href);
-                    return;
-                <?php endif; ?>
-                
-                // Get the button element that was clicked
-                const button = event.target;
+            function quickAddToCart(productId, button) {
+                // Get the original button text
                 const originalText = button.value;
                 
                 // First, fetch product sizes to handle products like shoes that require specific sizes
-                fetch('../api/product_sizes.php?product_id=' + encodeURIComponent(productId))
+                fetch('../api/product_sizes.php?product_id=' + encodeURIComponent(productId) + '&add_to_cart=true')
                 .then(response => response.json())
                 .then(data => {
                     if (!data.success) {
@@ -519,9 +453,16 @@ require_once __DIR__ . '/../app/restrict_admin.php';
                 .then(response => {
                     if (!response.ok) {
                         if (response.status === 401) {
-                            // Redirect to login if unauthorized
-                            window.location.href = '../login/login.php?redirect=' + encodeURIComponent(window.location.href);
-                            throw new Error('Please login to add items to your cart');
+                            // Show login modal instead of redirecting
+                            const loginModal = document.querySelector('.login-modal');
+                            if (loginModal) {
+                                loginModal.style.display = 'block';
+                                throw new Error('Please login to add items to your cart');
+                            } else {
+                                // Fallback to redirect if modal not found
+                                window.location.href = '../login/login.php?redirect=' + encodeURIComponent(window.location.href);
+                                throw new Error('Please login to add items to your cart');
+                            }
                         } else if (response.status === 403) {
                             // Handle CSRF token errors by refreshing the page
                             window.location.reload();

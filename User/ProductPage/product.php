@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="product.css">
     <link rel="stylesheet" href="../Header_and_Footer/footer.css">
     <link rel="stylesheet" href="../Header_and_Footer/header.css">
+    <link rel="stylesheet" href="../app/services/auth-notification.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <?php
     // Include CSRF protection
@@ -271,6 +272,7 @@
         </div>
         <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?> 
         <script src="product.js"></script>
+        <script src="../app/services/auth-notification.js"></script>
 </body>
 
 <?php
@@ -330,14 +332,8 @@ document.addEventListener("DOMContentLoaded", function () {
     updateSKU(); 
     sizeSelect.addEventListener("change", updateSKU);
     
-    // Handle authentication for add to cart
-    if (addToCartBtn && addToCartBtn.getAttribute('data-requires-auth')) {
-        addToCartBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Redirect to login page with return URL
-            window.location.href = '/FYP/FYP/User/login/login.php?redirect=' + encodeURIComponent(window.location.href);
-        });
-    }
+    // The auth-notification.js script will handle the authentication modal
+    // No need to add specific handlers here as it will be handled by the auth-notification.js
 });
 </script>
 

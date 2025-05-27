@@ -1,0 +1,110 @@
+/* Auth Notification Styles */
+.auth-notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+/* Login Modal Styles */
+.login-modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    overflow: auto;
+}
+
+.login-modal-content {
+    position: relative;
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    max-width: 90%;
+    animation: modalFadeIn 0.3s ease-in-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-modal-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.login-modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.login-modal-body {
+    padding: 24px;
+}
+
+.login-modal-close {
+    position: absolute;
+    right: 16px;
+    top: 12px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #999;
+}
+
+.login-modal-close:hover {
+    color: #000;
+}
+
+.login-modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.login-button {
+    padding: 10px 20px;
+    background-color: #e60000;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s;
+}
+
+.login-button:hover {
+    background-color: #cc0000;
+}
+
+.cancel-button {
+    padding: 10px 20px;
+    background-color: #f2f2f2;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.cancel-button:hover {
+    background-color: #e5e5e5;
+} 

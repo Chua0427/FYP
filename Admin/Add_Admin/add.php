@@ -37,12 +37,10 @@
                     <div class="form-group">
                         <label>Email:</label>
                         <input type="email" name="email" id="email" required>
-                        <span id="emailError" style="color: red; display: none; text-align: center; font-size: 14px;">Please Enter Valid Email...</span>
                     </div>
                     <div class="form-group">
                         <label>Mobile Number:</label>
                         <input type="tel" name="mobile_number" id="mobile_number" required>
-                        <span id="telError" style="color: red; display: none; text-align: center; font-size: 14px;">Please Enter Valid Mobile Number...</span>
                     </div>
                 </div>
 
@@ -70,7 +68,6 @@
                     <div class="form-group">
                         <label>Post Code:</label>
                         <input type="text" name="postcode" id="postcode" required>
-                        <span id="postcodeError" style="color:red; display:none; text-align:center; font-size:14px;">Please Enter Valid Postcode...</span>
                     </div>
                     <div class="form-group">
                         <label>State:</label>
