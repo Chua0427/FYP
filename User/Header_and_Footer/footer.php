@@ -30,12 +30,6 @@
                             <li>Email: <a href="mailto:support@verosports.com">support@verosports.com</a></li>
                             <li>Phone: <a href="tel:+60123456789">+60 12-345 6789</a></li>
                             <li>Working Hours: Mon-Fri 9AM - 6PM</li>
-                            <li>
-                                Follow us:
-                                <a href="#"><i class="fab fa-facebook"></i></a>
-                                <a href="#"><i class="fab fa-instagram"></i></a>
-                                <a href="#"><i class="fab fa-twitter"></i></a>
-                            </li>
                         </ul>
                     </div>
                 </div>
