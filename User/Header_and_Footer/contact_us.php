@@ -2,9 +2,9 @@
     include __DIR__ . '/../../connect_db/config.php';
     
     session_start();
-    $user = $_SESSION['user_id'];
+    $user = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
-    if(!isset($user)){
+    if(!$user){
         echo "<script>alert('Please Sign Up and Login First! Thank You!'); window.location.href='../login/login.php';</script>";
         exit;
     }
