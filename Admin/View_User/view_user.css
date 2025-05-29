@@ -54,6 +54,7 @@ table {
 .user-table table td {
     padding: 5px;
     text-align: center;
+    font-size: 16px;
 }
 
 .user-table img {
