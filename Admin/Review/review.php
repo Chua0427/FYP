@@ -39,6 +39,7 @@
                         $sql= "SELECT p.*, AVG(r.rating) AS avr_rating
                             FROM product p
                             LEFT JOIN review r ON p.product_id=r.product_id
+                            WHERE p.deleted=0
                             GROUP BY p.product_id";
 
                         $result = $conn->query($sql);
