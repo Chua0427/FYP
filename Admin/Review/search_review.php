@@ -9,7 +9,7 @@ if (isset($_POST['query'])) {
     $sql= "SELECT p.*, AVG(r.rating) AS avr_rating
         FROM product p
         LEFT JOIN review r ON p.product_id = r.product_id
-        WHERE";
+        WHERE p.deleted=0 AND";
             
     $params = [];
     $types = ""; 
