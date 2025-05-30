@@ -12,6 +12,7 @@
         $discount_price = isset($_POST["discount_price"]) && $_POST["discount_price"] !== '' ? $_POST["discount_price"] : 0;
 
         $description= $_POST["description"];
+        $deleted=0;
 
         $upload= "../../upload/";
 
@@ -54,13 +55,14 @@
             product_img2, 
             product_img3, 
             product_img4, 
-            size_chart
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            size_chart,
+            deleted
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
         
         $stmt = $conn->prepare($sql);
         
         $stmt->bind_param(
-            "ssssssddssssss", 
+            "ssssssddssssssi", 
             $product_name,
             $product_type,
             $brand,
@@ -74,7 +76,8 @@
             $uniqueName2,
             $uniqueName3,
             $uniqueName4,
-            $uniqueName
+            $uniqueName,
+            $deleted
         );
         
         $result = $stmt->execute();

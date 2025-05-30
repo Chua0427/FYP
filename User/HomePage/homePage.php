@@ -131,7 +131,7 @@ require_once __DIR__ . '/../app/auth-check.php';
                         WHERE p.status='New'
                         AND EXISTS (
                             SELECT 1 FROM stock s
-                            WHERE s.product_id = p.product_id AND s.stock > 0
+                            WHERE s.product_id = p.product_id AND s.stock > 0 AND deleted=0
                             )
                             ORDER BY RAND()
                             LIMIT 5";
@@ -175,7 +175,7 @@ require_once __DIR__ . '/../app/auth-check.php';
                 WHERE p.status='Promotion'
                 AND EXISTS (
                     SELECT 1 FROM stock s
-                    WHERE s.product_id = p.product_id AND s.stock > 0
+                    WHERE s.product_id = p.product_id AND s.stock > 0 AND deleted=0
                     )
                     ORDER BY RAND()
                     LIMIT 5";
@@ -256,7 +256,7 @@ require_once __DIR__ . '/../app/auth-check.php';
                 WHERE p.status='Normal' AND p.product_categories='Jersey'
                 AND EXISTS (
                     SELECT 1 FROM stock s
-                    WHERE s.product_id = p.product_id AND s.stock > 0
+                    WHERE s.product_id = p.product_id AND s.stock > 0 AND deleted=0
                     )
                     ORDER BY RAND()
                     LIMIT 6";

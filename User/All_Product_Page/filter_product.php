@@ -10,7 +10,7 @@ $maxprice = isset($_POST['maxprice']) && $_POST['maxprice'] !== '' ? (int)$_POST
 $sql = "SELECT p.*, MIN(s.stock) as stock 
         FROM product p
         LEFT JOIN stock s ON p.product_id = s.product_id
-        WHERE s.stock > 0";
+        WHERE s.stock > 0 AND deleted=0";
 
 if (!empty($genders)) {
     $genderList = "'" . implode("','", $genders) . "'";

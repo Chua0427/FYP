@@ -52,7 +52,7 @@
         $sql = "SELECT * FROM product p
                 WHERE EXISTS (
                     SELECT 1 FROM stock s
-                    WHERE s.product_id = p.product_id AND s.stock > 0
+                    WHERE s.product_id = p.product_id AND s.stock > 0 AND deleted=0
                 )";
 
 
@@ -71,7 +71,7 @@
         //check available categries
         $availableCategories = [];
 
-        $sqlCategories = "SELECT DISTINCT p.product_categories FROM product p JOIN stock s ON p.product_id=s.product_id WHERE 1=1 AND s.stock>0";
+        $sqlCategories = "SELECT DISTINCT p.product_categories FROM product p JOIN stock s ON p.product_id=s.product_id WHERE 1=1 AND s.stock>0 AND deleted=0";
         
         if (!empty($gender)) {
             $sqlCategories .= " AND gender = '$gender'";
@@ -88,7 +88,7 @@
         //check available brand
         $availableBrands=[];
 
-        $sqlBrands = "SELECT DISTINCT p.brand FROM product p JOIN stock s ON p.product_id=s.product_id WHERE 1=1 AND s.stock>0";
+        $sqlBrands = "SELECT DISTINCT p.brand FROM product p JOIN stock s ON p.product_id=s.product_id WHERE 1=1 AND s.stock>0 AND deleted=0";
         
         if (!empty($gender)) {
             $sqlBrands .= " AND gender = '$gender'";
@@ -106,7 +106,7 @@
         //check gender
         $availableGender=[];
 
-        $sqlGender = "SELECT DISTINCT p.gender FROM product p JOIN stock s ON p.product_id=s.product_id WHERE 1=1 AND s.stock>0";
+        $sqlGender = "SELECT DISTINCT p.gender FROM product p JOIN stock s ON p.product_id=s.product_id WHERE 1=1 AND s.stock>0 AND deleted=0";
         
         if (!empty($brand)) {
             $sqlGender .= " AND brand = '$brand'";
