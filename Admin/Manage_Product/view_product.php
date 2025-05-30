@@ -56,7 +56,7 @@
                         <?php
                             include __DIR__ . '/../../connect_db/config.php';
 
-                            $sql = "SELECT * FROM product";
+                            $sql = "SELECT * FROM product WHERE deleted=0";
                             $result = $conn->query($sql);
                             while ($row = $result->fetch_assoc()) {
                                 $finalPrice = $row["discount_price"] > 0 ? $row["discount_price"] : $row["price"];

@@ -6,7 +6,7 @@ if (isset($_POST['query'])) {
     
     $keywords = explode(' ', $search); 
     
-    $sql = "SELECT* FROM product WHERE ";
+    $sql = "SELECT* FROM product WHERE deleted=0 AND";
             
     $params = [];
     $types = ""; 

@@ -27,7 +27,7 @@
         //check available categries
         $availableCategories = [];
 
-        $sqlCategories = "SELECT DISTINCT p.product_categories FROM product p JOIN stock s ON p.product_id=s.product_id WHERE 1=1 AND s.stock>0 AND status='New'";
+        $sqlCategories = "SELECT DISTINCT p.product_categories FROM product p JOIN stock s ON p.product_id=s.product_id WHERE 1=1 AND s.stock>0 AND status='New' AND deleted=0";
 
         $categoryResult = $conn->query($sqlCategories);
         while ($row = $categoryResult->fetch_assoc()) {
@@ -37,7 +37,7 @@
         //check available brand
         $availableBrands=[];
 
-        $sqlBrands = "SELECT DISTINCT p.brand FROM product p JOIN stock s ON p.product_id=s.product_id WHERE 1=1 AND s.stock>0 AND status='New'";
+        $sqlBrands = "SELECT DISTINCT p.brand FROM product p JOIN stock s ON p.product_id=s.product_id WHERE 1=1 AND s.stock>0 AND status='New' AND deleted=0";
     
         $brandResult= $conn->query($sqlBrands);
         while($rowbrand = $brandResult->fetch_assoc()){
@@ -47,7 +47,7 @@
         //check gender
         $availableGender=[];
 
-        $sqlGender = "SELECT DISTINCT p.gender FROM product p JOIN stock s ON p.product_id=s.product_id WHERE 1=1 AND s.stock>0 AND status='New'";
+        $sqlGender = "SELECT DISTINCT p.gender FROM product p JOIN stock s ON p.product_id=s.product_id WHERE 1=1 AND s.stock>0 AND status='New' AND deleted=0";
         
         $genderResult= $conn->query($sqlGender);
         while($rowgender = $genderResult->fetch_assoc()){
@@ -127,7 +127,7 @@
                             WHERE p.status='New'
                             AND EXISTS (
                                 SELECT 1 FROM stock s
-                                WHERE s.product_id = p.product_id AND s.stock > 0
+                                WHERE s.product_id = p.product_id AND s.stock > 0 AND deleted=0
                             )";
             
                     $result= $conn->query($sql);
