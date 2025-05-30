@@ -124,7 +124,7 @@
         
         <div class="highlight">
             <p><strong>Customer Service Contact:</strong><br>
-            Email: verosports11@gmail.com<br>
+            Email: support@verosports.com<br>
             Toll Free: 1800-22-8188<br>
             Operation Hours: Monday to Friday 9.00 AM - 6.00 PM<br>
             Response Time: 3-4 working days</p>

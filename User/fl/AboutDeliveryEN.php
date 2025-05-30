@@ -267,8 +267,8 @@
             <div class="contact-box">
                 <p><i class="fas fa-headset"></i><strong>Please contact us immediately:</strong></p>
                 <ul>
-                    <li><i class="fas fa-phone"></i> Phone/WhatsApp: [Your Number]</li>
-                    <li><i class="fas fa-envelope"></i> Email: verosports11@gmail.com</li>
+                    <li><i class="fas fa-phone"></i> Phone: [012-3456789]</li>
+                    <li><i class="fas fa-envelope"></i> Email: support@verosports.com</li>
                 </ul>
             </div>
             

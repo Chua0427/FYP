@@ -207,7 +207,11 @@
                 </div>
 
                 <div class="tab-content" id="returns">
-                    <p>Return policy and refund details.</p>
+                    <p>We will only entertain returns within a reasonable cause.</p>
+                    <p>No exchange of size once purchase is made.</p>
+                    <p>Items must be in good condition with original receipt.</p>
+                    <p>Only unworn, unaltered, unwashed items in sellable condition can be returned.</p>
+                    <p>All original tags must be intact and in original packaging.</p>
                 </div>
             </div>
         </div>
