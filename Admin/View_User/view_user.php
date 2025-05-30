@@ -36,12 +36,12 @@
                     <th>Image</th>
                     <th>Name</th>
                     <th>Email</th>
-                    <th>Mobile Number</th>
+                    <th>Phone</th>
                     <th>Address</th>
                     <th>Postcode</th>
                     <th>State</th>
                     <th>City</th>
-                    <th>Birthday Date</th>
+                    <th>Birthday</th>
                     <th>Gender</th>
                 </tr>
                 <tbody id="userTableBody">

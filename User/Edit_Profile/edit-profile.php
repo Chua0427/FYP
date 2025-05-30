@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $profile_image = $user['profile_image'];
     if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = __DIR__ . '/../upload/';
+        $upload_dir = __DIR__ . '/../../upload/';
         if (!is_dir($upload_dir)) {
             mkdir($upload_dir, 0755, true);
         }
@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="profile-picture-section">
                 <div class="profile-picture">
                     <?php if ($user['profile_image']): ?>
-                        <img src="../upload/<?php echo $user['profile_image']; ?>" alt="Profile Image" id="profileImagePreview">
+                        <img src="../../upload/<?php echo $user['profile_image']; ?>" alt="Profile Image" id="profileImagePreview">
                     <?php else: ?>
                         <div class="default-profile" id="profileImagePreview"><i class="fas fa-user"></i></div>
                     <?php endif; ?>

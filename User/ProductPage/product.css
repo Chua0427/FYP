@@ -185,6 +185,12 @@ input{
     display: block;
 }
 
+#product-info{
+    overflow: auto;
+    height: 300px;
+    margin-bottom: -300px;
+}
+
 .ratingWrapper {
     margin-top: 20px;
     padding: 10px;
@@ -290,7 +296,7 @@ input{
     width: 100%;
     overflow: hidden;
     text-align: center;
-    margin-top: 200px;
+    margin-top: 250px;
     margin-bottom: 100px;
 }
 

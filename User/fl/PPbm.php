@@ -178,7 +178,7 @@
         <p>VeroSports mempunyai hak untuk mengubah Polisi ini pada bila-bila masa. Polisi ini bukan merupakan kontrak, dan tidak mencadangkan apa-apa kewajipan kepada pihak kami dengan pihak lain. Sekiranya berlaku sebarang konflik tafsiran antara Polisi Bahasa Inggeris dan Bahasa Malaysia, versi Bahasa Inggeris akan diutamakan.</p>
         
         <h2>12. Komunikasi</h2>
-        <p>Anda boleh menghubungi VeroSports bagi hal-hal berkaitan dengan Polisi di Jabatan Khidmat Pelanggan kami di alamat: <a href="mailto:verosports11@gmail.com">verosports11@gmail.com</a>.</p>
+        <p>Anda boleh menghubungi VeroSports bagi hal-hal berkaitan dengan Polisi di Jabatan Khidmat Pelanggan kami di alamat:support@verosports.com.</p>
         
         <p><strong>POLISI TAMAT</strong></p>
     </div>

@@ -37,11 +37,11 @@
                     <tr>
                         <th>Order ID</th>
                         <th>View Order Items</th>
-                        <th>Recipient Name</th>
-                        <th>Recipient Phone Number</th>
+                        <th>Recipient</th>
+                        <th>Recipient Phone</th>
                         <th>Shipping Address</th>
-                        <th>Delivery Status</th>
-                        <th>Update Status</th>
+                        <th>Status</th>
+                        <th>Update</th>
                     </tr>
 
                     <tbody id="userTableBody">
