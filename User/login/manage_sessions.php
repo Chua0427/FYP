@@ -210,6 +210,15 @@ $current_user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
             max-width: 600px;
             margin: 0 auto;
         }
+
+        .session-icon i{
+            color: darkgray;
+
+        }
+
+        .meta-item i{
+            color: darkgray;
+        }
         
         .alert {
             padding: 15px 20px;
