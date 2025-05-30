@@ -51,6 +51,28 @@ try {
     // Initialize Database
     $db = new Database();
    
+    // Remove unchecked items based on selected products
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_items']) && !isset($_POST['create_order'])) {
+        // Validate CSRF token
+        if (!validateCsrfToken($_POST['csrf_token'] ?? '')) {
+            throw new Exception("Invalid security token. Please try again.");
+        }
+
+        // Sanitize selected items
+        $selectedItems = array_map('intval', $_POST['selected_items']);
+        if (empty($selectedItems)) {
+            throw new Exception("No items selected for checkout.");
+        }
+
+        // Delete unchecked items for this user
+        $placeholders = implode(',', array_fill(0, count($selectedItems), '?'));
+        $params = array_merge([$user_id], $selectedItems);
+        $db->execute(
+            "DELETE FROM cart WHERE user_id = ? AND cart_id NOT IN ($placeholders)",
+            $params
+        );
+    }
+   
     // Clear any previous checkout data to ensure fresh totals
     unset($_SESSION['checkout_cart_items'], $_SESSION['checkout_total_price']);
    
