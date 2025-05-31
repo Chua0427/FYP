@@ -34,16 +34,22 @@ try {
         throw new Exception("User information not found");
     }
     
+    // Remove cart entries for products marked as deleted
+    $db->execute(
+        "DELETE c FROM cart c JOIN product p ON c.product_id = p.product_id WHERE p.deleted = 1 AND c.user_id = ?",
+        [$user_id]
+    );
+    
     // Fetch cart items for the logged-in user with product details
     $cartItems = $db->fetchAll(
         "SELECT c.*, p.product_name, p.price, p.discount_price, p.product_img1, p.brand,
          CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price,
          s.stock
-         FROM cart c 
-         JOIN product p ON c.product_id = p.product_id 
+         FROM cart c
+         JOIN product p ON c.product_id = p.product_id
          JOIN stock s ON c.product_id = s.product_id AND c.product_size = s.product_size
-         WHERE c.user_id = ? 
-         ORDER BY p.brand, c.added_at DESC", 
+         WHERE c.user_id = ? AND p.deleted = 0
+         ORDER BY p.brand, c.added_at DESC",
         [$user_id]
     );
     
@@ -199,6 +205,8 @@ $pageTitle = "Shopping Cart - VeroSports";
     <link rel="stylesheet" href="../Header_and_Footer/footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="cart.css">
+    <link rel="preload" href="critical.js" as="script">
+    <script src="critical.js" defer></script>
     <?php add_auth_notification_resources(); ?>
     <meta name="csrf-token" content="<?php echo htmlspecialchars($csrf_token); ?>">
 </head>

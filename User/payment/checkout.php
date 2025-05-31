@@ -51,6 +51,12 @@ try {
     // Initialize Database
     $db = new Database();
    
+    // Remove cart entries for products marked as deleted
+    $db->execute(
+        "DELETE c FROM cart c JOIN product p ON c.product_id = p.product_id WHERE p.deleted = 1 AND c.user_id = ?",
+        [$user_id]
+    );
+   
     // Remove unchecked items based on selected products
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_items']) && !isset($_POST['create_order'])) {
         // Validate CSRF token
@@ -84,7 +90,7 @@ try {
          FROM cart c
          JOIN product p ON c.product_id = p.product_id
          JOIN stock s ON c.product_id = s.product_id AND c.product_size = s.product_size
-         WHERE c.user_id = ?
+         WHERE c.user_id = ? AND p.deleted = 0
          ORDER BY c.added_at DESC",
         [$user_id]
     );
@@ -432,18 +438,18 @@ $totalDiscount = $totalOriginalPrice - $totalPrice;
         const totalEl = document.getElementById('checkout-total');
        
         if (countEl) countEl.textContent = totalItems;
-        if (subtotalEl) subtotalEl.textContent = `RM ${totalOriginalPrice.toFixed(2)}`;
+        if (subtotalEl) subtotalEl.textContent = `RM ${totalOriginalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
        
         if (discountEl && discountRow) {
           if (totalDiscount > 0) {
-            discountEl.textContent = `-RM ${totalDiscount.toFixed(2)}`;
+            discountEl.textContent = `-RM ${totalDiscount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             discountRow.style.display = 'flex';
           } else {
             discountRow.style.display = 'none';
           }
         }
        
-        if (totalEl) totalEl.textContent = `RM ${totalPrice.toFixed(2)}`;
+        if (totalEl) totalEl.textContent = `RM ${totalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       }
 
 

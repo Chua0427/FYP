@@ -36,11 +36,7 @@ try {
     } else {
         // Fetch cart items directly if not in session
         $cartItems = $db->fetchAll(
-            "SELECT c.*, p.product_name, p.price, p.discount_price, p.product_img1, p.brand,
-             CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price
-             FROM cart c 
-             JOIN product p ON c.product_id = p.product_id 
-             WHERE c.user_id = ?",
+            "SELECT c.*, p.product_name, p.price, p.discount_price, p.product_img1, p.brand,\n             CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price\n             FROM cart c\n             JOIN product p ON c.product_id = p.product_id\n             WHERE c.user_id = ?\n             ORDER BY c.added_at DESC",
             [$user_id]
         );
         
@@ -337,6 +333,7 @@ function formatPrice($price) {
         .item-name {
             font-weight: 500;
             margin-bottom: 5px;
+            margin-right: 10px;
         }
         
         .item-quantity {
@@ -484,6 +481,7 @@ function formatPrice($price) {
                                     <div class="order-item">
                                         <div class="item-details">
                                             <p class="item-name"><?php echo htmlspecialchars($item['product_name']); ?></p>
+                                            <p class="item-brand"><?php echo htmlspecialchars($item['brand']); ?></p>
                                             <p class="item-quantity">Size: <?php echo htmlspecialchars($item['product_size']); ?> | Qty: <?php echo htmlspecialchars((string)$item['quantity']); ?></p>
                                         </div>
                                         <p class="item-price">
