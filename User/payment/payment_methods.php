@@ -33,10 +33,19 @@ try {
     // Check if we have cart items in session
     if (isset($_SESSION['checkout_cart_items'])) {
         $cartItems = $_SESSION['checkout_cart_items'];
+        // Sort cart items by brand then newest first to match checkout page
+        usort($cartItems, function($a, $b) {
+            $brandCmp = strcmp($a['brand'] ?? '', $b['brand'] ?? '');
+            if ($brandCmp !== 0) {
+                return $brandCmp;
+            }
+            // Compare added_at descending
+            return strcmp($b['added_at'] ?? '', $a['added_at'] ?? '');
+        });
     } else {
         // Fetch cart items directly if not in session
         $cartItems = $db->fetchAll(
-            "SELECT c.*, p.product_name, p.price, p.discount_price, p.product_img1, p.brand,\n             CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price\n             FROM cart c\n             JOIN product p ON c.product_id = p.product_id\n             WHERE c.user_id = ?\n             ORDER BY c.added_at DESC",
+            "SELECT c.*, p.product_name, p.price, p.discount_price, p.product_img1, p.brand,\n             CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price\n             FROM cart c\n             JOIN product p ON c.product_id = p.product_id\n             WHERE c.user_id = ?\n             ORDER BY p.brand ASC, c.added_at DESC",
             [$user_id]
         );
         
@@ -95,7 +104,7 @@ try {
 
 // Function to format price
 function formatPrice($price) {
-    return 'RM ' . number_format((float)$price, 2);
+    return 'MYR ' . number_format((float)$price, 2);
 }
 ?>
 

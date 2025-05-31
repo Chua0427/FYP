@@ -159,7 +159,7 @@ try {
 
 // Function to format price
 function formatPrice($price) {
-    return 'RM ' . number_format((float)$price, 2);
+    return 'MYR ' . number_format((float)$price, 2);
 }
 
 
@@ -413,9 +413,9 @@ $totalDiscount = $totalOriginalPrice - $totalPrice;
                 <p class="item-quantity">Size: ${item.product_size} | Qty: ${item.quantity}</p>
               </div>
               <div class="item-price">
-                RM ${(item.item_total).toFixed(2)}
+                MYR ${(item.item_total).toFixed(2)}
                 ${item.discount_price && item.discount_price < item.price ? `
-                  <div class="original-price">RM ${(item.item_original_total).toFixed(2)}</div>
+                  <div class="original-price">MYR ${(item.item_original_total).toFixed(2)}</div>
                 ` : ''}
               </div>
             </div>
@@ -438,18 +438,18 @@ $totalDiscount = $totalOriginalPrice - $totalPrice;
         const totalEl = document.getElementById('checkout-total');
        
         if (countEl) countEl.textContent = totalItems;
-        if (subtotalEl) subtotalEl.textContent = `RM ${totalOriginalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        if (subtotalEl) subtotalEl.textContent = `MYR ${totalOriginalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
        
         if (discountEl && discountRow) {
           if (totalDiscount > 0) {
-            discountEl.textContent = `-RM ${totalDiscount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            discountEl.textContent = `-MYR ${totalDiscount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             discountRow.style.display = 'flex';
           } else {
             discountRow.style.display = 'none';
           }
         }
        
-        if (totalEl) totalEl.textContent = `RM ${totalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        if (totalEl) totalEl.textContent = `MYR ${totalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       }
 
 
