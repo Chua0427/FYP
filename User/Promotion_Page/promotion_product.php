@@ -125,9 +125,10 @@
             <?php
                 $sql = "SELECT * FROM product p
                         WHERE p.status='Promotion'
+                        AND p.deleted=0
                         AND EXISTS (
                         SELECT 1 FROM stock s
-                        WHERE s.product_id = p.product_id AND s.stock > 0 AND deleted=0
+                        WHERE s.product_id = p.product_id AND s.stock > 0
                         )";
 
                 $result= $conn->query($sql);

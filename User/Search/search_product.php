@@ -11,9 +11,9 @@ if (isset($_POST['query'])) {
     
     $keywords = explode(' ', $search); 
     
-    $sql = "SELECT p.* FROM product p WHERE EXISTS (
+    $sql = "SELECT p.* FROM product p WHERE p.deleted=0 AND EXISTS (
             SELECT 1 FROM stock s
-            WHERE s.product_id = p.product_id AND s.stock > 0 AND p.deleted=0) AND";
+            WHERE s.product_id = p.product_id AND s.stock > 0) AND";
             
     $params = [];
     $types = ""; 

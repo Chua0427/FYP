@@ -129,6 +129,7 @@ require_once __DIR__ . '/../app/auth-check.php';
             <?php
                 $sql = "SELECT * FROM product p
                         WHERE p.status='New'
+                        AND p.deleted=0
                         AND EXISTS (
                             SELECT 1 FROM stock s
                             WHERE s.product_id = p.product_id AND s.stock > 0 AND deleted=0
@@ -173,9 +174,10 @@ require_once __DIR__ . '/../app/auth-check.php';
             <?php
                 $sql = "SELECT * FROM product p
                 WHERE p.status='Promotion'
+                AND p.deleted=0
                 AND EXISTS (
                     SELECT 1 FROM stock s
-                    WHERE s.product_id = p.product_id AND s.stock > 0 AND deleted=0
+                    WHERE s.product_id = p.product_id AND s.stock > 0
                     )
                     ORDER BY RAND()
                     LIMIT 5";
@@ -254,9 +256,10 @@ require_once __DIR__ . '/../app/auth-check.php';
             <?php
                 $sql = "SELECT * FROM product p
                 WHERE p.status='Normal' AND p.product_categories='Jersey'
+                AND p.deleted=0
                 AND EXISTS (
                     SELECT 1 FROM stock s
-                    WHERE s.product_id = p.product_id AND s.stock > 0 AND deleted=0
+                    WHERE s.product_id = p.product_id AND s.stock > 0
                     )
                     ORDER BY RAND()
                     LIMIT 6";
