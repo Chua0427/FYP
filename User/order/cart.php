@@ -164,6 +164,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                     $db->rollback(); // No database changes for checkout action
                     exit;
+                case 'remove_all':
+                    // Remove all cart items for this user
+                    $GLOBALS['logger']->info('Removing all cart items', ['user_id' => $user_id]);
+                    $db->execute(
+                        "DELETE FROM cart WHERE user_id = ?",
+                        [$user_id]
+                    );
+                    $db->commit();
+                    header('Location: ' . $_SERVER['PHP_SELF']);
+                    exit;
             }
         } catch (Exception $e) {
             if (isset($db) && $db->isTransactionActive()) {
@@ -218,6 +228,9 @@ include __DIR__ . '/../Header_and_Footer/header.php';
     <main>
         <div class="container">
             <h1>Shopping Cart</h1>
+            <div style="text-align: right; margin: 10px 0;">
+                <button type="button" class="remove-all-btn">Remove All</button>
+            </div>
             
             <?php if (isset($error)): ?>
                 <div class="error-message">
@@ -336,6 +349,11 @@ include __DIR__ . '/../Header_and_Footer/header.php';
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
         <input type="hidden" name="action" value="remove">
         <input type="hidden" id="remove-cart-id" name="cart_id">
+    </form>
+    
+    <form id="remove-all-form" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" style="display: none;">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+        <input type="hidden" name="action" value="remove_all">
     </form>
     
     <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
@@ -783,6 +801,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Restore selections on page load
     restoreSelectedItems();
+
+    // Remove All button functionality
+    const removeAllButtons = document.querySelectorAll('.remove-all-btn');
+    const removeAllForm = document.getElementById('remove-all-form');
+    removeAllButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to remove all items from your cart?')) {
+                removeAllForm.submit();
+            }
+        });
+    });
 });
 </script>
 <script>
