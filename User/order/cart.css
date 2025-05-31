@@ -182,7 +182,7 @@ h1 {
   background-color: #f9f9f9;
 }
 
-.remove-btn {
+.remove-btn, .remove-all-btn{
   background: none;
   border: none;
   color: #888;
@@ -191,7 +191,7 @@ h1 {
   transition: color 0.2s ease, transform 0.2s ease;
 }
 
-.remove-btn:hover {
+.remove-btn, .remove-all-btn:hover {
   color: #ee4d2d;
   text-decoration: underline;
   transform: translateX(2px);
