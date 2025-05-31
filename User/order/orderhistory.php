@@ -55,8 +55,14 @@ try {
     
     // Add reference filter if provided
     if (!empty($reference)) {
-        $query .= " AND o.order_id = ?";
-        $params[] = $reference;
+        // Filter orders containing products matching search term
+        $query .= " AND EXISTS (
+            SELECT 1 FROM order_items oi
+            JOIN product p ON oi.product_id = p.product_id
+            WHERE oi.order_id = o.order_id
+              AND p.product_name LIKE ?
+        )";
+        $params[] = '%' . $reference . '%';
     }
     
     // Add sorting based on user selection
@@ -687,7 +693,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
                 </div>
                 <div class="filter-group">
                     <label for="reference">Reference</label>
-                    <input type="text" id="reference" name="reference" placeholder="#" value="<?php echo htmlspecialchars($reference); ?>">
+                    <input type="text" id="reference" name="reference" placeholder="Enter any reference letter" value="<?php echo htmlspecialchars($reference); ?>">
                 </div>
                 <div class="filter-group">
                     <label for="sort_by">Sort By</label>
