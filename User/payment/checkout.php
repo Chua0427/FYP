@@ -258,7 +258,7 @@ $totalDiscount = $totalOriginalPrice - $totalPrice;
                                 </section>
                                
                                 <section class="payment-section">
-                                    <h2>Next Step: Payment</h2>
+                                    <h2>Next Step: Payment method</h2>
                                     <p>After confirming your order, you will be directed to select your payment method.</p>
                                 </section>
                                

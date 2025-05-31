@@ -211,15 +211,15 @@ textarea {
 
 .btn-primary {
     color: #fff;
-    background-color: #007bff;
-    border: 1px solid #007bff;
+    background-color: orangered;
+    border: 1px solid orangered;
     width: 100%;
     padding: 12px;
 }
 
 .btn-primary:hover {
-    background-color: #0069d9;
-    border-color: #0062cc;
+    background-color: darkorange;
+    border-color: darkorange;
 }
 
 .btn-secondary {
@@ -295,7 +295,7 @@ textarea {
         .empty-cart-message a.return-link {
             display: inline-block;
             padding: 10px 20px;
-            background-color: #116dfa;
+            background-color: orangered;
             color: white;
             text-decoration: none;
             border-radius: 4px;
@@ -304,7 +304,7 @@ textarea {
         }
        
         .empty-cart-message a.return-link:hover {
-            background-color: #0056b3;
+            background-color: orangered;
         }
        
         .error-message {
@@ -324,7 +324,7 @@ textarea {
         .btn.btn-primary {
             display: inline-block;
             padding: 12px 24px;
-            background-color: #116dfa;
+            background-color: orangered;
             color: white;
             text-decoration: none;
             border-radius: 4px;
@@ -335,5 +335,5 @@ textarea {
         }
        
         .btn.btn-primary:hover {
-            background-color: #0056b3;
+            background-color: darkorange;
         }
