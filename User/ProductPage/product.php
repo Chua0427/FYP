@@ -230,9 +230,10 @@
                 <?php
                         $sql = "SELECT * FROM product p
                             WHERE p.product_id!='$current_product_id'
+                            AND p.deleted=0
                             AND EXISTS (
                                 SELECT 1 FROM stock s
-                                WHERE s.product_id = p.product_id AND s.stock > 0 AND deleted=0
+                                WHERE s.product_id = p.product_id AND s.stock > 0
                                 )
                                 ORDER BY RAND()
                                 LIMIT 4";
