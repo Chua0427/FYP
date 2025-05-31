@@ -468,7 +468,7 @@ function formatPrice($price) {
         
         <main>
             <div class="payment-container">
-                <h1>Payment</h1>
+                <h1>Payment Details</h1>
                 
                 <?php if ($error): ?>
                     <div class="error-message">

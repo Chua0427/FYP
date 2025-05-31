@@ -223,11 +223,11 @@
         
         .btn-primary {
             color: #fff;
-            background-color: #007bff;
+            background-color: orangered;
         }
         
         .btn-primary:hover:not(:disabled) {
-            background-color: #0069d9;
+            background-color: darkorange;
         }
         
         .btn:disabled {

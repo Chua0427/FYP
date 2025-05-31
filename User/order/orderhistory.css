@@ -96,14 +96,14 @@
         }
         
         .search-btn {
-            background: #4f46e5;
+            background: orangered;
             color: white;
-            border-color: #4f46e5;
+            border-color: orangered;
         }
         
         .search-btn:hover {
-            background: #4338ca;
-            border-color: #4338ca;
+            background: darkorange;
+            border-color: darkorange;
         }
 
         .order-card {
@@ -221,22 +221,20 @@
         }
 
         .btn-primary {
-            background: #4f46e5;
+            background: orangered;
             color: white;
-            border-color: #4f46e5;
+            border-color: orangered;
         }
 
         .btn-primary:hover {
-            background: #4338ca;
-            border-color: #4338ca;
+            background: darkorange;
+            border-color: darkorange;
         }
 
         .needs-review {
             padding: 16px 20px;
             background: #fff3cd;
             border-left: 3px solid #ffc107;
-            margin: 0 20px;
-            border-radius: 0 6px 6px 0;
             font-size: 14px;
             color: #856404;
             display: flex;
