@@ -92,190 +92,9 @@ function formatStatus(string $status): string {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Details - VeroSports</title>
     <link rel="stylesheet" href="../Header_and_Footer/footer.css">
+    <link rel="stylesheet" href="view_payment_details.css">
     <link rel="stylesheet" href="../Header_and_Footer/header.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <style>
-        body {
-            margin: 0;
-            background: #f8f8f8;
-            font-family: 'Segoe UI', sans-serif;
-        }
-        
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 120px 20px 150px;
-        }
-        
-        .page-title {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 28px;
-            color: #333;
-        }
-        
-        .payment-container {
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            margin-bottom: 30px;
-        }
-        
-        .payment-header {
-            background: #f0f0f0;
-            padding: 15px 20px;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .payment-header h2 {
-            margin: 0;
-            font-size: 18px;
-            color: #333;
-        }
-        
-        .payment-body {
-            padding: 20px;
-        }
-        
-        .detail-row {
-            display: flex;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
-        }
-        
-        .detail-label {
-            width: 200px;
-            font-weight: bold;
-            color: #666;
-        }
-        
-        .detail-value {
-            flex: 1;
-            color: #333;
-        }
-        
-        .order-items-list {
-            margin-top: 30px;
-        }
-        
-        .order-items-list h3 {
-            margin-top: 0;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .order-item {
-            display: flex;
-            padding: 15px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .item-image {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 4px;
-            margin-right: 15px;
-        }
-        
-        .item-info {
-            flex: 1;
-        }
-        
-        .item-name {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .item-details {
-            display: flex;
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .item-detail {
-            margin-right: 15px;
-        }
-        
-        .actions {
-            margin-top: 30px;
-            text-align: center;
-        }
-        
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #ff5722;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: bold;
-            margin: 0 10px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        
-        .btn:hover {
-            background-color: #e64a19;
-        }
-        
-        .btn-back {
-            background-color: #757575;
-        }
-        
-        .btn-back:hover {
-            background-color: #616161;
-        }
-        
-        .error-message {
-            background-color: #ffebee;
-            color: #b71c1c;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: bold;
-        }
-        
-        .payment-status {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-        
-        .status-completed {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-        }
-        
-        .status-pending {
-            background-color: #fff8e1;
-            color: #ff6f00;
-        }
-        
-        .status-failed {
-            background-color: #ffebee;
-            color: #b71c1c;
-        }
-        
-        .status-refunded {
-            background-color: #e0f2f1;
-            color: #00796b;
-        }
-        
-        .status-unknown {
-            background-color: #f5f5f5;
-            color: #616161;
-        }
-    </style>
 </head>
 <body>
     <?php include __DIR__ . '/../Header_and_Footer/header.php'; ?>
@@ -358,7 +177,7 @@ function formatStatus(string $status): string {
                 <a href="gen_pdf_bill.php?order_id=<?php echo htmlspecialchars((string)$order['order_id']); ?>" class="btn" target="_blank">
                     <i class="fas fa-print"></i> Print Bill
                 </a>
-                <a href="orderhistory.php" class="btn btn-back">
+                <a href="#" id="btn-back" class="btn btn-back">
                     <i class="fas fa-arrow-left"></i> Back to Orders
                 </a>
             </div>
@@ -366,5 +185,20 @@ function formatStatus(string $status): string {
     </div>
 
     <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var backBtn = document.getElementById('btn-back');
+        if (backBtn) {
+            var ref = document.referrer;
+            if (ref.includes('orderhistory.php')) {
+                backBtn.href = 'orderhistory.php';
+            } else if (ref.includes('View_Order/order.php')) {
+                backBtn.href = '../View_Order/order.php';
+            } else {
+                backBtn.href = 'orderhistory.php';
+            }
+        }
+    });
+    </script>
 </body>
 </html> 

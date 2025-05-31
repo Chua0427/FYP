@@ -15,6 +15,20 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
     
+    // Highlight stars on hover
+    stars.forEach(star => {
+        star.addEventListener("mouseover", function() {
+            highlightStar(this.getAttribute("data-value"));
+        });
+    });
+    // Reset stars when not hovering
+    const starContainer = document.querySelector('.star-rating');
+    if (starContainer) {
+        starContainer.addEventListener("mouseleave", function() {
+            highlightStar(rating.value);
+        });
+    }
+    
     function highlightStar(value) {
         stars.forEach(star => {
             if (star.getAttribute("data-value") <= value) {
