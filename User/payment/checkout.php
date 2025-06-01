@@ -51,6 +51,12 @@ try {
     // Initialize Database
     $db = new Database();
    
+    // Remove cart entries for products marked as deleted
+    $db->execute(
+        "DELETE c FROM cart c JOIN product p ON c.product_id = p.product_id WHERE p.deleted = 1 AND c.user_id = ?",
+        [$user_id]
+    );
+   
     // Remove unchecked items based on selected products
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_items']) && !isset($_POST['create_order'])) {
         // Validate CSRF token
@@ -84,7 +90,7 @@ try {
          FROM cart c
          JOIN product p ON c.product_id = p.product_id
          JOIN stock s ON c.product_id = s.product_id AND c.product_size = s.product_size
-         WHERE c.user_id = ?
+         WHERE c.user_id = ? AND p.deleted = 0
          ORDER BY c.added_at DESC",
         [$user_id]
     );
@@ -153,7 +159,7 @@ try {
 
 // Function to format price
 function formatPrice($price) {
-    return 'RM ' . number_format((float)$price, 2);
+    return 'MYR ' . number_format((float)$price, 2);
 }
 
 
@@ -252,7 +258,7 @@ $totalDiscount = $totalOriginalPrice - $totalPrice;
                                 </section>
                                
                                 <section class="payment-section">
-                                    <h2>Next Step: Payment</h2>
+                                    <h2>Next Step: Payment method</h2>
                                     <p>After confirming your order, you will be directed to select your payment method.</p>
                                 </section>
                                
@@ -407,9 +413,9 @@ $totalDiscount = $totalOriginalPrice - $totalPrice;
                 <p class="item-quantity">Size: ${item.product_size} | Qty: ${item.quantity}</p>
               </div>
               <div class="item-price">
-                RM ${(item.item_total).toFixed(2)}
+                MYR ${(item.item_total).toFixed(2)}
                 ${item.discount_price && item.discount_price < item.price ? `
-                  <div class="original-price">RM ${(item.item_original_total).toFixed(2)}</div>
+                  <div class="original-price">MYR ${(item.item_original_total).toFixed(2)}</div>
                 ` : ''}
               </div>
             </div>
@@ -432,18 +438,18 @@ $totalDiscount = $totalOriginalPrice - $totalPrice;
         const totalEl = document.getElementById('checkout-total');
        
         if (countEl) countEl.textContent = totalItems;
-        if (subtotalEl) subtotalEl.textContent = `RM ${totalOriginalPrice.toFixed(2)}`;
+        if (subtotalEl) subtotalEl.textContent = `MYR ${totalOriginalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
        
         if (discountEl && discountRow) {
           if (totalDiscount > 0) {
-            discountEl.textContent = `-RM ${totalDiscount.toFixed(2)}`;
+            discountEl.textContent = `-MYR ${totalDiscount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             discountRow.style.display = 'flex';
           } else {
             discountRow.style.display = 'none';
           }
         }
        
-        if (totalEl) totalEl.textContent = `RM ${totalPrice.toFixed(2)}`;
+        if (totalEl) totalEl.textContent = `MYR ${totalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       }
 
 

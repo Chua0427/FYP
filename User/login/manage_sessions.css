@@ -1,0 +1,324 @@
+* {
+            box-sizing: border-box;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0px auto 150px auto;
+            padding: 0 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+            top: 120px;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .page-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .page-subtitle {
+            color: #7f8c8d;
+            font-size: 16px;
+            line-height: 1.5;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .session-icon i{
+            color: darkgray;
+
+        }
+
+        .meta-item i{
+            color: darkgray;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-success {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .sessions-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .sessions-header {
+            background: linear-gradient(135deg, orange 0%, orangered 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .sessions-header h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .sessions-count {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        .session-card {
+            border-bottom: 1px solid #e9ecef;
+            padding: 20px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .session-card:last-child {
+            border-bottom: none;
+        }
+        
+        .session-card:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .current-session {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            position: relative;
+        }
+        
+        .current-session::before {
+            content: "Current Session";
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .session-info {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .session-icon {
+            font-size: 24px;
+            color: #6c757d;
+            margin-top: 5px;
+            min-width: 30px;
+        }
+        
+        .session-details {
+            flex: 1;
+        }
+        
+        .device-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .session-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .session-actions {
+            margin-top: 15px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            line-height: 1;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .btn-outline-danger {
+            background-color: transparent;
+            color: #dc3545;
+            border: 2px solid #dc3545;
+        }
+        
+        .btn-outline-danger:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .logout-all-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logout-all-section h3 {
+            color: #e74c3c;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .logout-all-section p {
+            color: #6c757d;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #495057;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .back-link:hover {
+            background-color: #f8f9fa;
+            color: #5a67d8;
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                margin: 0px auto 60px auto;
+                position: relative;
+                top: 100px;
+                padding: 0 15px;
+            }
+            
+            .page-title {
+                font-size: 24px;
+            }
+            
+            .session-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .session-icon {
+                align-self: flex-start;
+            }
+            
+            .session-meta {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .current-session::before {
+                position: static;
+                display: inline-block;
+                margin-bottom: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 20px;
+            }
+            
+            .session-card {
+                padding: 15px;
+            }
+            
+            .sessions-header {
+                padding: 15px;
+            }
+        }

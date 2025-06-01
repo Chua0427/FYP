@@ -34,16 +34,22 @@ try {
         throw new Exception("User information not found");
     }
     
+    // Remove cart entries for products marked as deleted
+    $db->execute(
+        "DELETE c FROM cart c JOIN product p ON c.product_id = p.product_id WHERE p.deleted = 1 AND c.user_id = ?",
+        [$user_id]
+    );
+    
     // Fetch cart items for the logged-in user with product details
     $cartItems = $db->fetchAll(
         "SELECT c.*, p.product_name, p.price, p.discount_price, p.product_img1, p.brand,
          CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price,
          s.stock
-         FROM cart c 
-         JOIN product p ON c.product_id = p.product_id 
+         FROM cart c
+         JOIN product p ON c.product_id = p.product_id
          JOIN stock s ON c.product_id = s.product_id AND c.product_size = s.product_size
-         WHERE c.user_id = ? 
-         ORDER BY p.brand, c.added_at DESC", 
+         WHERE c.user_id = ? AND p.deleted = 0
+         ORDER BY p.brand, c.added_at DESC",
         [$user_id]
     );
     
@@ -158,6 +164,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                     $db->rollback(); // No database changes for checkout action
                     exit;
+                case 'remove_all':
+                    // Remove all cart items for this user
+                    $GLOBALS['logger']->info('Removing all cart items', ['user_id' => $user_id]);
+                    $db->execute(
+                        "DELETE FROM cart WHERE user_id = ?",
+                        [$user_id]
+                    );
+                    $db->commit();
+                    header('Location: ' . $_SERVER['PHP_SELF']);
+                    exit;
             }
         } catch (Exception $e) {
             if (isset($db) && $db->isTransactionActive()) {
@@ -199,6 +215,8 @@ $pageTitle = "Shopping Cart - VeroSports";
     <link rel="stylesheet" href="../Header_and_Footer/footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="cart.css">
+    <link rel="preload" href="critical.js" as="script">
+    <script src="critical.js" defer></script>
     <?php add_auth_notification_resources(); ?>
     <meta name="csrf-token" content="<?php echo htmlspecialchars($csrf_token); ?>">
 </head>
@@ -210,6 +228,9 @@ include __DIR__ . '/../Header_and_Footer/header.php';
     <main>
         <div class="container">
             <h1>Shopping Cart</h1>
+            <div style="text-align: right; margin: 10px 0;">
+                <button type="button" class="remove-all-btn">Remove All</button>
+            </div>
             
             <?php if (isset($error)): ?>
                 <div class="error-message">
@@ -328,6 +349,11 @@ include __DIR__ . '/../Header_and_Footer/header.php';
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
         <input type="hidden" name="action" value="remove">
         <input type="hidden" id="remove-cart-id" name="cart_id">
+    </form>
+    
+    <form id="remove-all-form" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" style="display: none;">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+        <input type="hidden" name="action" value="remove_all">
     </form>
     
     <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
@@ -775,6 +801,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Restore selections on page load
     restoreSelectedItems();
+
+    // Remove All button functionality
+    const removeAllButtons = document.querySelectorAll('.remove-all-btn');
+    const removeAllForm = document.getElementById('remove-all-form');
+    removeAllButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to remove all items from your cart?')) {
+                removeAllForm.submit();
+            }
+        });
+    });
 });
 </script>
 <script>

@@ -55,23 +55,6 @@ $logger->pushHandler($handler);
 // Make logger available globally
 $GLOBALS['logger'] = $logger;
 
-// Log application startup - only in development or at most once per day in production
-if (!$isProduction || !file_exists($logDir . '/startup_' . date('Y-m-d') . '.flag')) {
-    $logger->info('Application initialized', ['php_version' => phpversion()]);
-    if ($isProduction) {
-        touch($logDir . '/startup_' . date('Y-m-d') . '.flag');
-    }
-}
-
-// Test email functionality at startup - only in development
-if (!$isProduction && !isset($GLOBALS['email_test_done'])) {
-    $GLOBALS['email_test_done'] = true;
-    $testEmailLog = $logDir . '/email_test.log';
-    $mailResult = @mail('chiannchua05@gmail.com', 'PHP Init Email Test', 'This is a test from app/init.php', 'From: chiannchua05@gmail.com');
-    $logger->info('Email test at initialization', ['result' => $mailResult ? 'SUCCESS' : 'FAILED']);
-    file_put_contents($testEmailLog, date('[Y-m-d H:i:s]') . " Init mail test: " . ($mailResult ? "SUCCESS" : "FAILED") . PHP_EOL, FILE_APPEND);
-}
-
 // Session handling
 if (session_status() === PHP_SESSION_NONE) {
     // Configure session for better performance
