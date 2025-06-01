@@ -77,7 +77,9 @@ add_auth_notification_resources();
 ?>
 
 <header>
-    <img src="../Header_and_Footer/img/VeroSports.jpeg" class="logo">
+    <a href="../HomePage/homePage.php">
+        <img src="../Header_and_Footer/img/VeroSports.jpeg" class="logo">
+    </a>
 
     <div class="subtitleContainer">
         <div class="subTitle">

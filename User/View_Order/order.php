@@ -143,6 +143,7 @@
             <div class="order-footer">
                 <p>Order Time : <?php echo date("Y-m-d H:i", strtotime($row['order_at'])) ?></p>
                 <p>Total : <strong>RM <?php echo number_format($row['total_price'], 2) ?></strong></p>
+                <a href="../order/view_payment_details.php?order_id=<?php echo htmlspecialchars((string)$row['order_id']); ?>">View Payment Details</a>
                 <a href="../Delivery_Status_Page/delivery.php?id=<?php echo $row['order_id'] ?>">View Status</a>
             </div>
         </div>
