@@ -85,7 +85,6 @@ function ensure_session_started(): void {
 }
 
 // Set up specialized loggers with optimized settings
-
 // Auth logger - critical for security, keep at INFO level
 $authLogger = new Logger('auth');
 $authLogger->pushHandler(

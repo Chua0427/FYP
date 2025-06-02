@@ -3,13 +3,11 @@ declare(strict_types=1);
 
 /**
  * CSRF Protection Functions
- * 
  * This file contains functions for Cross-Site Request Forgery (CSRF) protection.
  */
 
 /**
  * Generate a CSRF token and store it in the session
- *
  * @return string The generated CSRF token
  */
 function generateCsrfToken(): string
@@ -32,7 +30,6 @@ function generateCsrfToken(): string
 
 /**
  * Validate a CSRF token against the one stored in session
- *
  * @param string $token The token to validate
  * @return bool True if the token is valid, false otherwise
  */
@@ -55,7 +52,6 @@ function validateCsrfToken(string $token): bool
 
 /**
  * Output a hidden CSRF token input field for forms
- *
  * @return string HTML for the CSRF token input field
  */
 function csrfTokenField(): string
@@ -66,7 +62,6 @@ function csrfTokenField(): string
 
 /**
  * Get the current CSRF token for use in AJAX requests
- *
  * @return string The current CSRF token
  */
 function getCsrfToken(): string
@@ -77,7 +72,6 @@ function getCsrfToken(): string
 /**
  * Verify a submitted CSRF token, or terminate the script if invalid
  * Typically used in POST request handlers
- * 
  * @param string $token The token to verify
  * @param bool $regenerate Whether to regenerate the token after verification
  * @return void
