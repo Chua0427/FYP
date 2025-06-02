@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", function() {
             highlightStar(this.getAttribute("data-value"));
         });
     });
+    
     // Reset stars when not hovering
     const starContainer = document.querySelector('.star-rating');
     if (starContainer) {
@@ -39,23 +40,20 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
     
-    // Handle browser back navigation if review already submitted
-    if (sessionStorage.getItem('reviewSubmitted') === 'true') {
-        window.addEventListener('pageshow', function(event) {
-            // event.persisted is true on Safari back-forward navigation
-            // performance.navigation.type === 2 indicates back/forward navigation in other browsers
-            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-                showReviewSubmittedAlert();
-            }
-        });
-    }
-    
     // Add event listener to form submit
     const reviewForm = document.querySelector('form');
     if (reviewForm) {
         reviewForm.addEventListener('submit', function(e) {
             if (validateForm(e)) {
-                sessionStorage.setItem('reviewSubmitted', 'true');
+                // Clear any existing navigation flags before submitting
+                clearNavigationFlags();
+                // Set flag to indicate successful form submission
+                try {
+                    sessionStorage.setItem('reviewSubmitted', 'true');
+                } catch(e) {
+                    // Handle case where sessionStorage is not available
+                    console.log('SessionStorage not available');
+                }
             }
         });
     }
@@ -79,8 +77,62 @@ document.addEventListener("DOMContentLoaded", function() {
         return true;
     }
     
-    function showReviewSubmittedAlert() {
-        alert('You have already submitted a review for this product');
-        window.location.href = '../order/orderhistory.php';
+    // Clear all navigation-related flags
+    function clearNavigationFlags() {
+        try {
+            sessionStorage.removeItem('formSubmitting');
+            sessionStorage.removeItem('reviewSubmitted');
+        } catch(e) {
+            console.log('SessionStorage not available');
+        }
     }
-}); 
+    
+    // Handle browser back/forward navigation - simplified approach
+    window.addEventListener('pageshow', function(event) {
+        // If this is a back/forward navigation (page from cache)
+        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+            checkForReviewSubmission();
+        }
+    });
+    
+    // Check if user is trying to access review page after submitting
+    function checkForReviewSubmission() {
+        try {
+            const reviewSubmitted = sessionStorage.getItem('reviewSubmitted');
+            if (reviewSubmitted === 'true') {
+                // Clear the flag immediately to prevent repeated alerts
+                sessionStorage.removeItem('reviewSubmitted');
+                
+                // Show alert and redirect
+                alert('You have already submitted a review for this product');
+                
+                // Redirect to order history after a brief delay
+                setTimeout(function() {
+                    window.location.href = '../order/orderhistory.php';
+                }, 100);
+            }
+        } catch(e) {
+            console.log('SessionStorage not available');
+        }
+    }
+    
+    // Clean up on page unload to prevent stale flags
+    window.addEventListener('beforeunload', function() {
+        // Only clear flags if we're not in the middle of form submission
+        const currentUrl = window.location.pathname;
+        if (currentUrl.includes('write_review') || currentUrl.includes('review')) {
+            try {
+                // Don't clear reviewSubmitted flag if form was just submitted
+                const formElements = document.querySelector('form');
+                if (formElements && !document.activeElement.closest('form')) {
+                    sessionStorage.removeItem('formSubmitting');
+                }
+            } catch(e) {
+                console.log('SessionStorage not available');
+            }
+        }
+    });
+    
+    // Initialize page - check if user shouldn't be here
+    checkForReviewSubmission();
+});

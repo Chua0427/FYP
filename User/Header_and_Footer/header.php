@@ -25,6 +25,9 @@ if (!isset($_SESSION['csrf_token'])) {
 // Ensure the Auth class is properly initialized
 Auth::init();
 
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
 // Check authentication - this will check both token and session auth
 $is_authenticated = Auth::check();
 $user_data = null;
@@ -374,6 +377,48 @@ add_auth_notification_resources();
             });
         }
     });
+
+    // Refresh cart count on page show events (back/forward navigation)
+    window.addEventListener('pageshow', function(event) {
+        // If the page is shown after back button navigation (from cache)
+        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+            refreshHeaderCartCount();
+        }
+    });
+    
+    // Function to refresh cart count from server
+    function refreshHeaderCartCount() {
+        fetch('/FYP/FYP/User/api/get_cart_count.php', {
+            method: 'GET',
+            credentials: 'same-origin',
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateHeaderCartCount(data.cart_count);
+            }
+        })
+        .catch(error => console.error('Error refreshing cart count:', error));
+    }
+    
+    // Function to update cart count in the header
+    function updateHeaderCartCount(count) {
+        const cartCount = document.getElementById('cartCount');
+        if (cartCount) {
+            if (count > 0) {
+                cartCount.textContent = count;
+                cartCount.style.display = 'flex';
+            } else {
+                cartCount.textContent = '0';
+                cartCount.style.display = 'none';
+            }
+            adjustCartCountSize();
+        }
+    }
 </script>
 
 <!-- Search popup and related JavaScript has been removed, but the search icon in the header is maintained --> 

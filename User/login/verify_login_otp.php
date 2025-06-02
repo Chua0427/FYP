@@ -188,11 +188,9 @@ if (isset($_POST['otp_submit'])) {
                 $_SESSION['user_id']
             );
             
-            // Create persistent token if remember me was checked
-            $remember_me = isset($_SESSION['remember_me']) && $_SESSION['remember_me'] === true;
-            if ($remember_me) {
-                Auth::login($_SESSION['user_id'], $_SESSION['temp_user'], true);
-            }
+            // Create authentication token and cookie based on remember preference (1 day if not remembered, infinite if remembered)
+            $remember_me = $_SESSION['remember_me'] ?? false;
+            Auth::login((int)$_SESSION['user_id'], $_SESSION['temp_user'], (bool)$remember_me);
             
             // Clear sensitive session data
             unset($_SESSION['login_otp']);
@@ -326,6 +324,10 @@ function isOTPExpired() {
         .link-button:hover {
             color: #0056b3;
             text-decoration: none;
+        }
+
+        .right-section h2{
+            text-align: center;
         }
     </style>
 </head>

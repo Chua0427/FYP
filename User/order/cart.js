@@ -668,3 +668,46 @@ function ensureFormHasCsrfToken(form, token) {
     }
     tokenInput.value = token;
 }
+
+// Refresh cart count on back/forward navigation
+window.addEventListener('pageshow', function(event) {
+    // If the page is shown after back button navigation (from cache)
+    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+        // Refresh cart count with the latest data from server
+        refreshCartCount();
+    }
+});
+
+// Function to refresh cart count
+function refreshCartCount() {
+    fetch('/FYP/FYP/User/api/get_cart_count.php', {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update cart counter in header
+            const cartCount = document.getElementById('cartCount');
+            if (cartCount) {
+                const count = data.cart_count;
+                if (count > 0) {
+                    cartCount.textContent = count;
+                    cartCount.style.display = 'flex';
+                    // Add pulse animation
+                    cartCount.classList.add('pulse');
+                    setTimeout(() => {
+                        cartCount.classList.remove('pulse');
+                    }, 500);
+                } else {
+                    cartCount.style.display = 'none';
+                }
+            }
+        }
+    })
+    .catch(error => console.error('Error refreshing cart count:', error));
+}

@@ -1,6 +1,10 @@
 <?php
 declare(strict_types=1);
 session_start();
+// Prevent caching to avoid stale review form on back navigation
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/auth.php';
@@ -59,6 +63,12 @@ try {
         [$user_id, $product_id, $order_id]
     );
     
+    // If already reviewed, immediately alert and redirect to order history
+    if ($existingReview) {
+        echo "<script>alert('You have already submitted a review for this product');window.location.href='../order/orderhistory.php';</script>";
+        exit;
+    }
+    
     // If this is a form submission
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Validate CSRF token
@@ -75,31 +85,20 @@ try {
         } elseif (empty($reviewText)) {
             $error = "Please enter your review text";
         } else {
-            // If user already reviewed, update the review
-            if ($existingReview) {
-                // Update existing review for this order
-                $result = $db->execute(
-                    "UPDATE review SET rating = ?, review_text = ?, review_at = CURRENT_TIMESTAMP 
-                     WHERE user_id = ? AND product_id = ? AND order_id = ?",
-                    [$rating, $reviewText, $user_id, $product_id, $order_id]
-                );
-                $success = "Your review has been updated";
-            } else {
-                // Insert new review for this order
-                $result = $db->execute(
-                    "INSERT INTO review (user_id, product_id, order_id, rating, review_text) 
-                     VALUES (?, ?, ?, ?, ?)",
-                    [$user_id, $product_id, $order_id, $rating, $reviewText]
-                );
-                $success = "Thank you for your review!";
-            }
+            // Insert new review for this order
+            $result = $db->execute(
+                "INSERT INTO review (user_id, product_id, order_id, rating, review_text) 
+                 VALUES (?, ?, ?, ?, ?)",
+                [$user_id, $product_id, $order_id, $rating, $reviewText]
+            );
+            $success = "Thank you for your review!";
             
             // Log the review action
             $logger->info('User submitted product review', [
                 'user_id' => $user_id,
                 'product_id' => $product_id,
                 'rating' => $rating,
-                'action' => $existingReview ? 'update' : 'new'
+                'action' => 'new'
             ]);
             
             // Set JavaScript session storage flag before redirecting
@@ -168,13 +167,13 @@ try {
                         <i class="fas fa-star star" data-value="1"></i>
                     </div>
                     
-                    <input type="hidden" id="ratingValue" name="ratingValue" value="<?php echo isset($existingReview) ? htmlspecialchars((string)$existingReview['rating']) : '0'; ?>">
+                    <input type="hidden" id="ratingValue" name="ratingValue" value="0">
                     
                     <h3>Share your review about recently purchased product!</h3>
-                    <textarea id="review" name="review" placeholder="Please write your comment..."><?php echo isset($existingReview) ? htmlspecialchars($existingReview['review_text']) : ''; ?></textarea>
+                    <textarea id="review" name="review" placeholder="Please write your comment..."></textarea>
                     
                     <button type="submit" class="submit-btn">
-                        <?php echo isset($existingReview) ? 'Update Review' : 'Submit'; ?>
+                        Submit
                     </button>
                     
                     <a href="../order/orderhistory.php" class="return-link">Return to Order History</a>
