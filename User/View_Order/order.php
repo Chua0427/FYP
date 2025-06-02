@@ -106,6 +106,28 @@
         .order-footer a:hover {
             background: #e64a19;
         }
+
+        #button{
+            position: relative;
+            top: 100px;
+            margin-left: 30px;
+            padding: 10px 20px;
+            color: black;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            background-color: lightgray;
+        }
+
+        #button i{
+            color: black;
+        }
+
+        #button:hover{
+            background-color: gray;
+        }
+
     </style>
 </head>
 <body>
@@ -113,7 +135,7 @@
 <?php 
     include __DIR__ . '/../Header_and_Footer/header.php'; 
 ?>
-
+<button onclick="history.back()" id="button"><i class="fa-solid fa-arrow-left"></i>  Go Back</button>
 <div class="container">
     <?php if($result1->num_rows>0): ?>
     <?php while($row = $result1->fetch_assoc()): ?>
