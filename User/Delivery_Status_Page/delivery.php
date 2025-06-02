@@ -38,6 +38,8 @@
     
     ?>
 
+    <button onclick="history.back()" id="button"><i class="fa-solid fa-arrow-left"></i>  Go Back</button>
+
     <h1>Tracking Delivery</h1><p></p>
 
 
