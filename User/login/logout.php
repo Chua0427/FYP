@@ -40,5 +40,4 @@ session_destroy();
 
 // Redirect to login page
 header("Location: /FYP/FYP/User/login/login.php");
-exit;
-?> 
+exit; 
