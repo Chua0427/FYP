@@ -163,6 +163,9 @@ try {
                 // Create order using OrderService
                 $orderService = new OrderService($db, $GLOBALS['logger']);
                 
+                // Get selected cart items from session
+                $selectedCartItems = isset($_SESSION['selected_cart_items']) ? $_SESSION['selected_cart_items'] : null;
+                
                 // Create order from cart items
                 $orderResult = $orderService->createOrderFromCart(
                     $user_id,
@@ -173,7 +176,7 @@ try {
                         'stripe_id' => $charge->id,
                         'payment_status' => 'completed'
                     ],
-                    null, // All cart items
+                    $selectedCartItems, // Selected cart items from session
                     true  // Clear cart after order creation
                 );
                 
@@ -294,6 +297,7 @@ try {
                 unset($_SESSION['checkout_total_price']);
                 unset($_SESSION['checkout_cart_items']);
                 unset($_SESSION['checkout_payment_method']);
+                unset($_SESSION['selected_cart_items']);  // Clear selected cart items
                 
                 // Commit the transaction
                 $db->commit();
