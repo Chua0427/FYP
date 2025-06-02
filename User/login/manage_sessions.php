@@ -4,6 +4,7 @@ session_start();
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/auth.php';
+require_once __DIR__ . '/../app/ip_geolocator.php';
 
 // Ensure user is authenticated
 Auth::requireAuth();
@@ -228,6 +229,12 @@ $current_user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
                     $is_current = ($cookie_token && isset($session['token']) && $cookie_token === $session['token']) ||
                                  (!$cookie_token && $current_user_agent === $session['user_agent']);
                     $device_info = getDeviceInfo($session['user_agent']);
+                    $remembered = ($session['expires_at'] === '9999-12-31 23:59:59');
+                    
+                    // Get geolocation info
+                    $ip_address = $session['ip_address'] ?? 'Unknown';
+                    $location = IPGeolocator::getLocation($ip_address);
+                    $location_str = IPGeolocator::formatLocation($location);
                 ?>
                     <div class="session-card <?php echo $is_current ? 'current-session' : ''; ?>">
                         <div class="session-info">
@@ -239,7 +246,13 @@ $current_user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
                                 <div class="session-meta">
                                     <div class="meta-item">
                                         <i class="fas fa-map-marker-alt"></i>
-                                        <span><?php echo htmlspecialchars($session['ip_address'] ?? 'Unknown Location'); ?></span>
+                                        <span><?php echo htmlspecialchars($location_str); ?></span>
+                                        <?php if (!empty($location['country_code'])): ?>
+                                            <img src="https://flagcdn.com/16x12/<?php echo strtolower($location['country_code']); ?>.png" 
+                                                alt="<?php echo htmlspecialchars($location['country']); ?>" 
+                                                class="country-flag"
+                                                title="<?php echo htmlspecialchars($location['country']); ?>">
+                                        <?php endif; ?>
                                     </div>
                                     <div class="meta-item">
                                         <i class="fas fa-clock"></i>
@@ -253,6 +266,10 @@ $current_user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
                                                 }
                                             ?>
                                         </span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fas <?php echo $remembered ? 'fa-check-circle' : 'fa-times-circle'; ?>" style="color: <?php echo $remembered ? '#28a745' : '#dc3545'; ?>;"></i>
+                                        <span><?php echo $remembered ? 'Remember Me' : 'Session (1 day)'; ?></span>
                                     </div>
                                 </div>
                                 

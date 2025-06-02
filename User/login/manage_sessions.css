@@ -323,3 +323,19 @@
                 padding: 15px;
             }
         }
+
+
+        /* Country flag styles */
+        .country-flag {
+            display: inline-block;
+            margin-left: 5px;
+            vertical-align: middle;
+            border: 1px solid #ddd;
+            border-radius: 2px;
+        }
+
+        /* Additional meta item styling for geolocation */
+        .meta-item span {
+            display: inline-flex;
+            align-items: center;
+        }

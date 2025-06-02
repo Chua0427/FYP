@@ -171,23 +171,27 @@ class Auth {
     public static function login(int $user_id, array $user_data, bool $remember = false): string {
         self::init();
         
-        // Generate token
-        $token = self::$tokenAuth->generateToken($user_id);
+        // Generate token with appropriate expiry: infinite if remember, 1 day otherwise
+        if ($remember) {
+            $token = self::$tokenAuth->generateToken($user_id, -1);
+            // Cookie expiry far in the future (10 years)
+            $cookieExpiry = time() + (86400 * 365 * 10);
+        } else {
+            $token = self::$tokenAuth->generateToken($user_id, 86400);
+            // Cookie expiry for 1 day
+            $cookieExpiry = time() + 86400;
+        }
         
         // Store user data
         self::$user = $user_data;
         
         // Set cookie with HttpOnly and secure flags
-        $expiry = $remember ? time() + (86400 * 30) : 0; // 30 days if remember, otherwise session cookie
         $secure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
-        
-        // Domain set to empty string to restrict it to current domain only
-        // and prevent it from being shared across subdomains
         setcookie(
             'auth_token',
             $token,
             [
-                'expires' => $expiry,
+                'expires' => $cookieExpiry,
                 'path' => '/',
                 'domain' => '',
                 'secure' => $secure,
@@ -263,7 +267,8 @@ class Auth {
         
         // Revoke token if exists
         if ($token) {
-            self::$tokenAuth->revokeToken($token);
+            // Permanently delete token record for this device
+            self::$tokenAuth->deleteToken($token);
         }
         
         // Clear cookie with same settings as when it was set
