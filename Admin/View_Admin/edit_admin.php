@@ -121,12 +121,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div class="form-group">
                             <label>Email:</label>
                             <input type="email" name="email" id="email" value="<?php echo ($admin['email']); ?>" required>
-                            <span id="emailError" style="color: red; display: none; text-align: center; font-size: 14px;">Please Enter Valid Email...</span>
                         </div>
                         <div class="form-group">
                             <label>Mobile Number:</label>
                             <input type="tel" name="mobile_number" id="mobile_number" value="<?php echo ($admin['mobile_number']); ?>" required>
-                            <span id="telError" style="color: red; display: none; text-align: center; font-size: 14px;">Please Enter Valid Mobile Number...</span>
                         </div>
                     </div>
 
@@ -134,7 +132,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div class="form-group">
                             <label style="display: flex; justify-content:space-between;">Password (leave empty to keep current): <i class="fa-solid fa-eye" id="Password"></i></label>
                             <input type="password" name="password" id="password">
-                            <div id="strength" style="display:block; font-size:14px; font-size:14px; text-align:center;"></div>
+                            <div id="passwordRequirements" style="font-size: 14px; line-height: 1.5; margin-bottom: 5px;">
+                                <div><span id="req-length">❌</span> At least 8 characters</div>
+                                <div><span id="req-lowercase">❌</span> At least one lowercase letter</div>
+                                <div><span id="req-uppercase">❌</span> At least one uppercase letter</div>
+                                <div><span id="req-digit">❌</span> At least one digit</div>
+                                <div><span id="req-symbol">❌</span> At least one symbol (@$!%*?&.,)</div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label style="display: flex; justify-content:space-between;">Confirm Password:  <i class="fa-solid fa-eye" id="ConfirmPassword"></i></label>
@@ -154,7 +158,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div class="form-group">
                             <label>Post Code:</label>
                             <input type="text" name="postcode" id="postcode" value="<?php echo ($admin['postcode']); ?>" required>
-                            <span id="postcodeError" style="color:red; display:none; text-align:center; font-size:14px;">Please Enter Valid Postcode...</span>
                         </div>
                         <div class="form-group">
                             <label>State:</label>

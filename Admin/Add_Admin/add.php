@@ -46,9 +46,15 @@
 
                 <div class="column1">
                     <div class="form-group">
-                        <label style="display: flex; justify-content:space-between;">Password: (1 lower, 1 upper, 1 digit, 1 symbol, at least 8)<i class="fa-solid fa-eye" id="Password"></i></label>
+                        <label style="display: flex; justify-content:space-between;">Password: <i class="fa-solid fa-eye" id="Password"></i></label>
                         <input type="password" name="password" id="password" required >
-                        <div id="strength" style="display:block; font-size:14px; font-size:14px; text-align:center;"></div>
+                        <div id="passwordRequirements" style="font-size: 14px; line-height: 1.5; margin-bottom: 5px;">
+                                <div><span id="req-length">❌</span> At least 8 characters</div>
+                                <div><span id="req-lowercase">❌</span> At least one lowercase letter</div>
+                                <div><span id="req-uppercase">❌</span> At least one uppercase letter</div>
+                                <div><span id="req-digit">❌</span> At least one digit</div>
+                                <div><span id="req-symbol">❌</span> At least one symbol (@$!%*?&.,)</div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label style="display: flex; justify-content:space-between;">Confirm Password:  <i class="fa-solid fa-eye" id="ConfirmPassword"></i></label>
