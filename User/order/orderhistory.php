@@ -13,6 +13,10 @@ require_once __DIR__ . '/../payment/db.php';
 
 // Check if user is authenticated
 Auth::requireAuth();
+// Prevent browser caching to reflect updated review status on back navigation
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
 
 // Set up logger for this page
 $logger = $GLOBALS['logger'];
@@ -55,14 +59,20 @@ try {
     
     // Add reference filter if provided
     if (!empty($reference)) {
-        // Filter orders containing products matching search term
-        $query .= " AND EXISTS (
-            SELECT 1 FROM order_items oi
-            JOIN product p ON oi.product_id = p.product_id
-            WHERE oi.order_id = o.order_id
-              AND p.product_name LIKE ?
-        )";
-        $params[] = '%' . $reference . '%';
+        // If the reference is purely numeric, treat it as an Order ID search
+        if (ctype_digit($reference)) {
+            $query .= " AND o.order_id = ?";
+            $params[] = (int)$reference;
+        } else {
+            // Otherwise, search by product name
+            $query .= " AND EXISTS (
+                SELECT 1 FROM order_items oi
+                JOIN product p ON oi.product_id = p.product_id
+                WHERE oi.order_id = o.order_id
+                  AND p.product_name LIKE ?
+            )";
+            $params[] = '%' . $reference . '%';
+        }
     }
     
     // Add sorting based on user selection
@@ -199,6 +209,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
     <link rel="stylesheet" href="../Header_and_Footer/footer.css">
     <link rel="stylesheet" href="orderhistory.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 </head>
 <body>
     <?php include __DIR__ . '/../Header_and_Footer/header.php'; ?>
@@ -233,15 +246,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
             <form method="post" class="filter-form" id="orderForm">
                 <div class="filter-group">
                     <label for="from_date">From Date</label>
-                    <input type="date" id="from_date" name="from_date" value="<?php echo htmlspecialchars($from_date); ?>">
+                    <div class="date-input-container">
+                        <input type="text" id="from_date" name="from_date" placeholder="YYYY-MM-DD" value="<?php echo htmlspecialchars($from_date); ?>" autocomplete="off">
+                        <i class="fas fa-calendar-alt calendar-icon" id="from_date_icon"></i>
+                    </div>
                 </div>
                 <div class="filter-group">
                     <label for="to_date">To Date</label>
-                    <input type="date" id="to_date" name="to_date" value="<?php echo htmlspecialchars($to_date); ?>">
+                    <div class="date-input-container">
+                        <input type="text" id="to_date" name="to_date" placeholder="YYYY-MM-DD" value="<?php echo htmlspecialchars($to_date); ?>" autocomplete="off">
+                        <i class="fas fa-calendar-alt calendar-icon" id="to_date_icon"></i>
+                    </div>
                 </div>
                 <div class="filter-group">
                     <label for="reference">Reference</label>
-                    <input type="text" id="reference" name="reference" placeholder="Enter any reference letter" value="<?php echo htmlspecialchars($reference); ?>">
+                    <input type="text" id="reference" name="reference" placeholder="Enter Any Reference" value="<?php echo htmlspecialchars($reference); ?>">
                 </div>
                 <div class="filter-group">
                     <label for="sort_by">Sort By</label>
@@ -332,7 +351,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
                                             </a>
                                         <?php else: ?>
                                             <span class="already-reviewed">
-                                                <i class="fas fa-check-circle"></i> Reviewed
+                                            Reviewed
                                             </span>
                                         <?php endif; ?>
                                         <form method="post" style="margin: 0;">
@@ -361,6 +380,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
             document.getElementById('sort_by').value = 'order_date_desc';
             form.submit();
         }
+
+        $(document).ready(function() {
+            // Common datepicker options
+            const datepickerOptions = {
+                dateFormat: 'yy-mm-dd',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: '2020:+0',
+                showOtherMonths: true,
+                selectOtherMonths: true
+            };
+            
+            // Initialize datepickers
+            $("#from_date").datepicker(datepickerOptions);
+            $("#to_date").datepicker(datepickerOptions);
+            
+            // Add click event for calendar icons
+            $("#from_date_icon").click(function() {
+                $("#from_date").focus();
+            });
+            
+            $("#to_date_icon").click(function() {
+                $("#to_date").focus();
+            });
+            
+            // Validate date format when manually typed
+            function validateDateFormat(dateString) {
+                if (!dateString) return true;
+                // Check yyyy-mm-dd format
+                const regex = /^\d{4}-\d{2}-\d{2}$/;
+                if (!regex.test(dateString)) return false;
+                
+                // Check if it's a valid date
+                const date = new Date(dateString);
+                return !isNaN(date.getTime());
+            }
+            
+            // Add form submit validation
+            $("#orderForm").submit(function(e) {
+                const fromDate = $("#from_date").val();
+                const toDate = $("#to_date").val();
+                
+                if (fromDate && !validateDateFormat(fromDate)) {
+                    alert("Please enter a valid From Date in YYYY-MM-DD format.");
+                    e.preventDefault();
+                    return false;
+                }
+                
+                if (toDate && !validateDateFormat(toDate)) {
+                    alert("Please enter a valid To Date in YYYY-MM-DD format.");
+                    e.preventDefault();
+                    return false;
+                }
+                
+                if (fromDate && toDate && new Date(fromDate) > new Date(toDate)) {
+                    alert("From Date cannot be later than To Date.");
+                    e.preventDefault();
+                    return false;
+                }
+                
+                return true;
+            });
+        });
     </script>
 
     <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>

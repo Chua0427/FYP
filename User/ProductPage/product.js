@@ -23,29 +23,23 @@ document.addEventListener("DOMContentLoaded", function () {
     let smallImages = document.querySelectorAll(".small-img");
     let currentIndex=0;
 
-    // Handle small image clicks - optimize with event delegation
-    const imageContainer = document.querySelector('.small-img-group');
-    if (imageContainer) {
-        imageContainer.addEventListener('click', function(e) {
-            if (e.target.classList.contains('small-img')) {
-                mainImage.src = e.target.src;
-                
-                // Update current index for navigation
-                smallImages.forEach((img, index) => {
-                    if (img === e.target) currentIndex = index;
-                });
-            }
-        });
-    } else {
-        // Fall back to individual listeners if container not found
-        smallImages.forEach((img, index) => {
-            img.addEventListener('click', function() {
-                mainImage.src = this.src;
-                currentIndex = index;
-            });
-        });
+
+    smallImages[0].onclick = function(){
+        mainImage.src=smallImages[0].src
+    }
+
+    smallImages[1].onclick = function(){
+        mainImage.src=smallImages[1].src
+    }
+
+    smallImages[2].onclick = function(){
+        mainImage.src=smallImages[2].src
     }
     
+    smallImages[3].onclick = function(){
+        mainImage.src = smallImages[3].src;
+    };
+
     // Handle navigation buttons
     const prevButton = document.getElementById("productButton");
     const nextButton = document.getElementById("productnextButton");
