@@ -310,8 +310,8 @@
         .product-actions {
             display: flex;
             flex-direction: column;
+            align-items: center;
             gap: 8px;
-            align-items: flex-end;
         }
 
         .product-actions .btn {
@@ -322,9 +322,10 @@
 
         .already-reviewed {
             color: #28a745;
+            text-align: center;
             font-size: 12px;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             gap: 4px;
             font-weight: 500;
         }
@@ -445,5 +446,74 @@
             .order-footer-actions {
                 flex-direction: column;
                 gap: 8px;
+            }
+        }
+
+        /* Date picker styling */
+        .date-input-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .date-input-container input[type="text"] {
+            width: 100%;
+            padding: 8px 30px 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .date-input-container .calendar-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            cursor: pointer;
+        }
+
+        .date-input-container input[type="text"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Datepicker customization */
+        .ui-datepicker {
+            font-family: 'Arial', sans-serif;
+            font-size: 14px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .ui-datepicker .ui-datepicker-header {
+            background: var(--primary-color);
+            color: white;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .ui-datepicker .ui-datepicker-title {
+            font-weight: bold;
+        }
+
+        .ui-datepicker .ui-state-default {
+            border: 1px solid #f6f6f6;
+            background: #f6f6f6;
+            color: #333;
+        }
+
+        .ui-datepicker .ui-state-active,
+        .ui-datepicker .ui-state-hover {
+            border: 1px solid var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Responsive styles for date picker */
+        @media (max-width: 768px) {
+            .date-input-container input[type="text"] {
+                font-size: 13px;
+                padding: 6px 30px 6px 8px;
             }
         }

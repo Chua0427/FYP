@@ -327,6 +327,10 @@ function isOTPExpired() {
             color: #0056b3;
             text-decoration: none;
         }
+
+        .right-section h2{
+            text-align: center;
+        }
     </style>
 </head>
 <body>
