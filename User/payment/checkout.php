@@ -70,33 +70,60 @@ try {
             throw new Exception("No items selected for checkout.");
         }
 
-        // Delete unchecked items for this user
-        $placeholders = implode(',', array_fill(0, count($selectedItems), '?'));
-        $params = array_merge([$user_id], $selectedItems);
-        $db->execute(
-            "DELETE FROM cart WHERE user_id = ? AND cart_id NOT IN ($placeholders)",
-            $params
-        );
+        // Store selected cart IDs in session to maintain selection through the checkout flow
+        $_SESSION['selected_cart_items'] = $selectedItems;
+        
+        // Log selected items
+        if (isset($GLOBALS['logger'])) {
+            $GLOBALS['logger']->info('User selected items for checkout', [
+                'user_id' => $user_id, 
+                'selected_items' => $selectedItems
+            ]);
+        }
     }
-   
+    
+    // Check if we have previously selected items in session
+    if (isset($_SESSION['selected_cart_items'])) {
+        $selectedItems = $_SESSION['selected_cart_items'];
+    } else {
+        // If no selection in session, select all cart items (fallback)
+        $allCartItems = $db->fetchAll(
+            "SELECT cart_id FROM cart WHERE user_id = ?",
+            [$user_id]
+        );
+        $selectedItems = array_map(function($item) { 
+            return (int)$item['cart_id']; 
+        }, $allCartItems);
+        
+        // Store in session
+        $_SESSION['selected_cart_items'] = $selectedItems;
+    }
+    
     // Clear any previous checkout data to ensure fresh totals
     unset($_SESSION['checkout_cart_items'], $_SESSION['checkout_total_price']);
-   
-    // Fetch fresh cart items - Fix the cart fetching issue
-    $cartItems = $db->fetchAll(
-        "SELECT c.*, p.product_name, p.price, p.discount_price, p.product_img1, p.brand,
-         CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price,
-         s.stock
-         FROM cart c
-         JOIN product p ON c.product_id = p.product_id
-         JOIN stock s ON c.product_id = s.product_id AND c.product_size = s.product_size
-         WHERE c.user_id = ? AND p.deleted = 0
-         ORDER BY c.added_at DESC",
-        [$user_id]
-    );
-   
+    
+    // Fetch fresh cart items - only selected ones
+    $placeholders = implode(',', array_fill(0, count($selectedItems), '?'));
+    $params = array_merge([$user_id], $selectedItems);
+    
+    if (!empty($selectedItems)) {
+        $cartItems = $db->fetchAll(
+            "SELECT c.*, p.product_name, p.price, p.discount_price, p.product_img1, p.brand,
+             CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price,
+             s.stock
+             FROM cart c
+             JOIN product p ON c.product_id = p.product_id
+             JOIN stock s ON c.product_id = s.product_id AND c.product_size = s.product_size
+             WHERE c.user_id = ? AND c.cart_id IN ($placeholders) AND p.deleted = 0
+             ORDER BY c.added_at DESC",
+            $params
+        );
+    } else {
+        $cartItems = [];
+    }
+    
     if (empty($cartItems)) {
-        throw new Exception("Your cart is empty. Please add items before proceeding to checkout.");
+        throw new Exception("No items selected for checkout. Please select items from your cart.");
     }
    
     // Get user details for shipping
@@ -342,7 +369,7 @@ $totalDiscount = $totalOriginalPrice - $totalPrice;
     <script>
       // Enhanced cart data fetching with robust error handling
       function fetchCheckoutSummary() {
-        fetch('../api/get_cart_data.php', {
+        fetch('../api/get_cart_data.php?checkout=1', {
           credentials: 'same-origin',
           method: 'GET',
           headers: {

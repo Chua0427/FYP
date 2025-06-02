@@ -249,7 +249,7 @@ include __DIR__ . '/../Header_and_Footer/header.php';
                     <?php foreach ($cartByStore as $storeName => $items): ?>
                         <div class="store">
                             <h3>
-                                <input type="checkbox" checked>
+                                <input type="checkbox" class="store-checkbox" checked>
                                 <a href="../All_Product_Page/all_product.php?brand=<?php echo urlencode($storeName); ?>" class="store-link">
                                     <?php echo htmlspecialchars($storeName); ?>
                                 </a>
@@ -257,7 +257,7 @@ include __DIR__ . '/../Header_and_Footer/header.php';
                             
                             <?php foreach ($items as $item): ?>
                                 <div class="product">
-                                    <input type="checkbox" class="product-select" name="selected_items[]" value="<?php echo $item['cart_id']; ?>" checked data-price="<?php echo $item['final_price'] * $item['quantity']; ?>">
+                                    <input type="checkbox" class="product-select" name="selected_items[]" value="<?php echo $item['cart_id']; ?>" checked data-price="<?php echo $item['final_price'] * $item['quantity']; ?>" data-store="<?php echo htmlspecialchars($storeName); ?>">
                                     <a href="../ProductPage/product.php?id=<?php echo $item['product_id']; ?>" class="product-link">
                                         <img src="<?php echo '../../upload/' . htmlspecialchars($item['product_img1']); ?>" alt="<?php echo htmlspecialchars($item['product_name']); ?>">
                                     </a>
@@ -406,14 +406,19 @@ document.addEventListener('DOMContentLoaded', function() {
     storeCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function() {
             const storeDiv = this.closest('.store');
+            const storeName = storeDiv.querySelector('.store-link').textContent.trim();
             const isChecked = this.checked;
             
-            const productCheckboxes = storeDiv.querySelectorAll('.product-select');
+            // Select/deselect all products from this store
+            const productCheckboxes = document.querySelectorAll(`.product-select[data-store="${storeName}"]`);
             productCheckboxes.forEach(productCheckbox => {
                 productCheckbox.checked = isChecked;
             });
             
             updateCartTotals();
+            
+            // Save selection state to session storage
+            saveSelectedItems();
         });
     });
     
@@ -781,12 +786,24 @@ document.addEventListener('DOMContentLoaded', function() {
         if (saved) {
             try {
                 const selected = JSON.parse(saved);
+                
+                // First uncheck all checkboxes
+                document.querySelectorAll('.product-select').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                
+                // Then check only the saved ones
                 selected.forEach(cartId => {
                     const checkbox = document.querySelector(`.product-select[value="${cartId}"]`);
                     if (checkbox) {
                         checkbox.checked = true;
                     }
                 });
+                
+                // Update store checkboxes to match
+                updateStoreCheckboxes();
+                
+                // Update totals to reflect restored selections
                 updateCartTotals();
             } catch (e) {
                 console.error('Error restoring selected items:', e);
@@ -794,13 +811,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Save selections on change
+    // Function to update store checkboxes based on product selections
+    function updateStoreCheckboxes() {
+        const storeDivs = document.querySelectorAll('.store');
+        storeDivs.forEach(storeDiv => {
+            const storeCheckbox = storeDiv.querySelector('.store-checkbox');
+            const productCheckboxes = storeDiv.querySelectorAll('.product-select');
+            const checkedProducts = storeDiv.querySelectorAll('.product-select:checked');
+            
+            if (productCheckboxes.length > 0) {
+                // Set store checkbox state based on whether all products are checked
+                storeCheckbox.checked = productCheckboxes.length === checkedProducts.length;
+                
+                // Set indeterminate state if some but not all products are checked
+                storeCheckbox.indeterminate = checkedProducts.length > 0 && checkedProducts.length < productCheckboxes.length;
+            }
+        });
+    }
+    
+    // Update store checkboxes when product checkboxes change
     productCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', saveSelectedItems);
+        checkbox.addEventListener('change', function() {
+            updateStoreCheckboxes();
+            updateCartTotals();
+            saveSelectedItems();
+        });
     });
     
-    // Restore selections on page load
-    restoreSelectedItems();
+    // Initial update of store checkboxes
+    updateStoreCheckboxes();
 
     // Remove All button functionality
     const removeAllButtons = document.querySelectorAll('.remove-all-btn');

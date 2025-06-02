@@ -35,18 +35,46 @@ try {
         [$user_id]
     );
     
-    // Fetch cart items for the logged-in user with product details
-    $cartItems = $db->fetchAll(
-        "SELECT c.*, p.product_name, p.price, p.discount_price, p.product_img1, p.brand,
-         CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price,
-         s.stock
-         FROM cart c
-         JOIN product p ON c.product_id = p.product_id
-         JOIN stock s ON c.product_id = s.product_id AND c.product_size = s.product_size
-         WHERE c.user_id = ? AND p.deleted = 0
-         ORDER BY p.brand, c.added_at DESC",
-        [$user_id]
-    );
+    // Check if this is for checkout page
+    $isCheckout = isset($_GET['checkout']) && $_GET['checkout'] === '1';
+    
+    // If checkout and we have selected items in session, only include those
+    if ($isCheckout && isset($_SESSION['selected_cart_items'])) {
+        $selectedItems = $_SESSION['selected_cart_items'];
+        
+        if (!empty($selectedItems)) {
+            $placeholders = implode(',', array_fill(0, count($selectedItems), '?'));
+            $params = array_merge([$user_id], $selectedItems);
+            
+            $cartItems = $db->fetchAll(
+                "SELECT c.*, p.product_name, p.price, p.discount_price, p.product_img1, p.brand,
+                 CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price,
+                 s.stock
+                 FROM cart c
+                 JOIN product p ON c.product_id = p.product_id
+                 JOIN stock s ON c.product_id = s.product_id AND c.product_size = s.product_size
+                 WHERE c.user_id = ? AND c.cart_id IN ($placeholders) AND p.deleted = 0
+                 ORDER BY p.brand, c.added_at DESC",
+                $params
+            );
+        } else {
+            // No items selected, return empty array
+            $cartItems = [];
+        }
+    } else {
+        // Regular cart view - fetch all items
+        $cartItems = $db->fetchAll(
+            "SELECT c.*, p.product_name, p.price, p.discount_price, p.product_img1, p.brand,
+             CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price,
+             s.stock
+             FROM cart c
+             JOIN product p ON c.product_id = p.product_id
+             JOIN stock s ON c.product_id = s.product_id AND c.product_size = s.product_size
+             WHERE c.user_id = ? AND p.deleted = 0
+             ORDER BY p.brand, c.added_at DESC",
+            [$user_id]
+        );
+    }
     
     // Calculate totals
     $totalItems = 0;

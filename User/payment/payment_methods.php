@@ -30,6 +30,16 @@ try {
     // Initialize Database
     $db = new Database();
     
+    // Check if we have selected items in session
+    if (!isset($_SESSION['selected_cart_items'])) {
+        throw new Exception("No items selected for checkout. Please return to your cart and select items.");
+    }
+    
+    $selectedItems = $_SESSION['selected_cart_items'];
+    if (empty($selectedItems)) {
+        throw new Exception("No items selected for checkout. Please return to your cart and select items.");
+    }
+    
     // Check if we have cart items in session
     if (isset($_SESSION['checkout_cart_items'])) {
         $cartItems = $_SESSION['checkout_cart_items'];
@@ -43,14 +53,22 @@ try {
             return strcmp($b['added_at'] ?? '', $a['added_at'] ?? '');
         });
     } else {
-        // Fetch cart items directly if not in session
+        // Fetch cart items directly if not in session - only selected items
+        $placeholders = implode(',', array_fill(0, count($selectedItems), '?'));
+        $params = array_merge([$user_id], $selectedItems);
+        
         $cartItems = $db->fetchAll(
-            "SELECT c.*, p.product_name, p.price, p.discount_price, p.product_img1, p.brand,\n             CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price\n             FROM cart c\n             JOIN product p ON c.product_id = p.product_id\n             WHERE c.user_id = ?\n             ORDER BY p.brand ASC, c.added_at DESC",
-            [$user_id]
+            "SELECT c.*, p.product_name, p.price, p.discount_price, p.product_img1, p.brand,
+             CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.price END as final_price
+             FROM cart c
+             JOIN product p ON c.product_id = p.product_id
+             WHERE c.user_id = ? AND c.cart_id IN ($placeholders)
+             ORDER BY p.brand ASC, c.added_at DESC",
+            $params
         );
         
         if (empty($cartItems)) {
-            throw new Exception("Your cart is empty. Please add items before proceeding to checkout.");
+            throw new Exception("Your selected items are no longer available. Please return to your cart.");
         }
         
         // Store cart items in session
