@@ -1,57 +1,77 @@
-# Cross-Browser Authentication System
+# VeroSports Authentication System
 
-This authentication system allows users to stay logged in across different browsers and devices when the "Remember Me" option is checked during login.
+A secure, modern authentication system that supports cross-browser/device login management and IP geolocation tracking.
+
+## Features
+
+### Core Authentication
+- **Session Management**: Regular session-based authentication
+- **Persistent Login**: "Remember Me" feature for extended authentication periods
+- **Cross-Device Support**: Stays logged in across different browsers and devices
+
+### Security
+- **Token Security**:
+  - High-entropy tokens generated with secure random bytes
+  - HttpOnly cookies to prevent JavaScript access
+  - HMAC protection for stored tokens
+  
+- **Session Protection**:
+  - Session fingerprinting prevents hijacking
+  - Secure session regeneration after login
+  - CSRF token validation for sensitive actions
+  
+- **Activity Monitoring**:
+  - IP address tracking with geolocation
+  - User agent fingerprinting
+  - Comprehensive logging of login activities
+
+### Device Management
+- View all active sessions across devices
+- Identify current session with visual indicator
+- Log out from specific devices remotely
+- One-click option to log out from all devices except current one
+- Real-time device and browser identification
+
+### IP Geolocation
+- Displays physical locations of login attempts
+- Shows city, region, and country information
+- Visual indicators with country flags
+- Efficient caching system to minimize API calls
+- Multiple fallback APIs for reliable location data
 
 ## How It Works
 
-1. When a user logs in with "Remember Me" checked:
-   - A secure token is generated and stored in the database
-   - The token is tied to the user ID, browser information, and IP address
-   - The token is set as a cookie with a 30-day expiration
+### Authentication Flow
+1. **Regular Login**:
+   - Session-based authentication
+   - 24-hour token validity
+   - Session ends when browser closes
 
-2. When a user doesn't check "Remember Me":
-   - No token is created, only session-based authentication is used
-   - When the browser is closed, the session ends and the user will need to log in again
+2. **Remember Me Login**:
+   - Secure token stored in database
+   - Cookie set with extended expiration (30 days)
+   - Device information linked to token
 
-3. Cross-browser login:
-   - The system maintains separate tokens for each browser/device
-   - Users can see all their active sessions and log out from any device
-   - Tokens are automatically refreshed when used
+3. **Token Validation**:
+   - Tokens automatically verified on each request
+   - Invalid or expired tokens trigger re-authentication
+   - Tokens refreshed when used
 
-## Files and Components
+## Components
 
-- `auth.php`: Main authentication class that handles login/logout
-- `token.php`: Handles token generation, validation, and revocation
-- `login.php`: Login form that implements the "Remember Me" functionality
-- `manage_sessions.php`: Allows users to view and manage active login sessions
+### Core Files
+- `auth.php`: Main authentication class for login/logout
+- `token.php`: Token generation, validation and revocation
+- `ip_geolocator.php`: IP address location services
 
-## Security Features
-
-1. **Token Security**:
-   - Tokens are generated using secure random bytes (high entropy)
-   - Stored with HMAC protection
-   - HttpOnly cookie settings prevent JavaScript access
-   
-2. **Session Security**:
-   - Session fingerprinting to prevent session hijacking
-   - Secure session regeneration after login
-   
-3. **Device Management**:
-   - Users can log out remotely from any device
-   - IP addresses and user agents are tracked
-   - Login activity is logged
-
-## Usage
-
-To use the "Remember Me" functionality:
-
-1. Check the "Remember Me" box when logging in to stay logged in across browser sessions
-2. Use the "Manage Devices" link in the user dropdown to see and manage active sessions
-3. Log out from specific devices or all other devices as needed
+### User Interface
+- `login.php`: Login form with Remember Me option
+- `manage_sessions.php`: Device management interface
+- `logout.php`: Session termination handler
 
 ## Database Schema
 
-The authentication system uses the `user_tokens` table:
+The system uses the `user_tokens` table:
 
 ```sql
 CREATE TABLE `user_tokens` (
@@ -67,7 +87,20 @@ CREATE TABLE `user_tokens` (
   PRIMARY KEY (`token_id`),
   UNIQUE KEY `token` (`token`),
   KEY `user_id` (`user_id`),
-  KEY `idx_token_validation` (`token`, `expires_at`, `is_revoked`),
-  CONSTRAINT `user_tokens_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
+  KEY `idx_token_validation` (`token`, `expires_at`, `is_revoked`)
 )
-``` 
+```
+
+## Usage
+
+### For Users
+1. Check "Remember Me" at login to stay authenticated across sessions
+2. Visit "Manage Device" in account settings to see all active sessions
+3. Log out from any suspicious devices
+4. Use "Logout All Other Devices" for complete security
+
+### For Developers
+1. Use `Auth::requireAuth()` to protect routes
+2. Use `Auth::login($user_id, $data, $remember)` for authentication
+3. Token data accessible via `Auth::getActiveSessions()`
+4. IP geolocation available via `IPGeolocator::getLocation($ip)` 

@@ -43,7 +43,6 @@
             color: #222;
         }
         
-        /* Error and Success Messages */
         .error-message {
             background-color: #f8d7da;
             color: #721c24;
@@ -62,7 +61,6 @@
             border: 1px solid #c3e6cb;
         }
         
-        /* Payment Layout */
         .payment-grid {
             display: grid;
             grid-template-columns: 1fr 400px;
@@ -80,7 +78,6 @@
             height: fit-content;
         }
         
-        /* Form Styling */
         .form-group {
             margin-bottom: 20px;
         }
@@ -118,7 +115,6 @@
             box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
         }
         
-        /* Credit Card Input Styling */
         .card-input-container {
             position: relative;
             display: flex;
@@ -126,7 +122,7 @@
         }
         
         .card-number-input {
-            padding-right: 110px; /* Space for the card logos */
+            padding-right: 110px;
             letter-spacing: 1px;
         }
         
@@ -142,7 +138,6 @@
             width: auto;
         }
         
-        /* Stripe Elements Styling */
         .stripe-element-container {
             padding: 12px 15px;
             border: 1px solid #ddd;
@@ -161,7 +156,6 @@
             border-color: #dc3545;
         }
         
-        /* Expiry Date Styling */
         .expiry-container {
             display: flex;
             align-items: center;
@@ -188,7 +182,6 @@
             border: 1px solid #ddd;
         }
         
-        /* Error text for validations */
         .error-text {
             color: #dc3545;
             font-size: 13px;
@@ -196,7 +189,6 @@
             min-height: 18px;
         }
         
-        /* Button Styling */
         .button-container {
             margin-top: 25px;
         }
@@ -262,7 +254,6 @@
             to {transform: rotate(360deg);}
         }
         
-        /* Return Link */
         .return-link {
             display: block;
             margin-top: 10px;
@@ -275,7 +266,6 @@
             text-decoration: underline;
         }
         
-        /* Order items */
         .order-item {
             display: flex;
             justify-content: space-between;
@@ -301,7 +291,6 @@
             font-weight: 500;
         }
         
-        /* Summary totals */
         .summary-totals {
             margin-top: 20px;
             border-top: 1px solid #eee;
@@ -335,7 +324,6 @@
             line-height: 1.3;
         }
         
-        /* Security Info */
         .security-info {
             display: flex;
             align-items: center;
@@ -357,7 +345,6 @@
             color: #666;
         }
         
-        /* Responsive */
         @media (max-width: 992px) {
             .payment-grid {
                 grid-template-columns: 1fr;
