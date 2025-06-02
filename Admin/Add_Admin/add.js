@@ -50,40 +50,22 @@ document.querySelector("form").addEventListener("submit", function(event) {
     }
 });
 
-document.getElementById("password").addEventListener("input", function(){
-    const password=this.value;
-    const strength= document.getElementById("strength");
-    const submitBtn= document.getElementById("submit");
+document.getElementById("password").addEventListener("input", function () {
+    const password = this.value;
 
     const hasLowercase = /[a-z]/.test(password);
     const hasUppercase = /[A-Z]/.test(password);
     const hasDigit = /\d/.test(password);
     const hasSymbol = /[@$!%*?&.,]/.test(password);
+    const isLongEnough = password.length >= 8;
 
-    let matchCount = 0;
-    if (hasLowercase) matchCount++;
-    if (hasUppercase) matchCount++;
-    if (hasDigit) matchCount++;
-    if (hasSymbol) matchCount++;
-
-    if (password.length < 8) {
-        strength.innerText = "❗ At Least 8 Characters";
-        strength.style.color = "gray";
-    } else if (matchCount === 1) {
-        strength.innerText = "🔴🔴🔴 Weak Password";
-        strength.style.color = "red";
-    } else if (matchCount === 2) {
-        strength.innerText = "🟠🟠🟠 Medium Password";
-        strength.style.color = "orange";
-    } else if (matchCount === 3) {
-        strength.innerText = "🟢🟢🟢 Strong Password";
-        strength.style.color = "green";
-    } else if (matchCount === 4) {
-        strength.innerText = "🟢🟢🟢 Very Strong Password";
-        strength.style.color = "darkgreen";
-    }
-    
+    document.getElementById("req-length").innerText = isLongEnough ? "✅" : "❌";
+    document.getElementById("req-lowercase").innerText = hasLowercase ? "✅" : "❌";
+    document.getElementById("req-uppercase").innerText = hasUppercase ? "✅" : "❌";
+    document.getElementById("req-digit").innerText = hasDigit ? "✅" : "❌";
+    document.getElementById("req-symbol").innerText = hasSymbol ? "✅" : "❌";
 });
+
 
 document.getElementById("confirm_password").addEventListener("input", function(){
     const confirmPassword= this.value;
