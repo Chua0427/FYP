@@ -7,10 +7,10 @@ $brands = $_POST['brand'] ?? [];
 $minprice = isset($_POST['minprice']) && $_POST['minprice'] !== '' ? (int)$_POST['minprice'] : null;
 $maxprice = isset($_POST['maxprice']) && $_POST['maxprice'] !== '' ? (int)$_POST['maxprice'] : null;
 
-$sql = "SELECT p.*, MIN(s.stock) as stock 
+$sql = "SELECT p.* 
         FROM product p
-        LEFT JOIN stock s ON p.product_id = s.product_id
-        WHERE s.stock > 0 AND deleted=0";
+        JOIN stock s ON p.product_id = s.product_id
+        WHERE s.stock > 0 AND p.deleted=0";
 
 if (!empty($genders)) {
     $genderList = "'" . implode("','", $genders) . "'";
