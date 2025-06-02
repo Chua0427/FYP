@@ -87,9 +87,9 @@ function ensure_session_started(): void {
 // Set up specialized loggers with optimized settings
 
 // Auth logger - critical for security, keep at INFO level
-$authLogger = new \Monolog\Logger('auth');
+$authLogger = new Logger('auth');
 $authLogger->pushHandler(
-    new \Monolog\Handler\RotatingFileHandler(
+    new RotatingFileHandler(
         $logDir . '/auth.log',
         30, // Keep auth logs for 30 days
         \Monolog\Level::Info
@@ -97,9 +97,9 @@ $authLogger->pushHandler(
 );
 
 // Payment logger - only log important payment events in production
-$paymentLogger = new \Monolog\Logger('payment');
+$paymentLogger = new Logger('payment');
 $paymentLogger->pushHandler(
-    new \Monolog\Handler\RotatingFileHandler(
+    new RotatingFileHandler(
         $logDir . '/payment.log',
         90, // Keep payment logs for 90 days
         $isProduction ? \Monolog\Level::Notice : \Monolog\Level::Info
@@ -107,9 +107,9 @@ $paymentLogger->pushHandler(
 );
 
 // Audit logger - keep at INFO level for compliance
-$auditLogger = new \Monolog\Logger('audit');
+$auditLogger = new Logger('audit');
 $auditLogger->pushHandler(
-    new \Monolog\Handler\RotatingFileHandler(
+    new RotatingFileHandler(
         $logDir . '/audit.log',
         365, // Keep audit logs for a year
         \Monolog\Level::Info
