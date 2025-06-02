@@ -28,14 +28,24 @@ class TokenAuth {
      * Generate a new authentication token
      * 
      * @param int $user_id User ID
+     * @param int|null $expirySeconds Expiry in seconds (null for default, 86400 for 1 day, -1 for infinite)
      * @return string Generated token
      * @throws Exception If token generation fails
      */
-    public function generateToken(int $user_id): string {
+    public function generateToken(int $user_id, ?int $expirySeconds = null): string {
         try {
             // Generate a random token with better entropy
             $token = bin2hex(random_bytes(32));
-            $expires_at = date('Y-m-d H:i:s', time() + $this->token_expiry);
+            // Determine expiry
+            if ($expirySeconds === null) {
+                $expirySeconds = $this->token_expiry;
+            }
+            if ($expirySeconds < 0) {
+                // Infinite expiry
+                $expires_at = '9999-12-31 23:59:59';
+            } else {
+                $expires_at = date('Y-m-d H:i:s', time() + $expirySeconds);
+            }
             
             // Get browser and device info for logging
             $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
@@ -143,14 +153,13 @@ class TokenAuth {
      */
     public function getUserTokens(int $user_id): array {
         try {
-            $stmt = $this->db->prepare("
-                SELECT token_id, created_at, expires_at, last_used_at, user_agent, ip_address
+            // Include token in result to identify current session
+            $stmt = $this->db->prepare("SELECT token_id, token, created_at, expires_at, last_used_at, user_agent, ip_address
                 FROM user_tokens 
                 WHERE user_id = :user_id 
                 AND expires_at > NOW() 
                 AND is_revoked = 0
-                ORDER BY last_used_at DESC
-            ");
+                ORDER BY last_used_at DESC");
             
             $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
             $stmt->execute();
@@ -290,6 +299,24 @@ class TokenAuth {
         }
         
         return 'Unknown';
+    }
+
+    /**
+     * Permanently delete a specific token record
+     *
+     * @param string $token Token to delete
+     * @return bool Success status
+     */
+    public function deleteToken(string $token): bool {
+        try {
+            $stmt = $this->db->prepare("DELETE FROM user_tokens WHERE token = :token");
+            $stmt->bindParam(':token', $token, PDO::PARAM_STR);
+            $stmt->execute();
+            return $stmt->rowCount() > 0;
+        } catch (Exception $e) {
+            error_log("Token Deletion Error: " . $e->getMessage());
+            return false;
+        }
     }
 }
 ?> 

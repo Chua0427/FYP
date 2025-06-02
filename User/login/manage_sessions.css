@@ -237,6 +237,7 @@
         }
         
         .empty-state i {
+            color: GRAY;
             font-size: 48px;
             margin-bottom: 20px;
             opacity: 0.5;
@@ -276,7 +277,7 @@
                 margin: 0px auto 60px auto;
                 position: relative;
                 top: 100px;
-                padding: 0 15px;
+                padding: 60px 15px;
             }
             
             .page-title {
@@ -321,4 +322,20 @@
             .sessions-header {
                 padding: 15px;
             }
+        }
+
+
+        /* Country flag styles */
+        .country-flag {
+            display: inline-block;
+            margin-left: 5px;
+            vertical-align: middle;
+            border: 1px solid #ddd;
+            border-radius: 2px;
+        }
+
+        /* Additional meta item styling for geolocation */
+        .meta-item span {
+            display: inline-flex;
+            align-items: center;
         }

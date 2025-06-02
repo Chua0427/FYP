@@ -194,7 +194,7 @@ try {
                     <div class="col company-details">
                         <h2>VeroSports Sdn. Bhd.</h2>
                         <p>
-                            123 Sports Avenue<br>
+                            No. 123, Jalan Utama<br>
                             Kuala Lumpur, 50000<br>
                             Malaysia<br>
                             Tel: +603-1234-5678<br>
