@@ -1,11 +1,17 @@
 <?php
+  if (session_status() == PHP_SESSION_NONE) {
+      session_start();
+  }
+
+  // Check if user is admin (user_type = 2 or user_type = 3)
+  if ($_SESSION['user_type'] != 2 && $_SESSION['user_type'] != 3) {
+      // Redirect non-admin users to the main site
+      header("Location: /FYP/FYP/User/HomePage/homePage.php");
+      exit;
+  }
+
 include '../../connect_db/config.php'; 
 date_default_timezone_set('Asia/Kuala_Lumpur');
-
-// Start session if not already started
-if (session_status() == PHP_SESSION_NONE) {
-  session_start();
-}
 
 
 $startDate = $_GET['start_date'] ?? date('Y-m-01');
