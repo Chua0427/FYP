@@ -231,3 +231,21 @@ body {
     font-size: 12px;
   }
 }
+
+.go-back-home {
+  margin-top: 20px;
+  text-align: center;
+}
+.back-home-link {
+  display: inline-block;
+  background-color: #e74c3c;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+.back-home-link:hover {
+  background-color: #c0392b;
+}
