@@ -205,7 +205,6 @@ class Auth {
     
     /**
      * Get all active sessions/devices for the current user
-     * 
      * @return array List of active tokens with device information
      */
     public static function getActiveSessions(): array {
@@ -221,7 +220,6 @@ class Auth {
     
     /**
      * Revoke a specific session/device
-     * 
      * @param int $token_id Token ID to revoke
      * @return bool Success status
      */
@@ -238,7 +236,6 @@ class Auth {
     
     /**
      * Revoke all sessions except the current one
-     * 
      * @return bool Success status
      */
     public static function revokeOtherSessions(): bool {
@@ -256,7 +253,6 @@ class Auth {
     
     /**
      * Logout current user
-     * 
      * @return void
      */
     public static function logout(): void {

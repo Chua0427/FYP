@@ -449,7 +449,6 @@
             }
         }
 
-        /* Date picker styling */
         .date-input-container {
             position: relative;
             width: 100%;
@@ -478,7 +477,6 @@
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
 
-        /* Datepicker customization */
         .ui-datepicker {
             font-family: 'Arial', sans-serif;
             font-size: 14px;
@@ -510,7 +508,6 @@
             color: white;
         }
 
-        /* Responsive styles for date picker */
         @media (max-width: 768px) {
             .date-input-container input[type="text"] {
                 font-size: 13px;

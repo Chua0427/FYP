@@ -250,77 +250,6 @@ add_auth_notification_resources();
         </div>
     </div>
 </header>
-
-<style>
-/* Add these styles for the user dropdown */
-.user-dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.user-dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: white;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-    right: 0;
-    border-radius: 4px;
-}
-
-.user-dropdown:hover .user-dropdown-content {
-    display: block;
-}
-
-.user-dropdown-content a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    font-size: 14px;
-}
-
-.user-info {
-    padding: 12px 16px;
-    border-bottom: 1px solid #eee;
-    font-weight: bold;
-    font-size: 14px;
-}
-
-.user-dropdown-content a:hover {
-    background-color: #f8f8f8;
-}
-
-/* Improved cart counter that's always a perfect circle */
-.cart-counter {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background-color: red;
-    color: white;
-    /* Fixed dimensions to ensure perfect circle */
-    width: 20px;
-    height: 20px;
-    /* Use flexbox for perfect centering */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    font-size: 12px;
-    font-weight: bold;
-    /* Prevent text wrapping or overflow */
-    text-align: center;
-    overflow: hidden;
-}
-
-.shoppingCart {
-    position: relative;
-}
-</style>
-
-<!-- Search popup and related JavaScript has been removed, but the search icon in the header is maintained -->
-
 <script>
     // Adjust cart count font size based on the number of digits
     document.addEventListener('DOMContentLoaded', function() {
@@ -420,5 +349,3 @@ add_auth_notification_resources();
         }
     }
 </script>
-
-<!-- Search popup and related JavaScript has been removed, but the search icon in the header is maintained --> 

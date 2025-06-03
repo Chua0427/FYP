@@ -135,7 +135,6 @@ body {
   margin-bottom: 20px;
 }
 
-/* Password toggle styles */
 .password-container {
   position: relative;
   width: 100%;
@@ -177,4 +176,58 @@ body {
 }
 .shake {
   animation: shake 0.5s ease-in-out;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    padding: 15px;
+    height: auto;
+  }
+  .left-section {
+    padding: 10px;
+    text-align: center;
+  }
+  .left-section h1 {
+    font-size: 36px;
+  }
+  .left-section p {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  .right-section {
+    width: 100%;
+    max-width: 400px;
+    margin-top: 20px;
+    padding: 20px;
+  }
+  .right-section h2 {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .left-section h1 {
+    font-size: 30px;
+  }
+  .left-section p {
+    font-size: 14px;
+  }
+  .right-section {
+    padding: 15px;
+  }
+  .input-box {
+    padding: 10px;
+    font-size: 14px;
+  }
+  .login-btn {
+    padding: 10px;
+    font-size: 14px;
+  }
+  .forgot-password {
+    font-size: 12px;
+  }
+  .signup-text {
+    font-size: 12px;
+  }
 }
