@@ -1,8 +1,12 @@
 <?php
+declare(strict_types=1);
 // Restrict admin access to user pages
 require_once __DIR__ . '/../app/restrict_admin.php';
 
-// Include authentication check and notification system
+// Include authentication check
+require_once __DIR__ . '/../auth_check.php';
+
+// Include notification system
 require_once __DIR__ . '/../app/auth-check.php';
 ?>
 <!DOCTYPE html>
@@ -638,9 +642,7 @@ require_once __DIR__ . '/../app/auth-check.php';
                 }, 50);
             }
             
-            /**
-             * Shakes the cart icon for visual feedback
-             */
+            //Shakes the cart icon for visual feedback
             function shakeCartIcon() {
                 const cartIcon = document.querySelector('.fa-cart-shopping');
                 if (!cartIcon) return;

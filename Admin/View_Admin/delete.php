@@ -1,4 +1,8 @@
 <?php
+
+
+require_once __DIR__ . '/../auth_check.php';
+require_once __DIR__ . '/../protect.php';
 include __DIR__ . '/../../connect_db/config.php';
 
 if(isset($_GET['id']))

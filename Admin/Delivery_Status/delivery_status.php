@@ -1,4 +1,8 @@
 <?php
+
+
+require_once __DIR__ . '/../auth_check.php';
+require_once __DIR__ . '/../protect.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['status'])) {
     include __DIR__ . '/../../connect_db/config.php';
     $order_id = $_POST['order_id'];

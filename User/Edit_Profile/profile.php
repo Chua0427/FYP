@@ -1,5 +1,10 @@
 <?php
-session_start();
+// Include authentication check
+require_once __DIR__ . '/../auth_check.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once 'db-connect.php';
 
 // Redirect if not logged in

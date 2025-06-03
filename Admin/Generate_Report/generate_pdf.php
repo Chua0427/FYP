@@ -1,4 +1,8 @@
 <?php
+
+
+require_once __DIR__ . '/../auth_check.php';
+require_once __DIR__ . '/../protect.php';
 require '../../../vendor/autoload.php';
 use Dompdf\Dompdf;
 

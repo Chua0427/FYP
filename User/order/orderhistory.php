@@ -1,5 +1,7 @@
 <?php
 declare(strict_types=1);
+// Include authentication check
+require_once __DIR__ . '/../auth_check.php';
 // Initialize session if not already started
 if (isset($GLOBALS['session_started']) || session_status() === PHP_SESSION_ACTIVE) {
     // Session already started in init.php or elsewhere

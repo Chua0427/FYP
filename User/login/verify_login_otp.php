@@ -161,8 +161,8 @@ if (isset($_POST['otp_submit'])) {
                 'user_id' => $_SESSION['temp_user']['user_id']
             ]);
             
-            // Check if user is an admin (user_type = 2)
-            if ($_SESSION['temp_user']['user_type'] == 2) {
+            // Check if user is an admin (user_type = 2) or superadmin (user_type = 3)
+            if ($_SESSION['temp_user']['user_type'] == 2 || $_SESSION['temp_user']['user_type'] == 3) {
                 // Clear all session data
                 $_SESSION = array();
                 

@@ -127,10 +127,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             $auth_time = microtime(true) - $start_time;
             error_log("Password verification successful at " . date('H:i:s') . " - Time: " . number_format($auth_time, 4) . "s");
             
-            // Check if user is an admin (user_type = 2)
-            if (isset($user['user_type']) && $user['user_type'] == 2) {
+            // Prevent admin and superadmin accounts (user_type = 2 or 3) from logging in via user page
+            if (isset($user['user_type']) && ($user['user_type'] == 2 || $user['user_type'] == 3)) {
                 $error = 'Admin accounts must use the admin login page.';
-                $GLOBALS['authLogger']->warning('Admin attempted to login on user page', [
+                $GLOBALS['authLogger']->warning('Privileged user attempted to login on user page', [
                     'email' => $email,
                     'ip' => $_SERVER['REMOTE_ADDR']
                 ]);

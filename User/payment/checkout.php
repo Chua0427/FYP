@@ -6,6 +6,8 @@ require_once __DIR__ . '/db.php';
 require __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/csrf.php';
 
+// Include authentication check
+require_once __DIR__ . '/../auth_check.php';
 
 // Initialize session if not already started
 ensure_session_started();

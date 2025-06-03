@@ -1,0 +1,22 @@
+# Deny direct web access to sensitive helper scripts
+<FilesMatch "^(deploy_admin_protection|add_auth_check)\.php$">
+    Require all denied
+</FilesMatch>
+
+# Enable access to PHP files 
+<FilesMatch "\.php$">
+    Require all granted
+</FilesMatch>
+
+# Set default index files
+DirectoryIndex index.php
+
+# Protect logs and sensitive directories
+RewriteEngine On
+RewriteRule ^User/logs/.* - [F,L]
+RewriteRule ^User/app/.*\.php$ - [F,L]
+
+# Disable directory listing for security
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule> 

@@ -1,4 +1,7 @@
 <?php
+// Include authentication check
+require_once __DIR__ . '/../auth_check.php';
+
 declare(strict_types=1);
 session_start();
 // Prevent caching to avoid stale review form on back navigation

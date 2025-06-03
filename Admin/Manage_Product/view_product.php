@@ -11,7 +11,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-    <?php include __DIR__ . '/../Header_And_Footer/header.php'; ?>
+    <?php 
+
+require_once __DIR__ . '/../auth_check.php';
+require_once __DIR__ . '/../protect.php';
+include __DIR__ . '/../Header_And_Footer/header.php'; ?>
 
     <div class="contain">
         <?php include __DIR__ . '/../sidebar/sidebar.php'; ?>
