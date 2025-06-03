@@ -19,10 +19,8 @@ class InvoiceService
 {
     private $db;
     private $logger;
-
     /**
      * Constructor
-     * 
      * @param Database $db Database connection
      */
     public function __construct(?Database $db = null)
@@ -803,7 +801,6 @@ HTML;
             return false;
         }
     }
-
     private function logToFile($logFile, $message)
     {
         file_put_contents($logFile, date('[Y-m-d H:i:s]') . " $message\n", FILE_APPEND);

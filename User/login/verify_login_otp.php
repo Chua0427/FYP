@@ -357,7 +357,6 @@ function isOTPExpired() {
                 <span class="email-highlight"><?php echo htmlspecialchars($_SESSION['temp_user']['email']); ?></span>
             </div>
             
-            <!-- OTP Verification Form -->
             <form method="POST" action="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                 <input type="text" class="input-box otp-input" name="otp_code" placeholder="Enter OTP" maxlength="6" required autofocus>
@@ -367,7 +366,6 @@ function isOTPExpired() {
                 <button type="submit" name="otp_submit" class="login-btn">Verify &amp; Login</button>
             </form>
             
-            <!-- Resend OTP Form -->
             <form method="POST" action="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>" class="resend-otp">
                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                 Didn't receive the code? 
@@ -390,7 +388,7 @@ function isOTPExpired() {
         <?php if (isset($_SESSION['otp_expiry'])): ?>
         endTime.setTime(<?php echo $_SESSION['otp_expiry'] ?> * 1000);
         <?php else: ?>
-        endTime.setTime(endTime.getTime() + 10 * 60 * 1000); // 10 minutes from now
+        endTime.setTime(endTime.getTime() + 10 * 60 * 1000); // 10 minutes 
         <?php endif; ?>
         
         function updateCountdown() {
@@ -422,7 +420,7 @@ function isOTPExpired() {
         const resendBtn = document.getElementById('resendBtn');
         const resendCountdown = document.getElementById('resendCountdown');
         const resendTimer = document.getElementById('resendTimer');
-        let resendCooldown = 60; // 60 seconds cooldown
+        let resendCooldown = 60; // cooldown
         
         <?php if (!empty($success_message)): ?>
         startResendCooldown();
