@@ -5,23 +5,46 @@ require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/auth.php';
 
-// Log the logout event if user is logged in
-if (isset($_SESSION['user_id'])) {
-    try {
-        $GLOBALS['authLogger']->info('User logout', [
-            'user_id' => $_SESSION['user_id'],
-            'email' => $_SESSION['email'] ?? 'unknown',
-            'ip' => $_SERVER['REMOTE_ADDR']
-        ]);
-    } catch (Exception $e) {
-        // Log error but continue with logout
-        $GLOBALS['logger']->error('Error logging logout', [
-            'message' => $e->getMessage()
-        ]);
-    }
+// Record logout information for security auditing
+$userId = $_SESSION['user_id'] ?? null;
+$userEmail = $_SESSION['email'] ?? null;
+$tokenPresent = isset($_COOKIE['auth_token']);
+$tokenValue = $_COOKIE['auth_token'] ?? null;
+
+// Get IP and user agent for logging
+$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+$userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+
+// Log the logout request before performing the logout
+if (isset($GLOBALS['authLogger']) && $userId) {
+    $GLOBALS['authLogger']->info('User logout requested', [
+        'user_id' => $userId,
+        'email' => $userEmail,
+        'ip' => $ip,
+        'user_agent' => $userAgent,
+        'had_token' => $tokenPresent
+    ]);
 }
 
-// Revoke token and clear cookie
+// Check for "all_devices" parameter to logout from all devices
+$allDevices = isset($_GET['all_devices']) && $_GET['all_devices'] === '1';
+
+if ($allDevices && $userId) {
+    // Revoke all tokens for this user
+    if (isset($GLOBALS['authLogger'])) {
+        $GLOBALS['authLogger']->notice('User logged out from all devices', [
+            'user_id' => $userId,
+            'email' => $userEmail,
+            'ip' => $ip
+        ]);
+    }
+    
+    // Initialize TokenAuth to revoke all user tokens
+    $tokenAuth = new TokenAuth();
+    $tokenAuth->revokeAllUserTokens($userId);
+}
+
+// Perform regular logout which handles token revocation for current device
 Auth::logout();
 
 // For backward compatibility, also destroy the session

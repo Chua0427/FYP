@@ -409,9 +409,9 @@ HTML;
         
         try {
             // Define PHPMailer paths
-            $exceptionPath = __DIR__ . '/../../../otp/phpmailer/src/Exception.php';
-            $phpmailerPath = __DIR__ . '/../../../otp/phpmailer/src/PHPMailer.php';
-            $smtpPath = __DIR__ . '/../../../otp/phpmailer/src/SMTP.php';
+            $exceptionPath = __DIR__ . '/../../ForgotPassword/phpmailer/src/Exception.php';
+            $phpmailerPath = __DIR__ . '/../../ForgotPassword/phpmailer/src/PHPMailer.php';
+            $smtpPath = __DIR__ . '/../../ForgotPassword/phpmailer/src/SMTP.php';
             
             // Check if PHPMailer files exist
             if (!file_exists($exceptionPath) || !file_exists($phpmailerPath) || !file_exists($smtpPath)) {

@@ -7,30 +7,36 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 require_once __DIR__ . '/app/auth.php';
 
-// Check if user is admin (types 2 or 3) and block access
+// Check if user is admin (types 2 or 3)
 if (isset($_SESSION['user_type']) && ($_SESSION['user_type'] == '2' || $_SESSION['user_type'] == '3')) {
-    // Clear session and redirect to admin login
-    $_SESSION = array();
-    if (isset($_COOKIE[session_name()])) {
-        setcookie(session_name(), '', time() - 86400, '/');
-    }
-    session_destroy();
+    // Set the admin view-only mode flag
+    $_SESSION['admin_view_only'] = true;
     
-    // Remove auth token cookie
-    setcookie('auth_token', '', time() - 86400, '/', '', false, true);
-    
-    // Log the unauthorized access attempt
-    if (class_exists('Monolog\\Logger')) {
-        $GLOBALS['authLogger']->warning('Admin attempted to access user area', [
+    // Log the admin accessing user pages
+    if (isset($GLOBALS['authLogger'])) {
+        $GLOBALS['authLogger']->info('Admin accessed user area in view-only mode', [
+            'admin_id' => $_SESSION['user_id'],
             'user_type' => $_SESSION['user_type'],
             'requested_url' => $_SERVER['REQUEST_URI'],
             'ip' => $_SERVER['REMOTE_ADDR']
         ]);
     }
     
-    // Redirect with error message
-    header('Location: /FYP/FYP/Admin/Dashboard/dashboard.php?error=unauthorized_access');
-    exit;
+    // If this is a request that would change data or requires a redirect, show notification
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' || 
+        isset($_GET['action']) || 
+        strpos($_SERVER['REQUEST_URI'], 'checkout') !== false ||
+        strpos($_SERVER['REQUEST_URI'], 'payment') !== false ||
+        strpos($_SERVER['REQUEST_URI'], 'profile') !== false) {
+        
+        // Store the current URL for the redirect back
+        $_SESSION['admin_redirect_from'] = $_SERVER['REQUEST_URI'];
+        
+        // Redirect to admin notification page
+        header('Location: /FYP/FYP/User/admin_notification.php');
+        exit;
+    }
 }
+
 // Regular user - continue normally
 ?> 

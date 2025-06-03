@@ -300,7 +300,6 @@ catch (Exception $e) {
 
 /**
  * Process a single cart item for insertion or update
- *
  * @param Database $db Database connection
  * @param int $user_id User ID
  * @param int $product_id Product ID
