@@ -5,6 +5,13 @@ require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/auth.php';
 
+// Check if this is an admin in view-only mode
+if (isset($_SESSION['admin_view_only']) && $_SESSION['admin_view_only'] === true) {
+    // Redirect to admin logout instead
+    header("Location: /FYP/FYP/Admin/logout.php");
+    exit;
+}
+
 // Record logout information for security auditing
 $userId = $_SESSION['user_id'] ?? null;
 $userEmail = $_SESSION['email'] ?? null;

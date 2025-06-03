@@ -82,14 +82,14 @@ add_auth_notification_resources();
 if (class_exists('Auth') && Auth::isAdminViewOnly()) {
     // Display admin view-only mode notification
     ?>
-    <div id="admin-view-only-banner" style="position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; background-color: #dc3545; color: white; text-align: center; padding: 5px 0; font-weight: bold; margin-bottom: 28px;">
+    <div id="admin-view-only-banner" style="position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; background-color: #dc3545; color: white; text-align: center; padding: 5px 0; font-weight: bold;">
         <i class="fas fa-user-shield"></i> ADMIN VIEW-ONLY MODE - For monitoring purposes only
     </div>
     <?php
 }
 ?>
 
-<header>
+<header <?php if (class_exists('Auth') && Auth::isAdminViewOnly()) echo 'style="margin-top:28px;"'; ?>>
     <a href="../HomePage/homePage.php">
         <img src="../Header_and_Footer/img/VeroSports.jpeg" class="logo">
     </a>
@@ -240,7 +240,11 @@ if (class_exists('Auth') && Auth::isAdminViewOnly()) {
                                 <a href="/FYP/FYP/Admin/Dashboard/dashboard.php">Admin Dashboard</a>
                             <?php endif; ?>
 
-                            <a href="../login/logout.php">Logout</a>
+                            <?php if (isset($_SESSION['admin_view_only']) && $_SESSION['admin_view_only'] === true): ?>
+                                <a href="/FYP/FYP/Admin/logout.php">Logout</a>
+                            <?php else: ?>
+                                <a href="../login/logout.php">Logout</a>
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php else: ?>
