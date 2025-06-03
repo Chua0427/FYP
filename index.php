@@ -23,6 +23,6 @@ if (class_exists('Auth') && Auth::check()) {
     exit;
 } else {
     // User is not logged in, redirect to login page
-    header('Location: FYP/User/login/login.php');
+    header('Location: User/login/login.php');
     exit;
 } 
