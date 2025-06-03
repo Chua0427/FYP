@@ -1,0 +1,55 @@
+# Deny direct access to all files in this directory
+<IfModule mod_authz_core.c>
+    # Apache 2.4
+    Require all denied
+    
+    # Allow only PHP files
+    <FilesMatch "\.(php|css|js|jpg|jpeg|png|gif|ico)$">
+        Require all granted
+    </FilesMatch>
+</IfModule>
+
+# For older Apache versions
+<IfModule !mod_authz_core.c>
+    Deny from all
+    
+    # Allow only PHP files
+    <FilesMatch "\.(php|css|js|jpg|jpeg|png|gif|ico)$">
+        Allow from all
+    </FilesMatch>
+</IfModule>
+
+# Prevent viewing of .htaccess file
+<Files .htaccess>
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Disable directory browsing
+Options -Indexes
+
+# Disable server signature
+ServerSignature Off
+
+# Set default document
+DirectoryIndex login.php
+
+# Deny access to sensitive file patterns
+<FilesMatch "\.(inc|sql|bak|config|json|env|log)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# PHP security settings
+php_flag display_errors off
+php_flag log_errors on
+php_value error_log /path/to/error_log
+
+# Require authentication for all folders
+RewriteEngine On
+RewriteBase /FYP/FYP/Admin/
+RewriteCond %{REQUEST_URI} !login\.php$ [NC]
+RewriteCond %{REQUEST_URI} !logout\.php$ [NC]
+RewriteCond %{REQUEST_URI} !\.(?:css|js|jpe?g|gif|png|ico)$ [NC]
+RewriteCond %{HTTP_COOKIE} !admin_logged_in=true
+RewriteRule .* login.php [R,L] 

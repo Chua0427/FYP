@@ -56,31 +56,35 @@ if (isset($_SESSION['user_id'])) {
     }
 }
 
-// Clear all session variables
+// Clear admin authentication cookie
+setcookie('admin_logged_in', '', [
+    'expires' => time() - 3600,
+    'path' => '/FYP/FYP/Admin/',
+    'httponly' => true,
+    'samesite' => 'Strict'
+]);
+
+// Clear all session data
 $_SESSION = array();
 
-// Destroy the session cookie
+// If session cookie is used, destroy it
 if (ini_get("session.use_cookies")) {
     $params = session_get_cookie_params();
-    setcookie(
-        session_name(),
-        '',
-        [
-            'expires' => time() - 42000,
-            'path' => $params["path"],
-            'domain' => $params["domain"],
-            'secure' => $params["secure"],
-            'httponly' => $params["httponly"],
-            'samesite' => 'Lax'
-        ]
-    );
+    setcookie(session_name(), '', [
+        'expires' => time() - 42000,
+        'path' => $params["path"],
+        'domain' => $params["domain"],
+        'secure' => $params["secure"],
+        'httponly' => $params["httponly"],
+        'samesite' => 'Strict'
+    ]);
 }
 
-// Destroy the session
+// Destroy session
 session_destroy();
 
-// Redirect to admin login page
-header("Location: /FYP/FYP/Admin/login.php");
+// Redirect to login page
+header("Location: /FYP/Admin/login.php");
 exit;
 
 /**
@@ -118,4 +122,3 @@ function getClientIP(): string {
     
     return 'Unknown';
 }
-?> 

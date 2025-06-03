@@ -1,4 +1,7 @@
 <?php
+// Include authentication check
+require_once __DIR__ . '/../auth_check.php';
+
 include __DIR__ . '/../../connect_db/config.php';
 
 if (isset($_POST['query'])) {

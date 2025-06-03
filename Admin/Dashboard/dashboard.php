@@ -1,5 +1,10 @@
 <?php
 declare(strict_types=1);
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
+// Include admin authentication check
+require_once __DIR__ . '/../auth_check.php';
 
 // Start session if not already started
 if (session_status() == PHP_SESSION_NONE) {
@@ -182,7 +187,7 @@ if ($_SESSION['user_type'] != 2 && $_SESSION['user_type'] != 3) {
                 <img src="../../upload/' . $row['profile_image'] . '" alt="Profile Image">
                 <p>Welcome Back ! '.$row['first_name'].'</p>
                 <p>Email: '.$row['email'].'</p>
-                <a href="../../Admin/logout.php" ><i class="fa-solid fa-right-from-bracket"></i></a>
+                <a href="/FYP/FYP/Admin/logout.php" ><i class="fa-solid fa-right-from-bracket"></i></a>
             </div>';
         }
 

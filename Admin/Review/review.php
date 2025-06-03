@@ -13,7 +13,11 @@
 
 </head>
 
-    <?php include __DIR__ . '/../../connect_db/config.php'; ?>
+    <?php 
+
+require_once __DIR__ . '/../auth_check.php';
+require_once __DIR__ . '/../protect.php';
+include __DIR__ . '/../../connect_db/config.php'; ?>
 
 <body>
     <?php include __DIR__ . '/..//Header_And_Footer/header.php'; ?>

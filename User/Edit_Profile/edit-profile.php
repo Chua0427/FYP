@@ -1,4 +1,7 @@
 <?php
+// Include authentication check
+require_once __DIR__ . '/../auth_check.php';
+
 session_start();
 require_once 'db-connect.php';
 

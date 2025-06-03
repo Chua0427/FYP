@@ -1,4 +1,8 @@
 <?php
+
+
+require_once __DIR__ . '/../auth_check.php';
+require_once __DIR__ . '/../protect.php';
 include '../../connect_db/config.php'; 
 date_default_timezone_set('Asia/Kuala_Lumpur');
 

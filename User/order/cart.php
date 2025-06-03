@@ -5,6 +5,9 @@ header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Pragma: no-cache');
 header('Expires: 0');
 
+// Include authentication check
+require_once __DIR__ . '/../auth_check.php';
+
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once '/xampp/htdocs/FYP/FYP/User/payment/db.php';
 require __DIR__ . '/../app/init.php';

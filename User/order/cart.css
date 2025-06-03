@@ -1,11 +1,9 @@
-/* Shopping Cart Styles - Shopee Inspired */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* Override only for this page content - not header/footer */
 main {
   background: #f4f4f4;
   color: #333;
@@ -33,7 +31,6 @@ h1 {
   font-family: 'Inter', sans-serif;
 }
 
-/* Store Section */
 .store {
   border-bottom: 1px solid #ddd;
   padding-bottom: 1rem;
@@ -67,9 +64,7 @@ h1 {
   transition: opacity 0.3s ease-out, transform 0.2s ease-out;
 }
 
-/* Disable hover transform and shadow on product */
 .product:hover {
-  /* hover disabled for persistent layout */
   transform: none;
   box-shadow: none;
 }
@@ -168,7 +163,7 @@ h1 {
   font-size: 0.9rem;
   padding: 5px 0;
   appearance: textfield;
-  -moz-appearance: textfield; /* Firefox */
+  -moz-appearance: textfield; 
 }
 
 .quantity-input::-webkit-outer-spin-button,
@@ -251,7 +246,6 @@ h1 {
   transform: scale(0.98);
 }
 
-/* Add arrow composed of two lines to checkout button */
 .checkout-btn::after {
   content: '';
   position: absolute;
@@ -264,7 +258,6 @@ h1 {
   transform: translateY(-50%) rotate(45deg);
 }
 
-/* Empty Cart */
 .empty-cart {
   text-align: center;
   padding: 3rem 0;
@@ -296,7 +289,6 @@ h1 {
   transform: translateY(0);
 }
 
-/* Error Message */
 .error-message {
   background: #fff8f8;
   color: #e74c3c;
@@ -306,7 +298,6 @@ h1 {
   border-left: 4px solid #e74c3c;
 }
 
-/* Responsive Adjustments */
 @media (max-width: 768px) {
   .container {
     padding: 1rem;
@@ -335,7 +326,6 @@ h1 {
   }
 }
 
-/* Product links */
 .product-link, .product-name-link {
     text-decoration: none;
     color: inherit;
@@ -385,8 +375,6 @@ h1 {
   margin-bottom: 0.5rem;
   line-height: 1.3;
 }
-
-        /* Cart Styling */
         .cart-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -554,7 +542,6 @@ h1 {
             margin-top: 20px;
         }
         
-        /* Store header styling */
         .store {
             margin-bottom: 10px;
             background-color: #f9f9f9;
@@ -571,8 +558,6 @@ h1 {
         .store h3 input[type="checkbox"] {
             margin-right: 10px;
         }
-        
-        /* Out of stock styling */
         .out-of-stock {
             color: #dc3545;
             font-weight: bold;

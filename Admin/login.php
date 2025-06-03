@@ -15,6 +15,12 @@ if (isset($_GET['error'])) {
     $error = $_GET['error'];
 }
 
+// Check for login_error in session
+if (isset($_SESSION['login_error'])) {
+    $error = $_SESSION['login_error'];
+    unset($_SESSION['login_error']);
+}
+
 // Handle admin login
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     try {
@@ -70,6 +76,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
                 ($_SERVER['REMOTE_ADDR'] ?? 'localhost') . 
                 $user['user_id']
             );
+            
+            // Set secure admin authentication cookie
+            $cookieValue = hash('sha256', session_id() . $user['user_id'] . $_SERVER['HTTP_USER_AGENT']);
+            setcookie('admin_logged_in', 'true', [
+                'expires' => time() + 3600, // 1 hour
+                'path' => '/FYP/FYP/Admin/',
+                'httponly' => true,
+                'samesite' => 'Strict'
+            ]);
             
             // Redirect to admin dashboard
             header("Location: /FYP/FYP/Admin/Dashboard/dashboard.php");

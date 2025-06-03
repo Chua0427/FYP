@@ -1,5 +1,9 @@
 <?php
-    include __DIR__ . '/../../connect_db/config.php';
+    
+
+require_once __DIR__ . '/../auth_check.php';
+require_once __DIR__ . '/../protect.php';
+include __DIR__ . '/../../connect_db/config.php';
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $first_name = $_POST["first_name"];
