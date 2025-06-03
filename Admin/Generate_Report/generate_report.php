@@ -6,11 +6,6 @@ require_once __DIR__ . '/../protect.php';
 include '../../connect_db/config.php'; 
 date_default_timezone_set('Asia/Kuala_Lumpur');
 
-// Start session if not already started
-if (session_status() == PHP_SESSION_NONE) {
-  session_start();
-}
-
 
 $startDate = $_GET['start_date'] ?? date('Y-m-01');
 $endDateRaw = $_GET['end_date'] ?? date('Y-m-t');
