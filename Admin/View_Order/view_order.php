@@ -1,3 +1,16 @@
+<?php
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    // Check if user is admin (user_type = 2 or user_type = 3)
+    if ($_SESSION['user_type'] != 2 && $_SESSION['user_type'] != 3) {
+        // Redirect non-admin users to the main site
+        header("Location: /FYP/FYP/User/HomePage/homePage.php");
+        exit;
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
