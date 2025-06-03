@@ -1,9 +1,13 @@
 <?php
 declare(strict_types=1);
-session_start();
+
 // Include authentication check
 require_once __DIR__ . '/../auth_check.php';
 
+// Only start session if not already active
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 // Prevent caching to avoid stale review form on back navigation
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Cache-Control: post-check=0, pre-check=0', false);
@@ -32,11 +36,43 @@ $user_id = (int)$_SESSION['user_id'];
 $error = '';
 $success = '';
 
+// Initialize database connection
+$db = new Database();
+
+// EARLY CHECK: Verify if user has already submitted a review for this product/order
+// We do this before any other processing to immediately redirect if needed
+try {
+    $existingReview = $db->fetchOne(
+        "SELECT review_id FROM review WHERE user_id = ? AND product_id = ? AND order_id = ? LIMIT 1",
+        [$user_id, $product_id, $order_id]
+    );
+    
+    if ($existingReview) {
+        // Log the duplicate review attempt
+        $logger->notice('User attempted to submit duplicate review', [
+            'user_id' => $user_id,
+            'product_id' => $product_id,
+            'order_id' => $order_id
+        ]);
+
+        // Set JavaScript flag and redirect immediately
+        echo "<script>
+            sessionStorage.setItem('reviewAlreadySubmitted', 'true'); 
+            alert('You have already submitted a review for this product');
+            window.location.href = '../order/orderhistory.php';
+        </script>";
+        exit;
+    }
+} catch (Exception $e) {
+    $logger->error('Error checking for existing review', [
+        'error' => $e->getMessage(),
+        'user_id' => $user_id,
+        'product_id' => $product_id
+    ]);
+}
+
 // Validate the product exists and user purchased it
 try {
-    // Initialize database connection
-    $db = new Database();
-    
     // Check if product exists
     $product = $db->fetchOne(
         "SELECT * FROM product WHERE product_id = ?",
@@ -60,20 +96,23 @@ try {
         throw new Exception("You can only review products you have purchased and received");
     }
     
-    // Check if user has already reviewed this product for this order
-    $existingReview = $db->fetchOne(
-        "SELECT * FROM review WHERE user_id = ? AND product_id = ? AND order_id = ?",
-        [$user_id, $product_id, $order_id]
-    );
-    
-    // If already reviewed, immediately alert and redirect to order history
-    if ($existingReview) {
-        echo "<script>alert('You have already submitted a review for this product');window.location.href='../order/orderhistory.php';</script>";
-        exit;
-    }
-    
     // If this is a form submission
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Re-validate that no review exists (double-check for race conditions)
+        $existingReview = $db->fetchOne(
+            "SELECT review_id FROM review WHERE user_id = ? AND product_id = ? AND order_id = ? LIMIT 1",
+            [$user_id, $product_id, $order_id]
+        );
+        
+        if ($existingReview) {
+            echo "<script>
+                sessionStorage.setItem('reviewAlreadySubmitted', 'true'); 
+                alert('You have already submitted a review for this product');
+                window.location.href = '../order/orderhistory.php';
+            </script>";
+            exit;
+        }
+        
         // Validate CSRF token
         if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
             throw new Exception('Invalid CSRF token');
@@ -187,6 +226,10 @@ try {
 
     <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>
     
+    <!-- Define current review key for this product and order -->
+    <script>
+        const currentReviewKey = <?php echo json_encode("review_{$order_id}_{$product_id}"); ?>;
+    </script>
     <script src="write_review.js"></script>
 </body>
 </html> 

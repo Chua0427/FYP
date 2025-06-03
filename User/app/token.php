@@ -34,8 +34,14 @@ class TokenAuth {
      */
     public function generateToken(int $user_id, ?int $expirySeconds = null): string {
         try {
-            // Generate a random token with better entropy
-            $token = bin2hex(random_bytes(32));
+            // Generate a random token with better entropy (Split-token approach)
+            $token_id = bin2hex(random_bytes(16)); // Public identifier
+            $token_secret = bin2hex(random_bytes(32)); // Secret part
+            $token = $token_id . '.' . $token_secret; // Combined token for client
+            
+            // Hash the secret part for storage (we never store the raw secret)
+            $token_hash = hash('sha256', $token_secret);
+            
             // Determine expiry
             if ($expirySeconds === null) {
                 $expirySeconds = $this->token_expiry;
@@ -57,13 +63,13 @@ class TokenAuth {
                                         VALUES (:user_id, :token, :expires_at, NOW(), :user_agent, :ip_address)");
             
             $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-            $stmt->bindParam(':token', $token, PDO::PARAM_STR);
+            $stmt->bindParam(':token', $token_hash, PDO::PARAM_STR); // Store the hashed secret, not the full token
             $stmt->bindParam(':expires_at', $expires_at, PDO::PARAM_STR);
             $stmt->bindParam(':user_agent', $user_agent, PDO::PARAM_STR);
             $stmt->bindParam(':ip_address', $ip_address, PDO::PARAM_STR);
             $stmt->execute();
             
-            return $token;
+            return $token; // Return the full token to the client
         } catch (Exception $e) {
             error_log("Token Generation Error: " . $e->getMessage());
             throw new Exception("Failed to generate authentication token");
@@ -78,22 +84,34 @@ class TokenAuth {
      */
     public function validateToken(string $token) {
         try {
+            // Split token into id and secret parts
+            $token_parts = explode('.', $token);
+            if (count($token_parts) !== 2) {
+                return false; // Invalid token format
+            }
+            
+            $token_id = $token_parts[0];
+            $token_secret = $token_parts[1];
+            
+            // Hash the secret for comparison
+            $token_hash = hash('sha256', $token_secret);
+            
             // Check if token exists and is not expired
             $stmt = $this->db->prepare("
-                SELECT u.*, t.token, t.expires_at, t.user_agent 
+                SELECT u.*, t.token_id, t.token, t.expires_at, t.user_agent 
                 FROM user_tokens t
                 JOIN users u ON t.user_id = u.user_id
-                WHERE t.token = :token AND t.expires_at > NOW() AND t.is_revoked = 0
+                WHERE t.token = :token_hash AND t.expires_at > NOW() AND t.is_revoked = 0
                 LIMIT 1
             ");
             
-            $stmt->bindParam(':token', $token, PDO::PARAM_STR);
+            $stmt->bindParam(':token_hash', $token_hash, PDO::PARAM_STR);
             $stmt->execute();
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if ($result) {
                 // Update last access time for this token
-                $this->updateTokenLastAccess($token);
+                $this->updateTokenLastAccess($token_hash);
                 return $result;
             }
             
@@ -107,13 +125,13 @@ class TokenAuth {
     /**
      * Update token's last access timestamp
      * 
-     * @param string $token Token to update
+     * @param string $token_hash Hashed token to update
      * @return bool Success status
      */
-    private function updateTokenLastAccess(string $token): bool {
+    private function updateTokenLastAccess(string $token_hash): bool {
         try {
-            $stmt = $this->db->prepare("UPDATE user_tokens SET last_used_at = NOW() WHERE token = :token");
-            $stmt->bindParam(':token', $token, PDO::PARAM_STR);
+            $stmt = $this->db->prepare("UPDATE user_tokens SET last_used_at = NOW() WHERE token = :token_hash");
+            $stmt->bindParam(':token_hash', $token_hash, PDO::PARAM_STR);
             $stmt->execute();
             return true;
         } catch (Exception $e) {
@@ -178,8 +196,17 @@ class TokenAuth {
      */
     public function revokeToken(string $token): bool {
         try {
-            $stmt = $this->db->prepare("UPDATE user_tokens SET is_revoked = 1 WHERE token = :token");
-            $stmt->bindParam(':token', $token, PDO::PARAM_STR);
+            // Split token into id and secret parts
+            $token_parts = explode('.', $token);
+            if (count($token_parts) !== 2) {
+                return false; // Invalid token format
+            }
+            
+            $token_secret = $token_parts[1];
+            $token_hash = hash('sha256', $token_secret);
+            
+            $stmt = $this->db->prepare("UPDATE user_tokens SET is_revoked = 1 WHERE token = :token_hash");
+            $stmt->bindParam(':token_hash', $token_hash, PDO::PARAM_STR);
             $stmt->execute();
             return $stmt->rowCount() > 0;
         } catch (Exception $e) {
@@ -236,13 +263,22 @@ class TokenAuth {
      */
     public function revokeOtherUserTokens(int $user_id, string $current_token): bool {
         try {
+            // Split token into id and secret parts
+            $token_parts = explode('.', $current_token);
+            if (count($token_parts) !== 2) {
+                return false; // Invalid token format
+            }
+            
+            $token_secret = $token_parts[1];
+            $token_hash = hash('sha256', $token_secret);
+            
             $stmt = $this->db->prepare("UPDATE user_tokens 
                                        SET is_revoked = 1 
                                        WHERE user_id = :user_id 
-                                       AND token != :current_token");
+                                       AND token != :token_hash");
                                        
             $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-            $stmt->bindParam(':current_token', $current_token, PDO::PARAM_STR);
+            $stmt->bindParam(':token_hash', $token_hash, PDO::PARAM_STR);
             $stmt->execute();
             return true;
         } catch (Exception $e) {
@@ -309,8 +345,17 @@ class TokenAuth {
      */
     public function deleteToken(string $token): bool {
         try {
-            $stmt = $this->db->prepare("DELETE FROM user_tokens WHERE token = :token");
-            $stmt->bindParam(':token', $token, PDO::PARAM_STR);
+            // Split token into id and secret parts
+            $token_parts = explode('.', $token);
+            if (count($token_parts) !== 2) {
+                return false; // Invalid token format
+            }
+            
+            $token_secret = $token_parts[1];
+            $token_hash = hash('sha256', $token_secret);
+            
+            $stmt = $this->db->prepare("DELETE FROM user_tokens WHERE token = :token_hash");
+            $stmt->bindParam(':token_hash', $token_hash, PDO::PARAM_STR);
             $stmt->execute();
             return $stmt->rowCount() > 0;
         } catch (Exception $e) {

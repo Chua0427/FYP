@@ -462,7 +462,17 @@ function formatPrice($price) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://js.stripe.com 'unsafe-inline'; connect-src 'self' https://*.stripe.com https://api.stripe.com; frame-src 'self' https://*.stripe.com https://*.hcaptcha.com; img-src 'self' data: https://*.stripe.com; worker-src blob: https://*.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;">
+    <meta http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        script-src 'self' https://js.stripe.com 'unsafe-inline';
+        connect-src 'self' https://*.stripe.com https://api.stripe.com;
+        frame-src 'self' https://*.stripe.com;
+        img-src 'self' data: https://*.stripe.com;
+        worker-src blob: https://*.stripe.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        font-src 'self' https://fonts.gstatic.com;
+      ">
     <title>Payment - VeroSports</title>
     <link rel="stylesheet" href="process_payment.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -485,13 +495,14 @@ function formatPrice($price) {
                     <form id="payment-form" method="post">
                         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
                         <input type="hidden" name="stripe_token" id="stripe_token">
-                        <!-- Stripe Link Authentication Element for autofilled user info -->
-                        <div id="link-authentication-element" class="stripe-element-container"></div>
-                        <div id="card-number-element" class="stripe-element-container"></div>
                         
                         <div class="payment-grid">
                             <div class="payment-form">
                                 <h2>Card Details</h2>
+                                
+                                <div style="display: none;">
+                                    <div id="link-authentication-element"></div>
+                                </div>
                                 
                                 <div class="form-group">
                                     <label for="card-number-element">Bank card information</label>
@@ -598,13 +609,16 @@ function formatPrice($price) {
         
         // Initialize Stripe
         const stripe = Stripe('pk_test_51R3yBQQZPLk7FzRY3uO9YLeLKEbmLgOWzlD43uf0xHYeHdVC13kMzpCw5zhRPnp215QEwdZz7F9qmeMT6dv2ZmC600HNBheJIT', stripeFallbackOptions);
-        const elements = stripe.elements();
         
-        // Create and mount Link Authentication Element
-        const linkAuthElement = elements.create('linkAuthentication', {
-            defaultEmail: <?php echo json_encode($_SESSION['email'] ?? ''); ?>
+        // Initialize elements with basic configuration
+        const elements = stripe.elements({
+            mode: 'payment',
+            currency: 'myr',
+            amount: <?php echo (int)round($totalPrice * 100); ?>,
+            appearance: {
+                theme: 'stripe',
+            }
         });
-        linkAuthElement.mount('#link-authentication-element');
         
         // Style for Stripe Elements
         const elementStyle = {
@@ -622,11 +636,19 @@ function formatPrice($price) {
             }
         };
         
-        // Create individual Stripe Elements for each field
+        // Create and mount Link Authentication Element with email prefill
+        const linkAuthElement = elements.create('linkAuthentication', {
+            defaultValues: {
+                email: '<?php echo htmlspecialchars($_SESSION['email'] ?? ''); ?>',
+            }
+        });
+        linkAuthElement.mount('#link-authentication-element');
+        
+        // Create individual Stripe Elements for each field with Link enabled
         const cardNumberElement = elements.create('cardNumber', {
             style: elementStyle,
             showIcon: true,
-            disableLink: true
+            // Allow Link integration
         });
         
         const cardExpiryElement = elements.create('cardExpiry', {
@@ -710,17 +732,14 @@ function formatPrice($price) {
             submitButton.disabled = true;
             processingOverlay.style.display = 'flex';
             
-            // Create a token from the card elements
-            const cardData = {
-                'type': 'card',
-                'card': cardNumberElement,
-                'billing_details': {
-                    'name': cardName.value.trim()
+            // Create a payment method instead of just a token
+            stripe.createPaymentMethod({
+                type: 'card',
+                card: cardNumberElement,
+                billing_details: {
+                    name: cardName.value.trim(),
+                    email: '<?php echo htmlspecialchars($_SESSION['email'] ?? ''); ?>'
                 }
-            };
-            
-            stripe.createToken(cardNumberElement, {
-                name: cardName.value.trim()
             }).then(function(result) {
                 if (result.error) {
                     // Show error in the form
@@ -730,20 +749,40 @@ function formatPrice($price) {
                     submitButton.disabled = false;
                     processingOverlay.style.display = 'none';
                 } else {
-                    // Send the token to the server
-                    document.getElementById('stripe_token').value = result.token.id;
-                    form.submit();
+                    // For backward compatibility with your existing code,
+                    // still create a token too
+                    createToken();
                 }
-            }).catch(function(error) {
-                console.error('Error:', error);
-                
-                // Show generic error
-                cardErrors.textContent = 'An unexpected error occurred. Please try again.';
-                
-                // Re-enable submit button and hide loading
-                submitButton.disabled = false;
-                processingOverlay.style.display = 'none';
             });
+            
+            // Create a token for backward compatibility
+            function createToken() {
+                stripe.createToken(cardNumberElement, {
+                    name: cardName.value.trim()
+                }).then(function(result) {
+                    if (result.error) {
+                        // Show error in the form
+                        cardErrors.textContent = result.error.message;
+                        
+                        // Re-enable submit button and hide loading
+                        submitButton.disabled = false;
+                        processingOverlay.style.display = 'none';
+                    } else {
+                        // Send the token to the server
+                        document.getElementById('stripe_token').value = result.token.id;
+                        form.submit();
+                    }
+                }).catch(function(error) {
+                    console.error('Error:', error);
+                    
+                    // Show generic error
+                    cardErrors.textContent = 'An unexpected error occurred. Please try again.';
+                    
+                    // Re-enable submit button and hide loading
+                    submitButton.disabled = false;
+                    processingOverlay.style.display = 'none';
+                });
+            }
         });
     </script>
 </body>

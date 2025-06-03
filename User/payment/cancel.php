@@ -1,5 +1,7 @@
 <?php
 declare(strict_types=1);
+// Start output buffering to allow header() after HTML
+ob_start();
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once '/xampp/htdocs/FYP/FYP/User/payment/secrets.php';
 require_once __DIR__ . '/db.php';
@@ -150,7 +152,6 @@ try {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Reset and base styles */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -168,13 +169,11 @@ try {
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            position: relative;
-            top: 100px;
         }
         
         main {
             flex: 1;
-            padding: 40px 0;
+            padding: 40px 0  120px 0;
         }
         
         .container {
@@ -189,6 +188,8 @@ try {
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             padding: 40px;
             text-align: center;
+            position: relative;
+            top: 80px;
         }
         
         .cancel-icon {
@@ -353,13 +354,13 @@ try {
                         <a href="payment_methods.php?order_id=<?php echo htmlspecialchars($order_id); ?>" class="btn btn-outline">
                             <i class="fas fa-credit-card"></i> Change Payment Method
                         </a>
-                        <a href="../index.php" class="btn btn-outline">
+                        <a href="../HomePage/homePage.php" class="btn btn-outline">
                             <i class="fas fa-home"></i> Return to Home
                         </a>
                     </div>
                     
                     <p class="contact-support">
-                        Need help? <a href="../contact_us.php">Contact our support team</a>
+                        Need help? <a href="mailto:support@verosports.com">Contact our support team</a>
                     </p>
                 </div>
             </div>

@@ -445,6 +445,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
                 return true;
             });
         });
+        
+        // This function is used when updating cart count from Buy Again buttons
+        function adjustCartCountSize() {
+            const cartCount = document.getElementById('cartCount');
+            if (!cartCount) return;
+            
+            const count = cartCount.textContent.trim();
+            if (count.length >= 3) {
+                // For 3 or more digits (100+)
+                cartCount.style.fontSize = '8px';
+                cartCount.style.width = '22px';
+            } else if (count.length === 2) {
+                // For 2 digits (10-99)
+                cartCount.style.fontSize = '10px';
+                cartCount.style.width = '20px';
+            } else {
+                // For 1 digit (0-9)
+                cartCount.style.fontSize = '12px';
+                cartCount.style.width = '20px';
+            }
+            
+            // Ensure vertical alignment
+            cartCount.style.lineHeight = '1';
+            cartCount.style.display = 'flex';
+            cartCount.style.alignItems = 'center';
+            cartCount.style.justifyContent = 'center';
+        }
+        
+        // Function to update cart count in the header
+        function updateHeaderCartCount(count) {
+            const cartCount = document.getElementById('cartCount');
+            if (cartCount) {
+                if (count > 0) {
+                    cartCount.textContent = count;
+                    cartCount.style.display = 'flex';
+                } else {
+                    cartCount.textContent = '0';
+                    cartCount.style.display = 'none';
+                }
+                adjustCartCountSize();
+            }
+        }
     </script>
 
     <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>

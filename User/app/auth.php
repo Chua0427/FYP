@@ -55,6 +55,20 @@ class Auth {
                     
                     if ($user) {
                         self::$user = $user;
+                        
+                        // Log periodic session activity for security auditing
+                        $current_time = time();
+                        if (!isset($_SESSION['last_activity_log']) || ($current_time - $_SESSION['last_activity_log'] > 3600)) {
+                            $_SESSION['last_activity_log'] = $current_time;
+                            if (isset($GLOBALS['authLogger'])) {
+                                $GLOBALS['authLogger']->info('Session activity', [
+                                    'user_id' => $user['user_id'],
+                                    'email' => $user['email'],
+                                    'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
+                                ]);
+                            }
+                        }
+                        
                         return true;
                     } else {
                         // User not found in database but exists in session
@@ -68,6 +82,15 @@ class Auth {
             } else {
                 // Fingerprint mismatch - potential session hijacking attempt
                 error_log("Auth fingerprint mismatch for user ID " . $_SESSION['user_id']);
+                
+                // Log the security event
+                if (isset($GLOBALS['authLogger'])) {
+                    $GLOBALS['authLogger']->warning('Session fingerprint mismatch - potential hijacking attempt', [
+                        'user_id' => $_SESSION['user_id'],
+                        'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                        'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+                    ]);
+                }
                 
                 // Clear potentially compromised session
                 unset($_SESSION['user_id']);
@@ -90,7 +113,9 @@ class Auth {
         // Store user data
         self::$user = $user;
         
-        // Update session data to maintain session across the current browser 
+        // Automatic session upgrade on first token use
+        // If we're here, it means we have a valid token but no valid session
+        // Create a new session to allow seamless navigation on the site
         $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['first_name'] = $user['first_name'] ?? '';
         $_SESSION['last_name'] = $user['last_name'] ?? '';
@@ -103,6 +128,16 @@ class Auth {
             ($_SERVER['REMOTE_ADDR'] ?? 'localhost') . 
             $user['user_id']
         );
+        
+        // Log the automatic session upgrade for security purposes
+        if (isset($GLOBALS['authLogger'])) {
+            $GLOBALS['authLogger']->info('Automatic session upgrade from token', [
+                'user_id' => $user['user_id'],
+                'email' => $user['email'],
+                'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+            ]);
+        }
         
         return true;
     }
@@ -200,6 +235,24 @@ class Auth {
             ]
         );
         
+        // Also set the token in session for API routes that need it
+        $_SESSION['auth_token'] = $token;
+        
+        // Log successful login with token
+        if (isset($GLOBALS['authLogger'])) {
+            $token_parts = explode('.', $token);
+            $token_id = $token_parts[0] ?? 'unknown';
+            
+            $GLOBALS['authLogger']->info('User logged in with token', [
+                'user_id' => $user_id,
+                'email' => $user_data['email'] ?? 'unknown',
+                'token_id' => $token_id, // Only log the public part
+                'remember_me' => $remember,
+                'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+            ]);
+        }
+        
         return $token;
     }
     
@@ -261,6 +314,15 @@ class Auth {
         // Get token
         $token = self::$tokenAuth->parseToken();
         
+        // Log the logout event before revoking the token
+        if (self::$user && isset($GLOBALS['authLogger'])) {
+            $GLOBALS['authLogger']->info('User logged out', [
+                'user_id' => self::$user['user_id'],
+                'email' => self::$user['email'] ?? 'unknown',
+                'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
+            ]);
+        }
+        
         // Revoke token if exists
         if ($token) {
             // Permanently delete token record for this device
@@ -286,7 +348,8 @@ class Auth {
         // Clear all authentication-related session variables
         $auth_keys = [
             'user_id', 'first_name', 'last_name', 'email', 'user_type', 
-            'auth_fingerprint', 'user_email', 'user_name', 'welcome_shown'
+            'auth_fingerprint', 'user_email', 'user_name', 'welcome_shown',
+            'auth_token', 'last_activity_log'
         ];
         
         foreach ($auth_keys as $key) {
@@ -297,6 +360,36 @@ class Auth {
         
         // Clear user data
         self::$user = null;
+    }
+    
+    /**
+     * Check if the current session is an admin in view-only mode
+     * 
+     * @return bool True if admin in view-only mode
+     */
+    public static function isAdminViewOnly(): bool {
+        return isset($_SESSION['admin_view_only']) && $_SESSION['admin_view_only'] === true;
+    }
+    
+    /**
+     * Checks if the current action is allowed for admin view-only mode
+     * Redirects to notification page if not allowed
+     * 
+     * @param bool $checkPostOnly If true, only checks POST requests
+     * @return void
+     */
+    public static function guardAgainstAdminAction(bool $checkPostOnly = false): void {
+        // If not in admin view mode or just GET request (when $checkPostOnly is true), allow
+        if (!self::isAdminViewOnly() || ($checkPostOnly && $_SERVER['REQUEST_METHOD'] !== 'POST')) {
+            return;
+        }
+        
+        // Store the current URL for the redirect back
+        $_SESSION['admin_redirect_from'] = $_SERVER['REQUEST_URI'];
+        
+        // Redirect to admin notification page
+        header('Location: /FYP/FYP/User/admin_notification.php');
+        exit;
     }
 }
 ?> 

@@ -77,9 +77,19 @@ if ($is_authenticated) {
 
 // Add auth notification resources
 add_auth_notification_resources();
+
+// Check if the user is in admin view-only mode
+if (class_exists('Auth') && Auth::isAdminViewOnly()) {
+    // Display admin view-only mode notification
+    ?>
+    <div id="admin-view-only-banner" style="position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; background-color: #dc3545; color: white; text-align: center; padding: 5px 0; font-weight: bold;">
+        <i class="fas fa-user-shield"></i> ADMIN VIEW-ONLY MODE - For monitoring purposes only
+    </div>
+    <?php
+}
 ?>
 
-<header>
+<header style="margin-top: 28px;">
     <a href="../HomePage/homePage.php">
         <img src="../Header_and_Footer/img/VeroSports.jpeg" class="logo">
     </a>

@@ -163,10 +163,17 @@ function getClientIP() {
     return 'Unknown';
 }
 
-// Determine current session
-$current_token = null;
-$cookie_token = isset($_COOKIE['auth_token']) ? $_COOKIE['auth_token'] : null;
-$current_user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
+// Determine current session token hash
+$tokenAuth = new TokenAuth();
+$currentRawToken = $tokenAuth->parseToken();
+$currentTokenHash = null;
+if ($currentRawToken) {
+    $parts = explode('.', $currentRawToken);
+    if (count($parts) === 2) {
+        $currentTokenHash = hash('sha256', $parts[1]);
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -226,8 +233,8 @@ $current_user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
                 </div>
                 
                 <?php foreach ($sessions as $session): 
-                    $is_current = ($cookie_token && isset($session['token']) && $cookie_token === $session['token']) ||
-                                 (!$cookie_token && $current_user_agent === $session['user_agent']);
+                    // Highlight current device if token hash matches
+                    $is_current = ($currentTokenHash && $currentTokenHash === $session['token']);
                     $device_info = getDeviceInfo($session['user_agent']);
                     $remembered = ($session['expires_at'] === '9999-12-31 23:59:59');
                     

@@ -1,4 +1,9 @@
 document.addEventListener("DOMContentLoaded", function() {
+    // Ensure currentReviewKey is defined
+    if (typeof currentReviewKey === 'undefined') {
+        console.error('currentReviewKey is not defined');
+        return;
+    }
     let stars = document.querySelectorAll(".star");
     let rating = document.getElementById("ratingValue");
     
@@ -45,13 +50,10 @@ document.addEventListener("DOMContentLoaded", function() {
     if (reviewForm) {
         reviewForm.addEventListener('submit', function(e) {
             if (validateForm(e)) {
-                // Clear any existing navigation flags before submitting
-                clearNavigationFlags();
-                // Set flag to indicate successful form submission
+                // Set flag to indicate successful form submission for this product
                 try {
-                    sessionStorage.setItem('reviewSubmitted', 'true');
+                    sessionStorage.setItem(currentReviewKey, 'submitted');
                 } catch(e) {
-                    // Handle case where sessionStorage is not available
                     console.log('SessionStorage not available');
                 }
             }
@@ -77,17 +79,16 @@ document.addEventListener("DOMContentLoaded", function() {
         return true;
     }
     
-    // Clear all navigation-related flags
-    function clearNavigationFlags() {
+    // Clear only this page's review flag
+    function clearReviewFlag() {
         try {
-            sessionStorage.removeItem('formSubmitting');
-            sessionStorage.removeItem('reviewSubmitted');
+            sessionStorage.removeItem(currentReviewKey);
         } catch(e) {
             console.log('SessionStorage not available');
         }
     }
     
-    // Handle browser back/forward navigation - simplified approach
+    // Handle browser back/forward navigation
     window.addEventListener('pageshow', function(event) {
         // If this is a back/forward navigation (page from cache)
         if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
@@ -98,18 +99,15 @@ document.addEventListener("DOMContentLoaded", function() {
     // Check if user is trying to access review page after submitting
     function checkForReviewSubmission() {
         try {
-            const reviewSubmitted = sessionStorage.getItem('reviewSubmitted');
-            if (reviewSubmitted === 'true') {
-                // Clear the flag immediately to prevent repeated alerts
-                sessionStorage.removeItem('reviewSubmitted');
+            // Check this page's review flag
+            const flag = sessionStorage.getItem(currentReviewKey);
+            if (flag === 'submitted' || flag === 'already') {
+                // Clear flag immediately
+                sessionStorage.removeItem(currentReviewKey);
                 
-                // Show alert and redirect
                 alert('You have already submitted a review for this product');
-                
-                // Redirect to order history after a brief delay
-                setTimeout(function() {
-                    window.location.href = '../order/orderhistory.php';
-                }, 100);
+                window.location.href = '../order/orderhistory.php';
+                return;
             }
         } catch(e) {
             console.log('SessionStorage not available');
@@ -119,18 +117,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Clean up on page unload to prevent stale flags
     window.addEventListener('beforeunload', function() {
         // Only clear flags if we're not in the middle of form submission
-        const currentUrl = window.location.pathname;
-        if (currentUrl.includes('write_review') || currentUrl.includes('review')) {
-            try {
-                // Don't clear reviewSubmitted flag if form was just submitted
-                const formElements = document.querySelector('form');
-                if (formElements && !document.activeElement.closest('form')) {
-                    sessionStorage.removeItem('formSubmitting');
-                }
-            } catch(e) {
-                console.log('SessionStorage not available');
-            }
-        }
+        clearReviewFlag();
     });
     
     // Initialize page - check if user shouldn't be here

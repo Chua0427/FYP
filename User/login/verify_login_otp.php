@@ -5,6 +5,12 @@ require_once '/xampp/htdocs/FYP/vendor/autoload.php';
 require_once __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/auth.php';
 
+// Initialize validation variable
+$valid = false;
+$error = '';
+$success_message = '';
+$user = [];
+
 // PHP Mailer for OTP resending
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -79,8 +85,6 @@ if (isset($_SESSION['send_otp']) && $_SESSION['send_otp'] === true) {
 
 // Get redirect URL from session
 $redirect = $_SESSION['redirect_after_login'] ?? '/FYP/FYP/User/HomePage/homePage.php';
-$error = '';
-$success_message = '';
 
 // Function to generate a random OTP
 function generateOTP() {
@@ -156,13 +160,16 @@ if (isset($_POST['otp_submit'])) {
             $error = "OTP has expired. Please request a new one.";
         } else if ($entered_otp == $stored_otp) {
             // OTP is valid
+            $valid = true;
+            $user = $_SESSION['temp_user'];
+            
             $GLOBALS['authLogger']->info('User successfully verified OTP and logged in', [
-                'email' => $_SESSION['temp_user']['email'],
-                'user_id' => $_SESSION['temp_user']['user_id']
+                'email' => $user['email'],
+                'user_id' => $user['user_id']
             ]);
             
             // Check if user is an admin (user_type = 2) or superadmin (user_type = 3)
-            if ($_SESSION['temp_user']['user_type'] == 2 || $_SESSION['temp_user']['user_type'] == 3) {
+            if ($user['user_type'] == 2 || $user['user_type'] == 3) {
                 // Clear all session data
                 $_SESSION = array();
                 
@@ -174,36 +181,69 @@ if (isset($_POST['otp_submit'])) {
                 exit();
             }
             
-            // Copy from temp_user to user session
-            $_SESSION['user_id'] = $_SESSION['temp_user']['user_id'];
-            $_SESSION['first_name'] = $_SESSION['temp_user']['first_name'];
-            $_SESSION['last_name'] = $_SESSION['temp_user']['last_name'];
-            $_SESSION['email'] = $_SESSION['temp_user']['email'];
-            $_SESSION['user_type'] = $_SESSION['temp_user']['user_type'];
+            // Authentication successful - Create session and token
+            $user_id = (int) $user['user_id'];
             
-            // Set authentication fingerprint to prevent session hijacking
+            // Clear OTP-related session variables
+            unset($_SESSION['login_otp']);
+            unset($_SESSION['login_time']);
+            unset($_SESSION['otp_expiry']);
+            unset($_SESSION['temp_user']);
+            unset($_SESSION['send_otp']);
+            
+            // Store user information in session
+            $_SESSION['user_id'] = $user_id;
+            $_SESSION['first_name'] = $user['first_name'];
+            $_SESSION['last_name'] = $user['last_name'];
+            $_SESSION['email'] = $user['email'];
+            $_SESSION['user_type'] = $user['user_type'];
+            
+            // Set session fingerprint to prevent session hijacking
             $_SESSION['auth_fingerprint'] = hash('sha256', 
                 $_SERVER['HTTP_USER_AGENT'] . 
                 ($_SERVER['REMOTE_ADDR'] ?? 'localhost') . 
-                $_SESSION['user_id']
+                $user_id
             );
             
-            // Create authentication token and cookie based on remember preference (1 day if not remembered, infinite if remembered)
-            $remember_me = $_SESSION['remember_me'] ?? false;
-            Auth::login((int)$_SESSION['user_id'], $_SESSION['temp_user'], (bool)$remember_me);
+            // Generate secure token if remember me is selected
+            $remember = isset($_SESSION['remember_me']) ? $_SESSION['remember_me'] : false;
+            if ($remember) {
+                $token = Auth::login($user_id, $user, true);
+            } else {
+                // Just create session without persistent token
+                $token = Auth::login($user_id, $user, false);
+            }
             
-            // Clear sensitive session data
-            unset($_SESSION['login_otp']);
-            unset($_SESSION['otp_expiry']);
-            unset($_SESSION['temp_user']);
+            // Clean up remember_me from session
             unset($_SESSION['remember_me']);
             
-            // Redirect to homepage or the intended destination
-            $redirect = $_SESSION['redirect_after_login'] ?? '/FYP/FYP/User/HomePage/homePage.php';
-            unset($_SESSION['redirect_after_login']);
+            try {
+                // Record last login time in user record
+                $pdo = new PDO('mysql:host=localhost;dbname=verosports', 'root', '');
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $stmt = $pdo->prepare("UPDATE users SET last_login = NOW() WHERE user_id = ?");
+                $stmt->execute([$user_id]);
+            } catch (PDOException $e) {
+                error_log("Failed to update last login: " . $e->getMessage());
+            }
             
-            header("Location: " . $redirect);
-            exit();
+            // Log successful authentication with OTP
+            $GLOBALS['authLogger']->info('User authenticated successfully with OTP', [
+                'user_id' => $user_id,
+                'email' => $user['email'],
+                'ip' => $_SERVER['REMOTE_ADDR'],
+                'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
+                'remember_me' => $remember ? 'yes' : 'no'
+            ]);
+            
+            // Regenerate session ID for security
+            SessionHelper::regenerateSession(true, false);
+            
+            // Redirect to destination
+            $redirect = isset($_SESSION['redirect_after_login']) ? $_SESSION['redirect_after_login'] : '/FYP/FYP/User/HomePage/homePage.php';
+            unset($_SESSION['redirect_after_login']);
+            header("Location: $redirect");
+            exit;
         } else {
             $error = "Invalid OTP. Please try again.";
         }
@@ -263,6 +303,7 @@ function isOTPExpired() {
     
     return time() > $_SESSION['otp_expiry'];
 }
+
 ?>
 
 <!DOCTYPE html>

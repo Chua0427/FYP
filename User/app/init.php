@@ -62,7 +62,26 @@ if (session_status() === PHP_SESSION_NONE) {
     ini_set('session.use_cookies', '1');
     ini_set('session.use_only_cookies', '1');
     ini_set('session.cache_limiter', $isProduction ? 'nocache' : 'private');
+    
+    // Set session cookie parameters with enhanced security
+    SessionHelper::setSecureSessionParams();
+    
     session_start();
+    
+    // Apply security headers
+    SessionHelper::addSecurityHeaders();
+    
+    // Regenerate session ID periodically to prevent session fixation
+    if (isset($_SESSION['last_regeneration'])) {
+        $regenerationTime = 1800; // 30 minutes
+        if ($_SESSION['last_regeneration'] + $regenerationTime < time()) {
+            // Regenerate ID and rotate auth token if it exists
+            SessionHelper::regenerateSession(true, isset($_COOKIE['auth_token']));
+            $_SESSION['last_regeneration'] = time();
+        }
+    } else {
+        $_SESSION['last_regeneration'] = time();
+    }
 }
 
 // Store that we've already started a session in a global
@@ -79,7 +98,15 @@ function ensure_session_started(): void {
         ini_set('session.use_cookies', '1');
         ini_set('session.use_only_cookies', '1');
         ini_set('session.cache_limiter', $GLOBALS['isProduction'] ? 'nocache' : 'private');
+        
+        // Set session cookie parameters with enhanced security
+        SessionHelper::setSecureSessionParams();
+        
         session_start();
+        
+        // Apply security headers
+        SessionHelper::addSecurityHeaders();
+        
         $GLOBALS['session_started'] = true;
     }
 }

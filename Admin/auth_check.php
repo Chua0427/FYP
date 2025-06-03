@@ -33,6 +33,43 @@ function isValidAdminSession(): bool {
     return true;
 }
 
+// Check for and delete any user authentication tokens when an admin logs in
+function clearUserTokens(): void {
+    if (isset($_COOKIE['auth_token'])) {
+        try {
+            $pdo = new PDO('mysql:host=localhost;dbname=verosports', 'root', '');
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            
+            // Parse the token to get the identifier part
+            $token = $_COOKIE['auth_token'];
+            $parts = explode('.', $token);
+            if (count($parts) === 2) {
+                $token_id = $parts[0];
+                
+                // Revoke the token in the database
+                $stmt = $pdo->prepare("UPDATE user_tokens SET is_revoked = 1 WHERE token = :token_hash");
+                $token_hash = hash('sha256', $parts[1]); // Hash the secret part
+                $stmt->bindParam(':token_hash', $token_hash);
+                $stmt->execute();
+                
+                // Delete the cookie
+                setcookie('auth_token', '', time() - 3600, '/');
+                
+                // Log the action
+                if (isset($GLOBALS['authLogger'])) {
+                    $GLOBALS['authLogger']->info('User auth token deleted due to admin login', [
+                        'admin_user_id' => $_SESSION['user_id'],
+                        'token_id' => $token_id,
+                        'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
+                    ]);
+                }
+            }
+        } catch (Exception $e) {
+            error_log("Failed to clear user token: " . $e->getMessage());
+        }
+    }
+}
+
 // If not properly authenticated, redirect to login
 if (!isValidAdminSession()) {
     // Clear any potentially invalid session data
@@ -48,5 +85,11 @@ if (!isValidAdminSession()) {
     // Redirect to login page
     header('Location: /FYP/FYP/Admin/login.php');
     exit;
+} else {
+    // Admin is logged in, check and clear any user tokens
+    clearUserTokens();
+    
+    // Set a flag to indicate an admin is logged in
+    $_SESSION['admin_logged_in'] = true;
 }
 ?> 
