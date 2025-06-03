@@ -89,10 +89,10 @@ function generateOTP() {
 
 // Function to send OTP via email
 function sendOTPEmail($email, $otp, $user_name) {
-    // Full paths to PHPMailer files using __DIR__ for reliability
-    require_once __DIR__ . '/../../otp/phpmailer/src/Exception.php';
-    require_once __DIR__ . '/../../otp/phpmailer/src/PHPMailer.php';
-    require_once __DIR__ . '/../../otp/phpmailer/src/SMTP.php';
+    // Include PHPMailer files from the ForgotPassword directory
+    require_once __DIR__ . '/../ForgotPassword/phpmailer/src/Exception.php';
+    require_once __DIR__ . '/../ForgotPassword/phpmailer/src/PHPMailer.php';
+    require_once __DIR__ . '/../ForgotPassword/phpmailer/src/SMTP.php';
     
     $mail = new PHPMailer(true);
     
