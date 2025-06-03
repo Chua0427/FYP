@@ -28,6 +28,17 @@ class Auth {
     public static function check(): bool {
         self::init();
         
+        // Immediately logout if a token cookie exists but is invalid or revoked
+        $cookieToken = self::$tokenAuth->parseToken();
+        if ($cookieToken !== null) {
+            $valid = self::$tokenAuth->validateToken($cookieToken);
+            if (!$valid) {
+                // Token revoked or expired: logout immediately
+                self::logout();
+                return false;
+            }
+        }
+        
         // If user is already loaded, return true
         if (self::$user) {
             return true;
