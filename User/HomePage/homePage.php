@@ -21,6 +21,7 @@ require_once __DIR__ . '/../app/auth-check.php';
     <link rel="stylesheet" href="../Header_and_Footer/header.css">
     <link rel="stylesheet" href="../Header_and_Footer/footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <?php include_once __DIR__ . '/../Header_and_Footer/favicon.php'; ?>
     <?php
     // Include CSRF protection
     require_once __DIR__ . '/../app/csrf.php';

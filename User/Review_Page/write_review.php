@@ -6,7 +6,7 @@ require_once __DIR__ . '/../auth_check.php';
 
 // Only start session if not already active
 if (session_status() == PHP_SESSION_NONE) {
-    session_start();
+session_start();
 }
 // Prevent caching to avoid stale review form on back navigation
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
@@ -99,20 +99,20 @@ try {
     // If this is a form submission
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Re-validate that no review exists (double-check for race conditions)
-        $existingReview = $db->fetchOne(
+    $existingReview = $db->fetchOne(
             "SELECT review_id FROM review WHERE user_id = ? AND product_id = ? AND order_id = ? LIMIT 1",
-            [$user_id, $product_id, $order_id]
-        );
-        
-        if ($existingReview) {
+        [$user_id, $product_id, $order_id]
+    );
+    
+    if ($existingReview) {
             echo "<script>
                 sessionStorage.setItem('reviewAlreadySubmitted', 'true'); 
                 alert('You have already submitted a review for this product');
                 window.location.href = '../order/orderhistory.php';
             </script>";
-            exit;
-        }
-        
+        exit;
+    }
+    
         // Validate CSRF token
         if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
             throw new Exception('Invalid CSRF token');

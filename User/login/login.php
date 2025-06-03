@@ -118,86 +118,135 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         $stmt->execute();
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Handle case where no user is found
+        // Handle case where no user is found - set error but don't throw exception
         if (!$user) {
-            // Log and throw generic error to avoid disclosing details
-            $GLOBALS['authLogger']->warning('Failed login attempt - user not found', [
-                'email' => $email,
-                'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
-            ]);
-            throw new Exception('Invalid email or password');
-        }
-
-        // Log DB query time
-        $db_time = microtime(true) - $start_time;
-        error_log("Database query time: " . number_format($db_time, 4) . " seconds");
-
-        if (password_verify($password, $user['password'])) {
-            // Authentication successful
-            $auth_time = microtime(true) - $start_time;
-            error_log("Password verification successful at " . date('H:i:s') . " - Time: " . number_format($auth_time, 4) . "s");
-            
-            // Prevent admin and superadmin accounts (user_type = 2 or 3) from logging in via user page
-            if (isset($user['user_type']) && ($user['user_type'] == 2 || $user['user_type'] == 3)) {
-                $error = 'Admin accounts must use the admin login page.';
-                $GLOBALS['authLogger']->warning('Privileged user attempted to login on user page', [
-                    'email' => $email,
-                    'ip' => $_SERVER['REMOTE_ADDR']
-                ]);
-                
-                // Stop processing
-                throw new Exception('Admin accounts must use the admin login page.');
+            // Log the attempt if logger is available
+            if (isset($GLOBALS['authLogger'])) {
+                try {
+                    $GLOBALS['authLogger']->warning('Failed login attempt - user not found', [
+                        'email' => $email,
+                        'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
+                    ]);
+                } catch (Exception $logException) {
+                    // Silently handle logging failures
+                    error_log("Logger exception: " . $logException->getMessage());
+                }
             }
-            
-            // Generate OTP
-            $otp = generateOTP();
-            
-            // Store OTP and user data in session for verification
-            $_SESSION['login_otp'] = $otp;
-            $_SESSION['temp_user'] = $user;
-            $_SESSION['login_time'] = time();
-            $_SESSION['remember_me'] = $remember;
-            $_SESSION['redirect_after_login'] = $redirect;
-            
-            // Set flag to send OTP email after redirect
-            $_SESSION['send_otp'] = true;
-            
-            // Log the OTP generation
-            $GLOBALS['authLogger']->info('OTP generated for login', [
-                'user_id' => $user['user_id'],
-                'email' => $user['email'],
-                'ip' => $_SERVER['REMOTE_ADDR'],
-                'auth_time' => number_format($auth_time, 4)
-            ]);
-            
-            // Record total processing time before redirect
-            $total_time = microtime(true) - $start_time;
-            error_log("Total login processing time before redirect: " . number_format($total_time, 4) . "s");
-            
-            // Redirect to OTP verification page
-            header("Location: verify_login_otp.php");
-            exit;
-        } else {
-            $error = 'Invalid email or password.';
-            error_log("Login failed: Invalid password for email {$email}");
-            $GLOBALS['authLogger']->warning('Failed login attempt', [
-                'email' => $email,
-                'ip' => $_SERVER['REMOTE_ADDR'],
-                'reason' => 'invalid_password'
-            ]);
+            $error = 'Invalid email or password';
+        }
+        // Continue only if user exists
+        else {
+            // Log DB query time
+            $db_time = microtime(true) - $start_time;
+            error_log("Database query time: " . number_format($db_time, 4) . " seconds");
+
+            if (password_verify($password, $user['password'])) {
+                // Authentication successful
+                $auth_time = microtime(true) - $start_time;
+                error_log("Password verification successful at " . date('H:i:s') . " - Time: " . number_format($auth_time, 4) . "s");
+                
+                // Prevent admin and superadmin accounts (user_type = 2 or 3) from logging in via user page
+                if (isset($user['user_type']) && ($user['user_type'] == 2 || $user['user_type'] == 3)) {
+                    $error = 'Invalid email or password.';
+                    
+                    // Log the attempt if logger is available
+                    if (isset($GLOBALS['authLogger'])) {
+                        try {
+                            $GLOBALS['authLogger']->warning('Privileged user attempted to login on user page', [
+                                'email' => $email,
+                                'ip' => $_SERVER['REMOTE_ADDR']
+                            ]);
+                        } catch (Exception $logException) {
+                            // Silently handle logging failures
+                            error_log("Logger exception: " . $logException->getMessage());
+                        }
+                    }
+                } else {
+                    // Generate OTP
+                    $otp = generateOTP();
+                    
+                    // Store OTP and user data in session for verification
+                    $_SESSION['login_otp'] = $otp;
+                    $_SESSION['temp_user'] = $user;
+                    $_SESSION['login_time'] = time();
+                    $_SESSION['remember_me'] = $remember;
+                    $_SESSION['redirect_after_login'] = $redirect;
+                    
+                    // Set flag to send OTP email after redirect
+                    $_SESSION['send_otp'] = true;
+                    
+                    // Log the OTP generation if logger is available
+                    if (isset($GLOBALS['authLogger'])) {
+                        try {
+                            $GLOBALS['authLogger']->info('OTP generated for login', [
+                                'user_id' => $user['user_id'],
+                                'email' => $user['email'],
+                                'ip' => $_SERVER['REMOTE_ADDR'],
+                                'auth_time' => number_format($auth_time, 4)
+                            ]);
+                        } catch (Exception $logException) {
+                            // Silently handle logging failures
+                            error_log("Logger exception: " . $logException->getMessage());
+                        }
+                    }
+                    
+                    // Record total processing time before redirect
+                    $total_time = microtime(true) - $start_time;
+                    error_log("Total login processing time before redirect: " . number_format($total_time, 4) . "s");
+                    
+                    // Redirect to OTP verification page
+                    header("Location: verify_login_otp.php");
+                    exit;
+                }
+            } else {
+                $error = 'Invalid email or password.';
+                error_log("Login failed: Invalid password for email {$email}");
+                
+                // Log the attempt if logger is available
+                if (isset($GLOBALS['authLogger'])) {
+                    try {
+                        $GLOBALS['authLogger']->warning('Failed login attempt', [
+                            'email' => $email,
+                            'ip' => $_SERVER['REMOTE_ADDR'],
+                            'reason' => 'invalid_password'
+                        ]);
+                    } catch (Exception $logException) {
+                        // Silently handle logging failures
+                        error_log("Logger exception: " . $logException->getMessage());
+                    }
+                }
+            }
         }
     } catch (PDOException $e) {
         $error = "Database error: " . $e->getMessage();
-        $GLOBALS['logger']->error('Login PDO error', [
-            'message' => $e->getMessage(),
-            'ip' => $_SERVER['REMOTE_ADDR']
-        ]);
+        
+        // Log the error if logger is available
+        if (isset($GLOBALS['logger'])) {
+            try {
+                $GLOBALS['logger']->error('Login PDO error', [
+                    'message' => $e->getMessage(),
+                    'ip' => $_SERVER['REMOTE_ADDR']
+                ]);
+            } catch (Exception $logException) {
+                // Silently handle logging failures
+                error_log("Logger exception: " . $logException->getMessage());
+            }
+        }
     } catch (Exception $e) {
         $error = $e->getMessage();
-        $GLOBALS['logger']->error('Login error', [
-            'message' => $e->getMessage(),
-            'ip' => $_SERVER['REMOTE_ADDR']
-        ]);
+        
+        // Log the error if logger is available
+        if (isset($GLOBALS['logger'])) {
+            try {
+                $GLOBALS['logger']->error('Login error', [
+                    'message' => $e->getMessage(),
+                    'ip' => $_SERVER['REMOTE_ADDR']
+                ]);
+            } catch (Exception $logException) {
+                // Silently handle logging failures
+                error_log("Logger exception: " . $logException->getMessage());
+            }
+        }
     }
 }
 ?>
