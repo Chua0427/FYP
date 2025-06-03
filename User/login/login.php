@@ -118,6 +118,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         $stmt->execute();
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        // Handle case where no user is found
+        if (!$user) {
+            // Log and throw generic error to avoid disclosing details
+            $GLOBALS['authLogger']->warning('Failed login attempt - user not found', [
+                'email' => $email,
+                'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
+            ]);
+            throw new Exception('Invalid email or password');
+        }
+
         // Log DB query time
         $db_time = microtime(true) - $start_time;
         error_log("Database query time: " . number_format($db_time, 4) . " seconds");
