@@ -1,5 +1,8 @@
 <?php
+declare(strict_types=1);
 session_start();
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 $servername = "localhost";
 $username = "root";
