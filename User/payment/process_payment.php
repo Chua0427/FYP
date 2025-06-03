@@ -485,6 +485,9 @@ function formatPrice($price) {
                     <form id="payment-form" method="post">
                         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
                         <input type="hidden" name="stripe_token" id="stripe_token">
+                        <!-- Stripe Link Authentication Element for autofilled user info -->
+                        <div id="link-authentication-element" class="stripe-element-container"></div>
+                        <div id="card-number-element" class="stripe-element-container"></div>
                         
                         <div class="payment-grid">
                             <div class="payment-form">
@@ -596,6 +599,12 @@ function formatPrice($price) {
         // Initialize Stripe
         const stripe = Stripe('pk_test_51R3yBQQZPLk7FzRY3uO9YLeLKEbmLgOWzlD43uf0xHYeHdVC13kMzpCw5zhRPnp215QEwdZz7F9qmeMT6dv2ZmC600HNBheJIT', stripeFallbackOptions);
         const elements = stripe.elements();
+        
+        // Create and mount Link Authentication Element
+        const linkAuthElement = elements.create('linkAuthentication', {
+            defaultEmail: <?php echo json_encode($_SESSION['email'] ?? ''); ?>
+        });
+        linkAuthElement.mount('#link-authentication-element');
         
         // Style for Stripe Elements
         const elementStyle = {

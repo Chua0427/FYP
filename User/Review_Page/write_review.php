@@ -1,9 +1,9 @@
 <?php
+declare(strict_types=1);
+session_start();
 // Include authentication check
 require_once __DIR__ . '/../auth_check.php';
 
-declare(strict_types=1);
-session_start();
 // Prevent caching to avoid stale review form on back navigation
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Cache-Control: post-check=0, pre-check=0', false);
