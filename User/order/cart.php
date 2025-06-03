@@ -429,11 +429,15 @@ include __DIR__ . '/../Header_and_Footer/header.php';
             button.addEventListener('click', function() {
                 const cartId = this.getAttribute('data-cart-id');
                 const input = document.querySelector(`input[name="quantity[${cartId}]"]`);
-                let value = parseInt(input.value, 10);
-                value = Math.max(1, value - 1);
+                // Parse and sanitize current value
+                let raw = parseInt(input.value, 10);
+                if (isNaN(raw) || raw < 1) {
+                    raw = parseInt(input.getAttribute('data-last-valid-quantity'), 10) || 1;
+                }
+                let value = Math.max(1, raw - 1);
                 input.value = value;
                 
-            queueCartUpdate(cartId, value);
+                queueCartUpdate(cartId, value);
                 updateCartTotals();
             });
         });
@@ -442,7 +446,12 @@ include __DIR__ . '/../Header_and_Footer/header.php';
             button.addEventListener('click', function() {
                 const cartId = this.getAttribute('data-cart-id');
                 const input = document.querySelector(`input[name="quantity[${cartId}]"]`);
-                let value = parseInt(input.value, 10);
+                // Parse and sanitize current value
+                let raw = parseInt(input.value, 10);
+                if (isNaN(raw) || raw < 1) {
+                    raw = parseInt(input.getAttribute('data-last-valid-quantity'), 10) || 1;
+                }
+                let value = raw;
                 
                 const maxStock = parseInt(input.getAttribute('data-max-stock') || Number.MAX_SAFE_INTEGER, 10);
                 
@@ -450,7 +459,7 @@ include __DIR__ . '/../Header_and_Footer/header.php';
                     value += 1;
                     input.value = value;
                     
-                queueCartUpdate(cartId, value);
+                    queueCartUpdate(cartId, value);
                     updateCartTotals();
                 } else {
                     alert(`Stock limit reached. Only ${maxStock} items available.`);
@@ -461,9 +470,13 @@ include __DIR__ . '/../Header_and_Footer/header.php';
         quantityInputs.forEach(input => {
             input.addEventListener('change', function() {
                 const cartId = this.getAttribute('data-cart-id');
-                let value = parseInt(this.value, 10);
-            value = Math.max(1, value);
-                
+                // Parse and sanitize input value
+                let raw = parseInt(this.value, 10);
+                if (isNaN(raw) || raw < 1) {
+                    raw = parseInt(this.getAttribute('data-last-valid-quantity'), 10) || 1;
+                }
+                let value = Math.max(1, raw);
+
                 const maxStock = parseInt(this.getAttribute('data-max-stock') || Number.MAX_SAFE_INTEGER, 10);
                 
                 if (value > maxStock) {
@@ -473,7 +486,7 @@ include __DIR__ . '/../Header_and_Footer/header.php';
                 
                 this.value = value;
                 
-            queueCartUpdate(cartId, value);
+                queueCartUpdate(cartId, value);
                 updateCartTotals();
             });
         });
