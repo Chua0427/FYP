@@ -246,6 +246,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             <div class="signup-text">
                 Don't have an account? <a href="../Registration/Register.php">Sign Up</a>
             </div>
+            <div class="go-back-home">
+                <a href="../HomePage/homePage.php" class="back-home-link">Go Back Home</a>
+            </div>
         </div>
     </div>
     <script>
