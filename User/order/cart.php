@@ -37,11 +37,27 @@ try {
         throw new Exception("User information not found");
     }
     
-    // Remove cart entries for products marked as deleted
-    $db->execute(
-        "DELETE c FROM cart c JOIN product p ON c.product_id = p.product_id WHERE p.deleted = 1 AND c.user_id = ?",
+    // Remove cart entries for products marked as deleted or out of stock
+    $toRemove = $db->fetchAll(
+        'SELECT c.cart_id
+         FROM cart c
+         LEFT JOIN product p ON c.product_id = p.product_id
+         LEFT JOIN stock s ON c.product_id = s.product_id AND c.product_size = s.product_size
+         WHERE (p.deleted = 1 OR s.stock <= 0) AND c.user_id = ?',
         [$user_id]
     );
+    foreach ($toRemove as $item) {
+        $cartIdToRemove = (int) $item['cart_id'];
+        // Log automatic removal due to deletion or zero stock
+        $GLOBALS['logger']->info(
+            'Auto-removing cart item (deleted product or zero stock)',
+            ['user_id' => $user_id, 'cart_id' => $cartIdToRemove]
+        );
+        $db->execute(
+            'DELETE FROM cart WHERE cart_id = ? AND user_id = ?',
+            [$cartIdToRemove, $user_id]
+        );
+    }
     
     // Fetch cart items for the logged-in user with product details
     $cartItems = $db->fetchAll(
