@@ -227,7 +227,7 @@ try {
 
         <div class="text-center mt-4">
             <a href="../HomePage/homePage.php" class="btn btn-primary">Continue Shopping</a>
-            <a href="../View_Order/view_order.php" class="btn btn-secondary ms-2">View Orders</a>
+            <a href="../View_Order/order.php" class="btn btn-secondary ms-2">View Orders</a>
         </div>
     </div>
 
