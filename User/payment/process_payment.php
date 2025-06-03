@@ -758,30 +758,30 @@ function formatPrice($price) {
             // Create a token for backward compatibility
             function createToken() {
                 stripe.createToken(cardNumberElement, {
-                    name: cardName.value.trim()
-                }).then(function(result) {
-                    if (result.error) {
-                        // Show error in the form
-                        cardErrors.textContent = result.error.message;
-                        
-                        // Re-enable submit button and hide loading
-                        submitButton.disabled = false;
-                        processingOverlay.style.display = 'none';
-                    } else {
-                        // Send the token to the server
-                        document.getElementById('stripe_token').value = result.token.id;
-                        form.submit();
-                    }
-                }).catch(function(error) {
-                    console.error('Error:', error);
-                    
-                    // Show generic error
-                    cardErrors.textContent = 'An unexpected error occurred. Please try again.';
+                name: cardName.value.trim()
+            }).then(function(result) {
+                if (result.error) {
+                    // Show error in the form
+                    cardErrors.textContent = result.error.message;
                     
                     // Re-enable submit button and hide loading
                     submitButton.disabled = false;
                     processingOverlay.style.display = 'none';
-                });
+                } else {
+                    // Send the token to the server
+                    document.getElementById('stripe_token').value = result.token.id;
+                    form.submit();
+                }
+            }).catch(function(error) {
+                console.error('Error:', error);
+                
+                // Show generic error
+                cardErrors.textContent = 'An unexpected error occurred. Please try again.';
+                
+                // Re-enable submit button and hide loading
+                submitButton.disabled = false;
+                processingOverlay.style.display = 'none';
+            });
             }
         });
     </script>

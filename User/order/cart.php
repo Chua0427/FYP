@@ -453,7 +453,7 @@ include __DIR__ . '/../Header_and_Footer/header.php';
                 let value = Math.max(1, raw - 1);
                 input.value = value;
                 
-                queueCartUpdate(cartId, value);
+            queueCartUpdate(cartId, value);
                 updateCartTotals();
             });
         });
@@ -475,7 +475,7 @@ include __DIR__ . '/../Header_and_Footer/header.php';
                     value += 1;
                     input.value = value;
                     
-                    queueCartUpdate(cartId, value);
+                queueCartUpdate(cartId, value);
                     updateCartTotals();
                 } else {
                     alert(`Stock limit reached. Only ${maxStock} items available.`);
@@ -492,7 +492,7 @@ include __DIR__ . '/../Header_and_Footer/header.php';
                     raw = parseInt(this.getAttribute('data-last-valid-quantity'), 10) || 1;
                 }
                 let value = Math.max(1, raw);
-
+                
                 const maxStock = parseInt(this.getAttribute('data-max-stock') || Number.MAX_SAFE_INTEGER, 10);
                 
                 if (value > maxStock) {
@@ -502,7 +502,7 @@ include __DIR__ . '/../Header_and_Footer/header.php';
                 
                 this.value = value;
                 
-                queueCartUpdate(cartId, value);
+            queueCartUpdate(cartId, value);
                 updateCartTotals();
             });
         });

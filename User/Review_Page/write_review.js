@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 sessionStorage.removeItem(currentReviewKey);
                 
                 alert('You have already submitted a review for this product');
-                window.location.href = '../order/orderhistory.php';
+                    window.location.href = '../order/orderhistory.php';
                 return;
             }
         } catch(e) {
