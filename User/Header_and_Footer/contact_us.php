@@ -1,7 +1,21 @@
 <?php
+    require_once __DIR__ . '/../auth_check.php';
     include __DIR__ . '/../../connect_db/config.php';
     
-    session_start();
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    // Check if admin in view-only mode
+    if (isset($_SESSION['admin_view_only']) && $_SESSION['admin_view_only'] === true) {
+        // Store the current URL for the redirect back
+        $_SESSION['admin_redirect_from'] = $_SERVER['REQUEST_URI'];
+        
+        // Redirect to admin notification page
+        header('Location: /FYP/FYP/User/admin_notification.php');
+        exit;
+    }
+    
     $user = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
     if(!$user){
