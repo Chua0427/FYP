@@ -7,6 +7,62 @@ require_once '/xampp/htdocs/FYP/FYP/User/payment/secrets.php';
 require_once __DIR__ . '/db.php';
 require __DIR__ . '/../app/init.php';
 
+// Function to log unauthorized access attempts
+function logUnauthorizedAccess($reason) {
+    $logDir = __DIR__ . '/logs';
+    if (!file_exists($logDir)) {
+        mkdir($logDir, 0777, true);
+    }
+    
+    $data = [
+        'timestamp' => date('Y-m-d H:i:s'),
+        'ip' => $_SERVER['REMOTE_ADDR'],
+        'reason' => $reason,
+        'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
+        'request_uri' => $_SERVER['REQUEST_URI'] ?? 'Unknown'
+    ];
+    
+    file_put_contents($logDir . '/unauthorized_access.log', json_encode($data) . PHP_EOL, FILE_APPEND);
+}
+
+// Prevent direct access without proper payment flow
+function validatePaymentFlow() {
+    // Must be logged in
+    if (!isset($_SESSION['user_id'])) {
+        logUnauthorizedAccess("Not logged in");
+        header('Location: ../login/login.php');
+        exit;
+    }
+
+    // Check for payment flow stages - allow either processing or failed state for cancel page
+    if (!isset($_SESSION['payment_flow_stage']) || 
+       ($_SESSION['payment_flow_stage'] !== 'processing' && $_SESSION['payment_flow_stage'] !== 'failed')) {
+        logUnauthorizedAccess("Invalid payment stage: " . ($_SESSION['payment_flow_stage'] ?? 'none'));
+        header('Location: checkout.php');
+        exit;
+    }
+
+    // Verify payment token exists
+    if (!isset($_SESSION['payment_flow_token']) || empty($_SESSION['payment_flow_token'])) {
+        logUnauthorizedAccess("Missing payment token");
+        header('Location: checkout.php');
+        exit;
+    }
+    
+    // Check if we have order_id in URL
+    if (empty($_GET['order_id'])) {
+        logUnauthorizedAccess("No order_id in URL");
+        header('Location: checkout.php');
+        exit;
+    }
+    
+    // Set payment flow stage to failed/cancelled
+    $_SESSION['payment_flow_stage'] = 'failed';
+}
+
+// Run validation
+validatePaymentFlow();
+
 // Ensure logs directory exists
 $log_dir = __DIR__ . '/logs';
 if (!file_exists($log_dir)) {

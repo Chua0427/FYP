@@ -149,13 +149,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
         $size = $_POST['size'];
         $quantity = (int)$_POST['quantity'];
 
-        // Verify product exists
+        // Verify product exists and not deleted
         $product = $db->fetchOne(
-            "SELECT product_id FROM product WHERE product_id = ?",
+            "SELECT product_id, deleted FROM product WHERE product_id = ?",
             [$product_id]
         );
-        if (!$product) {
-            throw new Exception("Product not found");
+        if (!$product || (int)$product['deleted'] === 1) {
+            // Product has been deleted or unavailable
+            throw new Exception("Product is sold out");
+        }
+        // Check stock availability for this size
+        $stockRow = $db->fetchOne(
+            "SELECT stock FROM stock WHERE product_id = ? AND product_size = ?",
+            [$product_id, $size]
+        );
+        if (!$stockRow || (int)$stockRow['stock'] < $quantity) {
+            throw new Exception("Product is out of stock");
         }
 
         // Check for existing cart item with this user, product and size
@@ -163,6 +172,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
             "SELECT cart_id, quantity FROM cart WHERE user_id = ? AND product_id = ? AND product_size = ?",
             [$user_id, $product_id, $size]
         );
+
+        // Prevent exceeding available stock in cart
+        $existingQty = $cartItem ? (int)$cartItem['quantity'] : 0;
+        if ($existingQty + $quantity > (int)$stockRow['stock']) {
+            // User already has all available stock in their cart
+            throw new Exception("The product is full stock in cart");
+        }
 
         if ($cartItem) {
             // Update quantity of existing cart item
@@ -186,8 +202,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
             'quantity' => $quantity
         ]);
 
-        // Redirect to prevent resubmission
-        header("Location: " . $_SERVER['PHP_SELF'] . "?cart_added=1");
+        // Store message in session
+        $_SESSION['flash_message'] = [
+            'type' => 'success',
+            'text' => 'Product has been added to your cart.'
+        ];
+        
+        // Redirect to prevent resubmission without parameters
+        header("Location: " . $_SERVER['PHP_SELF']);
         exit;
     } catch (Exception $e) {
         $logger->error('Error adding item to cart from order history', [
@@ -196,8 +218,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
             'product_size' => $size ?? null,
             'error' => $e->getMessage()
         ]);
-        $cart_error = "Failed to add item to cart: " . $e->getMessage();
+        // Store error in session
+        $_SESSION['flash_message'] = [
+            'type' => 'error',
+            'text' => $e->getMessage()
+        ];
     }
+}
+
+// Retrieve flash messages from session
+$flash_message = null;
+if (isset($_SESSION['flash_message'])) {
+    $flash_message = $_SESSION['flash_message'];
+    // Clear the message from session
+    unset($_SESSION['flash_message']);
 }
 ?>
 
@@ -223,24 +257,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
             <h1>Your Orders - <?php echo htmlspecialchars((string)$total_orders); ?></h1>
         </div>
         
-        <?php if (isset($error_message)): ?>
+        <?php if (isset($error_message) && !isset($flash_message)): ?>
             <div class="error-message">
                 <i class="fas fa-exclamation-triangle"></i>
                 <?php echo htmlspecialchars($error_message); ?>
             </div>
         <?php endif; ?>
         
-        <?php if (isset($_GET['cart_added']) && $_GET['cart_added'] == 1): ?>
+        <?php if (isset($flash_message) && $flash_message['type'] === 'success'): ?>
             <div class="success-message">
                 <i class="fas fa-check-circle"></i>
-                Product has been added to your cart.
+                <?php echo htmlspecialchars($flash_message['text']); ?>
             </div>
         <?php endif; ?>
         
-        <?php if (isset($cart_error)): ?>
+        <?php if (isset($flash_message) && $flash_message['type'] === 'error'): ?>
             <div class="error-message">
                 <i class="fas fa-exclamation-triangle"></i>
-                <?php echo htmlspecialchars($cart_error); ?>
+                <?php echo htmlspecialchars($flash_message['text']); ?>
             </div>
         <?php endif; ?>
         
@@ -487,6 +521,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
                 adjustCartCountSize();
             }
         }
+
+        // Auto-hide flash messages after 5 seconds and refresh page without params
+        $(function() {
+            var msgs = $('.success-message, .error-message');
+            if (msgs.length) {
+                // Fade out messages
+                setTimeout(function() {
+                    msgs.fadeOut('slow');
+                    
+                    // Refresh the page after fade animation completes
+                }, 3000);
+            }
+        });
     </script>
 
     <?php include __DIR__ . '/../Header_and_Footer/footer.php'; ?>

@@ -23,7 +23,27 @@ if (!function_exists('ensure_session_started')) {
             ini_set('session.use_cookies', '1');
             ini_set('session.use_only_cookies', '1');
             ini_set('session.cache_limiter', $isProduction ? 'nocache' : 'private');
+            ini_set('session.cookie_httponly', '1'); // Don't expose session cookie to JS
+            ini_set('session.cookie_secure', isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? '1' : '0');
+            
+            // For PHP < 7.3, set the SameSite attribute via session.cookie_path
+            if (PHP_VERSION_ID < 70300) {
+                ini_set('session.cookie_path', '/; SameSite=Lax');
+            }
+            
+            // Adjust session GC probability for better performance
+            ini_set('session.gc_probability', '1');
+            ini_set('session.gc_divisor', '100');
+            
+            // Try to start the session
             session_start();
+            
+            // Force session ID to refresh once per request to prevent session fixation
+            if (!isset($_SESSION['__last_access'])) {
+                session_regenerate_id(false);
+                $_SESSION['__last_access'] = time();
+            }
+            
             $GLOBALS['session_started'] = true;
         }
     }
@@ -263,4 +283,54 @@ class SessionHelper {
     public static function verifyCsrfToken(string $token): bool {
         return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
     }
+}
+
+/**
+ * Debug session state - useful for troubleshooting session issues
+ * @param string $label A label to identify this debug point
+ * @param string $logfile Optional file path to write log to
+ * @return array Session debug info
+ */
+function debug_session(string $label = 'Session Debug', ?string $logfile = null): array {
+    $debug = [
+        'label' => $label,
+        'timestamp' => date('Y-m-d H:i:s'),
+        'session_id' => session_id(),
+        'session_status' => session_status(),
+        'session_name' => session_name(),
+        'session_started' => isset($GLOBALS['session_started']),
+        'session_vars' => []
+    ];
+    
+    // Include sanitized session variables
+    if (isset($_SESSION) && is_array($_SESSION)) {
+        foreach ($_SESSION as $key => $value) {
+            if (is_scalar($value)) {
+                $debug['session_vars'][$key] = $value;
+            } else {
+                $debug['session_vars'][$key] = '('. gettype($value) . ')';
+            }
+        }
+    }
+    
+    // Add request info
+    $debug['request'] = [
+        'uri' => $_SERVER['REQUEST_URI'] ?? '',
+        'method' => $_SERVER['REQUEST_METHOD'] ?? '',
+        'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+        'referer' => $_SERVER['HTTP_REFERER'] ?? ''
+    ];
+    
+    // Write to log if requested
+    if ($logfile) {
+        $logdir = dirname($logfile);
+        if (!file_exists($logdir)) {
+            mkdir($logdir, 0777, true);
+        }
+        
+        $logEntry = date('[Y-m-d H:i:s]') . " $label: " . json_encode($debug) . PHP_EOL;
+        file_put_contents($logfile, $logEntry, FILE_APPEND);
+    }
+    
+    return $debug;
 } 

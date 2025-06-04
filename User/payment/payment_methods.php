@@ -6,6 +6,11 @@ require_once __DIR__ . '/db.php';
 require __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/csrf.php';
 
+// Add debug logging
+if (function_exists('debug_session')) {
+    debug_session('Payment Methods Page Load', __DIR__ . '/logs/payment_methods_debug.log');
+}
+
 // Ensure session is started safely
 ensure_session_started();
 
@@ -19,6 +24,12 @@ $user_id = $_SESSION['user_id'];
 $error = null;
 $success = null;
 $csrf_token = generateCsrfToken();
+
+// Check for payment method error from process_payment.php
+if (isset($_SESSION['payment_method_error'])) {
+    $error = $_SESSION['payment_method_error'];
+    unset($_SESSION['payment_method_error']);
+}
 
 // Clear any previous checkout cart data to stay in sync
 unset($_SESSION['checkout_cart_items'], $_SESSION['checkout_total_price']);
@@ -87,6 +98,18 @@ try {
         $_SESSION['checkout_total_price'] = $totalPrice;
     }
     
+    // Calculate total original price and discount
+    $totalOriginalPrice = 0;
+    $totalDiscount = 0;
+    foreach ($cartItems as $item) {
+        $originalItemPrice = $item['price'] * $item['quantity'];
+        $totalOriginalPrice += $originalItemPrice;
+        
+        if (isset($item['discount_price']) && $item['discount_price'] > 0 && $item['discount_price'] < $item['price']) {
+            $totalDiscount += $originalItemPrice - ($item['discount_price'] * $item['quantity']);
+        }
+    }
+    
     // Calculate total items
     $totalItems = 0;
     foreach ($cartItems as $item) {
@@ -104,8 +127,47 @@ try {
         
         // Currently only supporting credit card payment
         if ($payment_method === 'card') {
+            // Debug session before setting payment flow vars
+            if (function_exists('debug_session')) {
+                debug_session('Before Payment Method Selected', __DIR__ . '/logs/payment_flow_debug.log');
+            }
+            
             // Store payment method in session
             $_SESSION['checkout_payment_method'] = $payment_method;
+            
+            // Generate a unique token for this payment flow and store in session
+            $_SESSION['payment_flow_token'] = bin2hex(random_bytes(16));
+            $_SESSION['payment_selection_timestamp'] = time();
+            
+            // Set payment flow stage to enforce the correct sequence
+            $_SESSION['payment_flow_stage'] = 'method_selected';
+            
+            // Store the user's IP for additional validation
+            $_SESSION['payment_flow_ip'] = $_SERVER['REMOTE_ADDR'];
+            
+            // Set flag to indicate this is a legitimate flow
+            $_SESSION['payment_initiated'] = true;
+            
+            // Ensure all session variables are written
+            session_write_close();
+            
+            // Debug: Store a copy of session data in a separate cookie to verify
+            $sessionData = json_encode([
+                'flow_stage' => 'method_selected',
+                'time' => time(),
+                'token_hash' => md5($_SESSION['payment_flow_token'] ?? '')
+            ]);
+            setcookie('payment_debug', $sessionData, 0, '/');
+            
+            // Log the payment flow transition
+            if (isset($GLOBALS['logger'])) {
+                $GLOBALS['logger']->info('Payment method selected', [
+                    'user_id' => $user_id,
+                    'payment_method' => $payment_method,
+                    'token' => substr($_SESSION['payment_flow_token'], 0, 8) . '...',
+                    'flow_stage' => 'method_selected'
+                ]);
+            }
             
             // Redirect to the payment processing page
             header("Location: process_payment.php");
@@ -167,8 +229,8 @@ function formatPrice($price) {
                                 <h2>Choose Payment Method</h2>
                                 
                                 <div class="payment-options">
-                                    <div class="payment-option selected">
-                                        <input type="radio" id="payment-card" name="payment_method" value="card" checked>
+                                    <div class="payment-option">
+                                        <input type="radio" id="payment-card" name="payment_method" value="card">
                                         <label for="payment-card" class="payment-option-label">
                                             <span class="payment-icon"><i class="fas fa-credit-card"></i></span>
                                             <div class="payment-details">
@@ -185,7 +247,7 @@ function formatPrice($price) {
                                 </div>
                                 
                                 <div class="button-container">
-                                    <button type="submit" class="btn btn-primary">Process Payment</button>
+                                    <button type="submit" id="submit-btn" class="btn btn-primary">Process Payment</button>
                                     <a href="checkout.php" class="return-link">Back to Order Details</a>
                                 </div>
                             </div>
@@ -195,17 +257,25 @@ function formatPrice($price) {
                                 
                                 <?php foreach ($cartItems as $item): ?>
                                     <div class="order-item">
+                                        <div class="item-image">
+                                            <img src="../../upload/<?php echo htmlspecialchars($item['product_img1']); ?>" alt="<?php echo htmlspecialchars($item['product_name']); ?>" class="order-item-image">
+                                        </div>
                                         <div class="item-details">
                                             <p class="item-name"><?php echo htmlspecialchars($item['product_name']); ?></p>
                                             <p class="item-brand"><?php echo htmlspecialchars($item['brand']); ?></p>
                                             <p class="item-quantity">Size: <?php echo htmlspecialchars($item['product_size']); ?> | Qty: <?php echo htmlspecialchars((string)$item['quantity']); ?></p>
                                         </div>
-                                        <p class="item-price">
-                                            <?php 
-                                            $itemPrice = $item['final_price'] * $item['quantity'];
-                                            echo formatPrice($itemPrice); 
-                                            ?>
-                                        </p>
+                                        <div class="item-price">
+                                                    <?php
+                                                    $itemPrice = $item['final_price'] * $item['quantity'];
+                                                    echo formatPrice($itemPrice);
+                                                    ?>
+                                                    <?php if (isset($item['discount_price']) && $item['discount_price'] > 0 && $item['discount_price'] < $item['price']): ?>
+                                                        <div class="original-price" style="text-decoration: line-through;">
+                                                            <?php echo formatPrice($item['price'] * $item['quantity']); ?>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </div>
                                     </div>
                                 <?php endforeach; ?>
                                 
@@ -214,13 +284,15 @@ function formatPrice($price) {
                                         <span>Subtotal (<?php echo $totalItems; ?> items)</span>
                                         <span><?php echo formatPrice($totalPrice); ?></span>
                                     </div>
+                                    <?php if ($totalDiscount > 0): ?>
+                                    <div class="summary-row discount">
+                                        <span>Total Discount</span>
+                                        <span id="checkout-discount">-<?php echo formatPrice($totalDiscount); ?></span>
+                                    </div>
+                                    <?php endif; ?>
                                     <div class="summary-row">
                                         <span>Sales Tax (6% SST)</span>
                                         <span>Included</span>
-                                    </div>
-                                    <div class="summary-row">
-                                        <span>Shipping</span>
-                                        <span>Free</span>
                                     </div>
                                     <div class="summary-row total">
                                         <span>Total</span>
@@ -247,6 +319,19 @@ function formatPrice($price) {
         document.addEventListener('DOMContentLoaded', function() {
             // Handle payment option selection
             const paymentOptions = document.querySelectorAll('.payment-option');
+            const form = document.getElementById('payment-form');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            // Only add error container if form exists (prevents null reference on redirects)
+            let errorMsgContainer;
+            if (form) {
+                // Error message container
+                errorMsgContainer = document.createElement('div');
+                errorMsgContainer.className = 'error-message payment-error';
+                errorMsgContainer.style.display = 'none';
+                errorMsgContainer.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please select a payment method to continue.';
+                form.insertBefore(errorMsgContainer, form.firstChild);
+            }
             
             paymentOptions.forEach(option => {
                 option.addEventListener('click', function() {
@@ -259,8 +344,32 @@ function formatPrice($price) {
                     // Check the radio button
                     const radio = this.querySelector('input[type="radio"]');
                     radio.checked = true;
+                    
+                    // Hide error message if it was displayed and exists
+                    if (errorMsgContainer) {
+                        errorMsgContainer.style.display = 'none';
+                    }
                 });
             });
+            
+            // Form validation (only if form exists)
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    // Check if any payment method is selected
+                    const selectedPayment = document.querySelector('input[name="payment_method"]:checked');
+                    
+                    if (!selectedPayment) {
+                        e.preventDefault();
+                        errorMsgContainer.style.display = 'block';
+                        errorMsgContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        return false;
+                    }
+                    
+                    // Store selected payment method in session storage for validation on next page
+                    sessionStorage.setItem('payment_method_selected', selectedPayment.value);
+                    return true;
+                });
+            }
         });
     </script>
 </body>
