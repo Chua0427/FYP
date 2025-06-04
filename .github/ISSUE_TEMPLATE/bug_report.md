@@ -1,9 +1,10 @@
 ---
-name: "Bug report"
-about: "Create a report to help us improve"
+name: Bug report
+about: Create a report to help us improve
 title: "[BUG] "
-labels: ["bug"]
-assignees: []
+labels: bug
+assignees: Chua0427, elvistankw, SXJ0802
+
 ---
 
 **Describe the bug**
@@ -29,4 +30,4 @@ If applicable, add screenshots to help explain your problem.
 - MySQL/MariaDB version: [e.g. 10.4]
 
 **Additional context**
-Add any other context about the problem here. 
+Add any other context about the problem here.
