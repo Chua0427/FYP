@@ -1,0 +1,8 @@
+[04-Jun-2025 15:08:35 Europe/Berlin] Database query time: 0.0210 seconds
+[04-Jun-2025 15:08:35 Europe/Berlin] Login failed: Invalid password for email sohxj0802@gmail.com
+[04-Jun-2025 15:08:41 Europe/Berlin] Database query time: 0.0109 seconds
+[04-Jun-2025 15:08:41 Europe/Berlin] Password verification successful at 15:08:41 - Time: 0.1301s
+[04-Jun-2025 15:08:41 Europe/Berlin] Total login processing time before redirect: 0.1324s
+[04-Jun-2025 15:08:41 Europe/Berlin] Starting OTP email send after redirect at 15:08:41
+[04-Jun-2025 15:08:45 Europe/Berlin] Completed OTP email send after redirect at 15:08:45 - time: 4.6326s - result: success
+[04-Jun-2025 15:09:15 Europe/Berlin] Failed to update last login: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'last_login' in 'field list'

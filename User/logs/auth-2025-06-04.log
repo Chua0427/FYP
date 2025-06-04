@@ -1,0 +1,7 @@
+[2025-06-04T15:08:35.253833+02:00] auth.WARNING: Failed login attempt {"email":"sohxj0802@gmail.com","ip":"::1","reason":"invalid_password"} []
+[2025-06-04T15:08:41.175604+02:00] auth.INFO: OTP generated for login {"user_id":54,"email":"sohxj0802@gmail.com","ip":"::1","auth_time":"0.1301"} []
+[2025-06-04T15:08:45.870631+02:00] auth.INFO: OTP sent after redirect {"user_id":54,"email":"sohxj0802@gmail.com","ip":"::1","send_time":"4.6326"} []
+[2025-06-04T15:09:15.063309+02:00] auth.INFO: User successfully verified OTP and logged in {"email":"sohxj0802@gmail.com","user_id":54} []
+[2025-06-04T15:09:15.066897+02:00] auth.INFO: User logged in with token {"user_id":54,"email":"sohxj0802@gmail.com","token_id":"6f52af27b28e1b9a5accf8b76529468b","remember_me":false,"ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"} []
+[2025-06-04T15:09:15.102851+02:00] auth.INFO: User authenticated successfully with OTP {"user_id":54,"email":"sohxj0802@gmail.com","ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0","remember_me":"no"} []
+[2025-06-04T15:09:15.104027+02:00] auth.INFO: Session regenerated {"user_id":54,"old_session_id":"8dgfpd2h...","new_session_id":"ci6cbcvk...","ip":"::1"} []
