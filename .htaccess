@@ -13,6 +13,8 @@ DirectoryIndex index.php
 
 # Protect logs and sensitive directories
 RewriteEngine On
+RewriteRule ^add_auth_check\.php$ - [F,L]
+RewriteRule ^deploy_admin_protection\.php$ - [F,L]
 RewriteRule ^User/logs/.* - [F,L]
 RewriteRule ^User/app/.*\.php$ - [F,L]
 RewriteRule ^User/payment/logs/.* - [F,L]
