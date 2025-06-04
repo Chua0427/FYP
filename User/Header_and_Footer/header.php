@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-// Restrict admin access to user pages
-require_once __DIR__ . '/../app/restrict_admin.php';
+// Include authentication check which handles admin view-only mode
+require_once __DIR__ . '/../auth_check.php';
 
 // Load auth check and notification system
 require_once __DIR__ . '/../app/auth-check.php';
