@@ -304,6 +304,9 @@ $totalDiscount = $totalOriginalPrice - $totalPrice;
                                     <?php if (!empty($items)): ?>
                                         <?php foreach ($items as $item): ?>
                                             <div class="order-item" data-cart-id="<?php echo htmlspecialchars((string)$item['cart_id']); ?>">
+                                                <div class="item-image">
+                                                    <img src="../../upload/<?php echo htmlspecialchars($item['product_img1']); ?>" alt="<?php echo htmlspecialchars($item['product_name']); ?>" class="order-item-image">
+                                                </div>
                                                 <div class="item-details">
                                                     <p class="item-name"><?php echo htmlspecialchars($item['product_name']); ?></p>
                                                     <p class="item-brand"><?php echo htmlspecialchars($item['brand']); ?></p>
@@ -315,7 +318,7 @@ $totalDiscount = $totalOriginalPrice - $totalPrice;
                                                     echo formatPrice($itemPrice);
                                                     ?>
                                                     <?php if (isset($item['discount_price']) && $item['discount_price'] > 0 && $item['discount_price'] < $item['price']): ?>
-                                                        <div class="original-price">
+                                                        <div class="original-price" style="text-decoration: line-through;">
                                                             <?php echo formatPrice($item['price'] * $item['quantity']); ?>
                                                         </div>
                                                     <?php endif; ?>
@@ -343,10 +346,6 @@ $totalDiscount = $totalOriginalPrice - $totalPrice;
                                     <div class="summary-row">
                                         <span>Sales Tax (6% SST)</span>
                                         <span>Included</span>
-                                    </div>
-                                    <div class="summary-row">
-                                        <span>Shipping</span>
-                                        <span>Free</span>
                                     </div>
                                     <div class="summary-row total">
                                         <span>Total</span>
@@ -436,6 +435,9 @@ $totalDiscount = $totalOriginalPrice - $totalPrice;
         if (items.length > 0) {
           itemsContainer.innerHTML = items.map(item => `
             <div class="order-item" data-cart-id="${item.cart_id}">
+              <div class="item-image">
+                <img src="../../upload/${item.product_img1}" alt="${item.product_name}" class="order-item-image" width="80" height="80" style="object-fit:cover;">
+              </div>
               <div class="item-details">
                 <p class="item-name">${item.product_name}</p>
                 <p class="item-brand">${item.brand}</p>
@@ -444,7 +446,7 @@ $totalDiscount = $totalOriginalPrice - $totalPrice;
               <div class="item-price">
                 MYR ${(item.item_total).toFixed(2)}
                 ${item.discount_price && item.discount_price < item.price ? `
-                  <div class="original-price">MYR ${(item.item_original_total).toFixed(2)}</div>
+                  <div class="original-price" style="text-decoration: line-through;">MYR ${(item.item_original_total).toFixed(2)}</div>
                 ` : ''}
               </div>
             </div>

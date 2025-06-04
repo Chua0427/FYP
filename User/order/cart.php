@@ -331,10 +331,6 @@ include __DIR__ . '/../Header_and_Footer/header.php';
                             <span>Sales Tax (6% SST)</span>
                             <span>Included</span>
                         </div>
-                        <div class="row">
-                            <span>Shipping</span>
-                            <span>Free</span>
-                        </div>
                         <div class="row" style="font-weight: bold; font-size: 1.1rem;">
                             <span>Total</span>
                             <span id="total-price"><?php echo formatPrice($totalPrice); ?></span>

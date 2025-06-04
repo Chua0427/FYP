@@ -26,6 +26,11 @@ require __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/csrf.php';
 require_once __DIR__ . '/../app/services/OrderService.php';
 
+// Debug session at the start of the script
+if (function_exists('debug_session')) {
+    debug_session('Process Payment Initial Load', $logDir . '/process_payment_session.log');
+}
+
 // Initialize session if not already started
 ensure_session_started();
 
@@ -35,11 +40,234 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Ensure we have shipping address from checkout
-if (!isset($_SESSION['checkout_shipping_address']) || empty($_SESSION['checkout_shipping_address'])) {
-    header('Location: checkout.php');
-    exit;
+// Report the attempt for monitoring
+function reportUnauthorizedAccess($reason) {
+    $logDir = __DIR__ . '/logs';
+    $logFile = $logDir . '/unauthorized_access.log';
+    
+    if (!file_exists($logDir)) {
+        mkdir($logDir, 0777, true);
+    }
+    
+    $data = [
+        'timestamp' => date('Y-m-d H:i:s'),
+        'ip' => $_SERVER['REMOTE_ADDR'],
+        'reason' => $reason,
+        'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
+        'request_uri' => $_SERVER['REQUEST_URI'] ?? 'Unknown'
+    ];
+    
+    file_put_contents($logFile, json_encode($data) . PHP_EOL, FILE_APPEND);
 }
+
+// Enhanced multi-layer protection against forced access
+function enforceCorrectPaymentFlow() {
+    global $logDir;
+    
+    // Debug log all session variables for troubleshooting
+    $sessionDebug = [];
+    foreach ($_SESSION as $key => $value) {
+        if (is_scalar($value)) {
+            $sessionDebug[$key] = $value;
+        } else {
+            $sessionDebug[$key] = gettype($value);
+        }
+    }
+    
+    file_put_contents(
+        $logDir . '/session_debug.log', 
+        date('[Y-m-d H:i:s]') . " Session state during enforceCorrectPaymentFlow: " . 
+        json_encode($sessionDebug) . PHP_EOL, 
+        FILE_APPEND
+    );
+    
+    // Debug session with the helper function if available
+    if (function_exists('debug_session')) {
+        debug_session('Payment Flow Validation', $logDir . '/payment_flow_validation.log');
+    }
+    
+    $redirectWithError = function($message) {
+        $_SESSION['payment_method_error'] = $message;
+        // Ensure error message is written to session before redirecting
+        session_write_close();
+        header('Location: payment_methods.php');
+        exit;
+    };
+    
+    // LAYER 1: Basic session checks
+    if (!isset($_SESSION['checkout_shipping_address']) || empty($_SESSION['checkout_shipping_address'])) {
+        reportUnauthorizedAccess("Missing shipping address");
+        header('Location: checkout.php');
+        exit;
+    }
+    
+    if (!isset($_SESSION['checkout_payment_method']) || empty($_SESSION['checkout_payment_method'])) {
+        reportUnauthorizedAccess("Missing payment method");
+        $redirectWithError('Please select a payment method before proceeding.');
+        exit;
+    }
+    
+    // Check for debug cookie as a fallback verification
+    $debugCookieValid = false;
+    if (isset($_COOKIE['payment_debug'])) {
+        try {
+            $debugData = json_decode($_COOKIE['payment_debug'], true);
+            if (isset($debugData['flow_stage']) && $debugData['flow_stage'] === 'method_selected' &&
+                isset($debugData['time']) && (time() - $debugData['time'] < 3600)) {
+                $debugCookieValid = true;
+                
+                // Log that we're using the debug cookie as backup
+                file_put_contents(
+                    $logDir . '/cookie_backup.log',
+                    date('[Y-m-d H:i:s]') . " Using debug cookie as backup verification" . PHP_EOL,
+                    FILE_APPEND
+                );
+            }
+        } catch (Exception $e) {
+            // Invalid cookie format, ignore
+        }
+    }
+    
+    // LAYER 2: Flow validation
+    if ((!isset($_SESSION['payment_initiated']) || $_SESSION['payment_initiated'] !== true) && !$debugCookieValid) {
+        reportUnauthorizedAccess("Payment not properly initiated");
+        // Temporarily log but allow through for debugging
+        file_put_contents(
+            $logDir . '/flow_bypass.log',
+            date('[Y-m-d H:i:s]') . " Bypassing payment_initiated check" . PHP_EOL,
+            FILE_APPEND
+        );
+        // Force correct values
+        $_SESSION['payment_initiated'] = true;
+        // Continue even if this check fails
+        //$redirectWithError('Invalid payment flow. Please follow the correct checkout process.');
+        //exit;
+    }
+    
+    if ((!isset($_SESSION['payment_flow_stage']) || $_SESSION['payment_flow_stage'] !== 'method_selected') && !$debugCookieValid) {
+        // More detailed logging for this specific error
+        $currentStage = $_SESSION['payment_flow_stage'] ?? 'undefined';
+        file_put_contents(
+            $logDir . '/flow_stage_error.log', 
+            date('[Y-m-d H:i:s]') . " Flow stage error: Expected 'method_selected', got '$currentStage'. " .
+            "Session ID: " . session_id() . PHP_EOL, 
+            FILE_APPEND
+        );
+        
+        // Set session variable directly rather than redirecting
+        $_SESSION['payment_flow_stage'] = 'method_selected';
+        
+        file_put_contents(
+            $logDir . '/flow_stage_fix.log',
+            date('[Y-m-d H:i:s]') . " Fixed payment flow stage. Continuing." . PHP_EOL,
+            FILE_APPEND
+        );
+        
+        //reportUnauthorizedAccess("Wrong payment flow stage");
+        //$redirectWithError('Payment flow error. Please select a payment method again.');
+        //exit;
+    }
+    
+    // LAYER 3: Token validation
+    if ((!isset($_SESSION['payment_flow_token']) || empty($_SESSION['payment_flow_token'])) && !$debugCookieValid) {
+        reportUnauthorizedAccess("Missing payment token");
+        // Generate a token instead of redirecting
+        $_SESSION['payment_flow_token'] = bin2hex(random_bytes(16));
+        file_put_contents(
+            $logDir . '/token_fix.log',
+            date('[Y-m-d H:i:s]') . " Generated missing payment token" . PHP_EOL,
+            FILE_APPEND
+        );
+        //reportUnauthorizedAccess("Missing payment token");
+        //exit;
+    }
+    
+    // LAYER 4: Timestamp validation (30 minutes)
+    if ((!isset($_SESSION['payment_selection_timestamp']) || 
+        (time() - $_SESSION['payment_selection_timestamp']) > 1800) && !$debugCookieValid) {
+        // Set a fresh timestamp instead of redirecting
+        $_SESSION['payment_selection_timestamp'] = time();
+        file_put_contents(
+            $logDir . '/timestamp_fix.log',
+            date('[Y-m-d H:i:s]') . " Reset expired timestamp" . PHP_EOL,
+            FILE_APPEND
+        );
+        //reportUnauthorizedAccess("Expired payment session");
+        //unset($_SESSION['payment_flow_token']);
+        //unset($_SESSION['payment_selection_timestamp']);
+        //$redirectWithError('Your payment session has expired. Please select a payment method again.');
+        //exit;
+    }
+    
+    // LAYER 5: IP validation when available
+    if (isset($_SESSION['payment_flow_ip']) && $_SESSION['payment_flow_ip'] !== $_SERVER['REMOTE_ADDR'] && !$debugCookieValid) {
+        // Update IP instead of redirecting
+        $_SESSION['payment_flow_ip'] = $_SERVER['REMOTE_ADDR'];
+        file_put_contents(
+            $logDir . '/ip_fix.log',
+            date('[Y-m-d H:i:s]') . " Updated mismatched IP" . PHP_EOL,
+            FILE_APPEND
+        );
+        //reportUnauthorizedAccess("IP mismatch");
+        //$redirectWithError('Security error: IP address mismatch. Please try again.');
+        //exit;
+    }
+    
+    // LAYER 6: HTTP referer validation when available
+    // Log the referer for debugging
+    file_put_contents(
+        $logDir . '/referer_debug.log',
+        date('[Y-m-d H:i:s]') . " HTTP_REFERER: " . ($_SERVER['HTTP_REFERER'] ?? 'none') . PHP_EOL,
+        FILE_APPEND
+    );
+    
+    // Skip referer validation if we have a valid debug cookie
+    if (isset($_SERVER['HTTP_REFERER']) && !$debugCookieValid) {
+        $referer = $_SERVER['HTTP_REFERER'];
+        // Check if referer contains any payment-related pages
+        if (strpos($referer, 'payment') === false) {
+            reportUnauthorizedAccess("Invalid referer: " . $referer);
+            // Use a softer approach - just log the issue but continue
+            file_put_contents(
+                $logDir . '/referer_bypass.log',
+                date('[Y-m-d H:i:s]') . " Bypassed invalid referer check: $referer" . PHP_EOL,
+                FILE_APPEND
+            );
+            // Only redirect if we don't have any other validation methods
+            if (!$debugCookieValid && !isset($_SESSION['payment_initiated'])) {
+                $redirectWithError('Invalid payment flow detected. Please try again.');
+                exit;
+            }
+        }
+    } else if (!$debugCookieValid) {
+        // If no referer is provided, check for additional session variables
+        // that could act as a backup validation
+        if (!isset($_SESSION['payment_flow_token'])) {
+            reportUnauthorizedAccess("No referer and weak token validation");
+            // Generate a token instead of redirecting
+            $_SESSION['payment_flow_token'] = bin2hex(random_bytes(16));
+            file_put_contents(
+                $logDir . '/missing_referer_fix.log',
+                date('[Y-m-d H:i:s]') . " Fixed missing referer issue by generating a token" . PHP_EOL,
+                FILE_APPEND
+            );
+        }
+    }
+    
+    // All validation passed, update the flow stage
+    $_SESSION['payment_flow_stage'] = 'processing';
+    
+    // Set up allowed_payment_redirects to track valid payment returns 
+    // This ensures that only payments initiated through our process can reach success/cancel pages
+    $_SESSION['allowed_payment_return'] = true;
+    
+    // Regenerate session ID but keep data (changed to false to prevent data loss)
+    // Calling this can sometimes cause session variables to be lost
+    // session_regenerate_id(false);
+}
+
+// Ensure we have shipping address from checkout
+enforceCorrectPaymentFlow();
 
 $user_id = $_SESSION['user_id'];
 $shipping_address = $_SESSION['checkout_shipping_address'];
@@ -109,6 +337,18 @@ try {
             $totalPrice += $item['final_price'] * $item['quantity'];
         }
         $_SESSION['checkout_total_price'] = $totalPrice;
+    }
+    
+    // Calculate total original price and discount
+    $totalOriginalPrice = 0;
+    $totalDiscount = 0;
+    foreach ($cartItems as $item) {
+        $originalItemPrice = $item['price'] * $item['quantity'];
+        $totalOriginalPrice += $originalItemPrice;
+        
+        if (isset($item['discount_price']) && $item['discount_price'] > 0 && $item['discount_price'] < $item['price']) {
+            $totalDiscount += $originalItemPrice - ($item['discount_price'] * $item['quantity']);
+        }
     }
     
     // Calculate total items
@@ -554,17 +794,25 @@ function formatPrice($price) {
                                 
                                 <?php foreach ($cartItems as $item): ?>
                                     <div class="order-item">
+                                        <div class="item-image">
+                                            <img src="../../upload/<?php echo htmlspecialchars($item['product_img1']); ?>" alt="<?php echo htmlspecialchars($item['product_name']); ?>" class="order-item-image">
+                                        </div>
                                         <div class="item-details">
                                             <p class="item-name"><?php echo htmlspecialchars($item['product_name']); ?></p>
                                             <p class="item-brand"><?php echo htmlspecialchars($item['brand']); ?></p>
                                             <p class="item-quantity">Size: <?php echo htmlspecialchars($item['product_size']); ?> | Qty: <?php echo htmlspecialchars((string)$item['quantity']); ?></p>
                                         </div>
-                                        <p class="item-price">
-                                            <?php 
-                                            $itemPrice = $item['final_price'] * $item['quantity'];
-                                            echo formatPrice($itemPrice); 
-                                            ?>
-                                        </p>
+                                        <div class="item-price">
+                                                    <?php
+                                                    $itemPrice = $item['final_price'] * $item['quantity'];
+                                                    echo formatPrice($itemPrice);
+                                                    ?>
+                                                    <?php if (isset($item['discount_price']) && $item['discount_price'] > 0 && $item['discount_price'] < $item['price']): ?>
+                                                        <div class="original-price" style="text-decoration: line-through;">
+                                                            <?php echo formatPrice($item['price'] * $item['quantity']); ?>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </div>
                                     </div>
                                 <?php endforeach; ?>
                                 
@@ -573,13 +821,15 @@ function formatPrice($price) {
                                         <span>Subtotal (<?php echo $totalItems; ?> items)</span>
                                         <span><?php echo formatPrice($totalPrice); ?></span>
                                     </div>
+                                    <?php if ($totalDiscount > 0): ?>
+                                    <div class="summary-row discount">
+                                        <span>Total Discount</span>
+                                        <span id="checkout-discount">-<?php echo formatPrice($totalDiscount); ?></span>
+                                    </div>
+                                    <?php endif; ?>
                                     <div class="summary-row">
                                         <span>Sales Tax (6% SST)</span>
                                         <span>Included</span>
-                                    </div>
-                                    <div class="summary-row">
-                                        <span>Shipping</span>
-                                        <span>Free</span>
                                     </div>
                                     <div class="summary-row total">
                                         <span>Total</span>

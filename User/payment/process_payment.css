@@ -63,7 +63,7 @@
         
         .payment-grid {
             display: grid;
-            grid-template-columns: 1fr 400px;
+            grid-template-columns: 1fr 500px;
             gap: 30px;
         }
         
@@ -272,7 +272,13 @@
             padding: 12px 0;
             border-bottom: 1px solid #eee;
         }
-        
+
+        .order-item-image {
+            width:80px; 
+            height:80px; 
+            object-fit:cover;
+            margin-right: 8px;}
+    
         .item-details {
             flex: 1;
         }

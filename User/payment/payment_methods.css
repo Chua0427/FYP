@@ -66,7 +66,7 @@
         
         .payment-grid {
             display: grid;
-            grid-template-columns: 1fr 400px;
+            grid-template-columns: 1fr 500px;
             gap: 30px;
         }
         
@@ -270,6 +270,12 @@
             margin-right: 10px;
             color: gray;
         }
+
+        .order-item-image {
+            width:80px; 
+            height:80px; 
+            object-fit:cover;
+            margin-right: 8px;}
         
         @media (max-width: 992px) {
             .payment-grid {

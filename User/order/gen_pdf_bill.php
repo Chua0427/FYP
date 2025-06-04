@@ -249,10 +249,6 @@ try {
                             <td>RM ' . number_format($subtotal, 2) . '</td>
                         </tr>
                         <tr class="total-row">
-                            <td colspan="4" class="text-right">Shipping:</td>
-                            <td>RM 0.00</td>
-                        </tr>
-                        <tr class="total-row">
                             <td colspan="4" class="text-right">Total:</td>
                             <td>RM ' . number_format((float)$payment['total_amount'], 2) . '</td>
                         </tr>
