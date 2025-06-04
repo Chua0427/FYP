@@ -1,77 +1,83 @@
-# VeroSports Authentication System
+# VeroSports Authentication & Security System
 
-A secure, modern authentication system that supports cross-browser/device login management and IP geolocation tracking.
+A robust, secure authentication system for VeroSports e-commerce platform with multi-device login management, session protection, and comprehensive security features.
 
-## Features
+## 🔐 Core Authentication
 
-### Core Authentication
-- **Session Management**: Regular session-based authentication
-- **Persistent Login**: "Remember Me" feature for extended authentication periods
-- **Cross-Device Support**: Stays logged in across different browsers and devices
+| Feature | Description |
+|---------|-------------|
+| Session Management | Secure PHP session handling with fingerprinting and protection |
+| Persistent Login | "Remember Me" functionality with secure token storage |
+| Cross-Device Support | Seamless authentication across multiple browsers and devices |
+| Token Rotation | Regular refreshing of authentication tokens to prevent theft |
 
-### Security
-- **Token Security**:
-  - High-entropy tokens generated with secure random bytes
-  - HttpOnly cookies to prevent JavaScript access
-  - HMAC protection for stored tokens
-  
-- **Session Protection**:
-  - Session fingerprinting prevents hijacking
-  - Secure session regeneration after login
-  - CSRF token validation for sensitive actions
-  
-- **Activity Monitoring**:
-  - IP address tracking with geolocation
-  - User agent fingerprinting
-  - Comprehensive logging of login activities
+## 🛡️ Security Layers
 
-### Device Management
-- View all active sessions across devices
-- Identify current session with visual indicator
-- Log out from specific devices remotely
+### Token Security
+- High-entropy tokens generated using cryptographically secure random bytes
+- HttpOnly and SameSite cookie attributes prevent XSS and CSRF attacks
+- HMAC protection for token verification and integrity validation
+- Automatic token expiration and refresh mechanisms
+
+### Session Protection
+- Browser fingerprinting to detect session hijacking attempts
+- Secure session regeneration after authentication events
+- CSRF token validation for all sensitive operations
+- Strict Content-Security-Policy implementation
+
+### Activity Monitoring
+- IP address logging with geolocation data
+- User-agent fingerprinting and analysis
+- Comprehensive audit logs for security events
+- Automatic suspicious activity detection
+
+## 💻 Device Management
+
+The system provides users with full visibility and control over their active sessions:
+
+- Real-time monitoring of all active sessions across devices
+- Clear identification of current device with visual indicators
+- Ability to terminate specific sessions remotely
 - One-click option to log out from all devices except current one
-- Real-time device and browser identification
+- Detailed information about each device (browser, OS, location)
 
-### IP Geolocation
-- Displays physical locations of login attempts
-- Shows city, region, and country information
-- Visual indicators with country flags
+## 🗺️ IP Geolocation
+
+- Automatic tracking of login location data
+- City, region, country and ISP information
+- Visual indicators including country flags
 - Efficient caching system to minimize API calls
-- Multiple fallback APIs for reliable location data
+- Multiple fallback geolocation services for reliability
 
-## How It Works
+## ⚙️ Technical Implementation
 
 ### Authentication Flow
-1. **Regular Login**:
-   - Session-based authentication
-   - 24-hour token validity
-   - Session ends when browser closes
+1. **Standard Login:**
+   - Session-based authentication with 24-hour validity
+   - Browser fingerprinting and CSRF token generation
+   - Secure session parameters with HttpOnly flags
 
-2. **Remember Me Login**:
-   - Secure token stored in database
-   - Cookie set with extended expiration (30 days)
-   - Device information linked to token
+2. **Remember Me Login:**
+   - Secure random token stored with HMAC verification
+   - Extended cookie expiration (30 days)
+   - Device fingerprinting linked to token data
 
-3. **Token Validation**:
-   - Tokens automatically verified on each request
-   - Invalid or expired tokens trigger re-authentication
-   - Tokens refreshed when used
+3. **Continuous Protection:**
+   - Tokens automatically validated on each request
+   - Expired or invalid tokens trigger re-authentication
+   - Regular token rotation for extended sessions
 
-## Components
+### System Components
 
-### Core Files
-- `auth.php`: Main authentication class for login/logout
-- `token.php`: Token generation, validation and revocation
-- `ip_geolocator.php`: IP address location services
+| Component | File | Purpose |
+|-----------|------|---------|
+| Auth Core | `auth.php` | Main authentication class for login/logout operations |
+| Token Handler | `token.php` | Manages token lifecycle (creation, validation, revocation) |
+| Session Helper | `session_helper.php` | Secure session handling with anti-hijacking measures |
+| IP Geolocation | `ip_geolocator.php` | Location services with caching for login tracking |
+| CSRF Protection | `csrf.php` | Token generation and validation for form security |
 
-### User Interface
-- `login.php`: Login form with Remember Me option
-- `manage_sessions.php`: Device management interface
-- `logout.php`: Session termination handler
-
-## Database Schema
-
-The system uses the `user_tokens` table:
+## 💾 Database Schema
 
 ```sql
 CREATE TABLE `user_tokens` (
@@ -91,16 +97,38 @@ CREATE TABLE `user_tokens` (
 )
 ```
 
-## Usage
+## 📚 Usage Guidelines
 
 ### For Users
-1. Check "Remember Me" at login to stay authenticated across sessions
-2. Visit "Manage Device" in account settings to see all active sessions
-3. Log out from any suspicious devices
-4. Use "Logout All Other Devices" for complete security
+- Enable "Remember Me" during login for persistent authentication
+- Visit account settings to manage active devices and sessions
+- Review and terminate any suspicious login sessions
+- Use "Logout All Other Devices" for immediate security response
 
 ### For Developers
-1. Use `Auth::requireAuth()` to protect routes
-2. Use `Auth::login($user_id, $data, $remember)` for authentication
-3. Token data accessible via `Auth::getActiveSessions()`
-4. IP geolocation available via `IPGeolocator::getLocation($ip)` 
+```php
+// Protect routes with authentication check
+Auth::requireAuth();
+
+// Authenticate a user (with optional remember me)
+Auth::login($user_id, $userData, $rememberMe = false);
+
+// Get all active sessions for management view
+$sessions = Auth::getActiveSessions();
+
+// Get location data for display
+$location = IPGeolocator::getLocation($ipAddress);
+
+// Generate and validate CSRF tokens
+$token = SessionHelper::getCsrfToken();
+$valid = SessionHelper::verifyCsrfToken($userToken);
+```
+
+## 🔒 Security Best Practices
+
+The system implements multiple security best practices:
+- Defense in depth with multiple security layers
+- No password storage in cookies or session data
+- Minimization of sensitive data exposure
+- Secure defaults for all configuration options
+- Regular token rotation to limit attack windows 
