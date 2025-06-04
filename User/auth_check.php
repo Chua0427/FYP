@@ -8,7 +8,7 @@ if (session_status() == PHP_SESSION_NONE) {
 require_once __DIR__ . '/app/auth.php';
 
 // Check if user is admin (types 2 or 3)
-if (isset($_SESSION['user_type']) && ($_SESSION['user_type'] == '2' || $_SESSION['user_type'] == '3')) {
+if (isset($_SESSION['user_type']) && ($_SESSION['user_type'] == 2 || $_SESSION['user_type'] == 3 || $_SESSION['user_type'] == '2' || $_SESSION['user_type'] == '3')) {
     // Set the admin view-only mode flag
     $_SESSION['admin_view_only'] = true;
     
