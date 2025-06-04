@@ -457,22 +457,28 @@ require_once __DIR__ . '/../app/auth-check.php';
                 })
                 .then(response => {
                     if (!response.ok) {
-                        if (response.status === 401) {
-                            // Show login modal instead of redirecting
-                            const loginModal = document.querySelector('.login-modal');
-                            if (loginModal) {
-                                loginModal.style.display = 'block';
-                                throw new Error('Please login to add items to your cart');
-                            } else {
-                                // Fallback to redirect if modal not found
-                                window.location.href = '../login/login.php?redirect=' + encodeURIComponent(window.location.href);
-                                throw new Error('Please login to add items to your cart');
+                        return response.json().then(data => {
+                            // Special handling for admin view-only mode
+                            if (response.status === 403 && data.admin_view_only === true) {
+                                throw new Error('Admin in view-only mode cannot add items to cart');
+                            } else if (response.status === 401) {
+                                // Show login modal instead of redirecting
+                                const loginModal = document.querySelector('.login-modal');
+                                if (loginModal) {
+                                    loginModal.style.display = 'block';
+                                    throw new Error('Please login to add items to your cart');
+                                } else {
+                                    // Fallback to redirect if modal not found
+                                    window.location.href = '../login/login.php?redirect=' + encodeURIComponent(window.location.href);
+                                    throw new Error('Please login to add items to your cart');
+                                }
+                            } else if (response.status === 403) {
+                                // Handle CSRF token errors by refreshing the page
+                                window.location.reload();
+                                throw new Error('Session expired. Please try again.');
                             }
-                        } else if (response.status === 403) {
-                            // Handle CSRF token errors by refreshing the page
-                            window.location.reload();
-                            throw new Error('Session expired. Please try again.');
-                        }
+                            throw new Error(data.error || 'Error processing request');
+                        });
                     }
                     return response.json();
                 })

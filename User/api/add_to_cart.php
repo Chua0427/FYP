@@ -23,6 +23,17 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Check if admin in view-only mode
+if (isset($_SESSION['admin_view_only']) && $_SESSION['admin_view_only'] === true) {
+    http_response_code(403);
+    echo json_encode([
+        'success' => false, 
+        'error' => 'Admin in view-only mode cannot add items to cart',
+        'admin_view_only' => true
+    ]);
+    exit;
+}
+
 // Verify user authentication and CSRF token
 try {
     $user = requireApiAuth(); // This will exit with 401 if not authenticated

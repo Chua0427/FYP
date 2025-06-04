@@ -175,17 +175,20 @@ function addToCart() {
         clearTimeout(timeoutId);
         
         if (!response.ok) {
-            if (response.status === 401) {
-                // Redirect to login if unauthorized
-                window.location.href = '/FYP/User/login/login.php?redirect=' + encodeURIComponent(window.location.href);
-                throw new Error('Please login to add items to your cart');
-            } else if (response.status === 403) {
-                // Handle CSRF token errors by refreshing the page
-                window.location.reload();
-                throw new Error('Session expired. Please try again.');
-            }
-            return response.json().then(err => {
-                throw new Error(err.error || 'Error processing request');
+            return response.json().then(data => {
+                // Special handling for admin view-only mode
+                if (response.status === 403 && data.admin_view_only === true) {
+                    throw new Error('Admin in view-only mode cannot add items to cart');
+                } else if (response.status === 401) {
+                    // Redirect to login if unauthorized
+                    window.location.href = '/FYP/User/login/login.php?redirect=' + encodeURIComponent(window.location.href);
+                    throw new Error('Please login to add items to your cart');
+                } else if (response.status === 403) {
+                    // Handle CSRF token errors by refreshing the page
+                    window.location.reload();
+                    throw new Error('Session expired. Please try again.');
+                }
+                throw new Error(data.error || 'Error processing request');
             });
         }
         return response.json();
