@@ -1,132 +1,204 @@
-# VeroSports Payment System
+# 💳 VeroSports Payment System
 
-A secure, Stripe-powered payment processing module for the VeroSports e-commerce platform, designed with idempotence, precision, and robust logging.
+A comprehensive, Stripe-powered payment processing system designed for the VeroSports e-commerce platform. Built with security, idempotence and traceability as core principles.
 
----
+## 📋 Overview
 
-## Features
+| Component | Purpose |
+|-----------|---------|
+| Checkout Flow | Multi-step order creation and payment experience |
+| Payment Processing | Secure Stripe integration with idempotency |
+| Webhook Handling | Real-time payment event processing |
+| Comprehensive Logging | Detailed audit trail of all transactions |
+| Security Controls | CSRF, XSS and SQL injection protection |
 
-- **Checkout & Order Creation**
-  - `checkout.php`: Review cart, shipping info, create an order record
-- **Payment Methods**
-  - `payment_methods.php`: Select payment (currently Stripe card)
-- **Idempotent Payment Processing**
-  - `process_payment.php`: Charge via Stripe SDK
-  - Safe to retry without duplicate charges
-- **Webhook Handling**
-  - `webhook.php`: Listen for Stripe events (success, failure, refund)
-  - Asynchronous status updates on `orders` & `payment` tables
-- **Logging & Auditing**
-  - Monolog logs to `logs/payment.log` + `payment_log` table
-  - Detailed audit trail for all payment-related events
-- **Security & Compliance**
-  - CSRF protection on all forms
-  - Amounts stored in **cents/pence** for monetary precision
-  - Prepared statements for **SQL** (no string concatenation)
-  - XSS defense via `htmlspecialchars()` on output
-  - PSR-12 coding standards with `declare(strict_types=1);`
+## 🔄 Payment Flow Architecture
 
----
-
-## Architecture & Flow
-
-### 1. Checkout (`checkout.php`)
-- Display order summary and shipping form
-- Insert pending record in `orders` table
-- Redirect to `payment_methods.php`
-
-### 2. Payment Methods (`payment_methods.php`)
-- Choose Stripe card payment
-- Submit to `process_payment.php`
-
-### 3. Process Payment (`process_payment.php`)
-- Initialize Stripe with secret key
-- Create or confirm PaymentIntent
-- Record attempt in `payment` table
-- Log success/failure with Monolog
-- On success: mark `orders.delivery_status` as `pending`
-
-### 4. Webhook Listener (`webhook.php`)
-- Verify Stripe signature header
-- Handle events: `payment_intent.succeeded`, `payment_intent.payment_failed`, `charge.refunded`
-- Update `payment` and `orders` accordingly
-- Ensure idempotence by checking existing `payment_id`
-
-### 5. Result Pages
-- `success.php`: Thank you & order summary
-- `cancel.php`: Payment canceled or failed notice
-
----
-
-## Database Schema
-
-**Tables:**
-- `orders`            (order_id, user_id, total_price, shipping_address, delivery_status, order_at)
-- `order_items`      (order_item_id, order_id, product_id, quantity, price)
-- `payment`           (payment_id, order_id, total_amount, payment_status, payment_method, stripe_id, currency, payment_at)
-- `payment_log`       (log_id, payment_id, log_level, log_message, log_time)
-
-```sql
--- Example: idempotent insert
-INSERT INTO payment (payment_id, order_id, total_amount, ...) 
-VALUES (:payment_id, :order_id, :amount, ...)
-ON DUPLICATE KEY UPDATE last_error = VALUES(last_error);
+```mermaid
+flowchart TB
+    A[Cart] -->|Checkout| B(checkout.php)
+    B -->|Create Order| C[orders table]
+    B -->|Select Payment| D(payment_methods.php)
+    D -->|Process| E(process_payment.php)
+    E -->|Stripe API| F[Stripe]
+    F -->|Success| G(success.php)
+    F -->|Failed| H(cancel.php)
+    F -->|Events| I(webhook.php)
+    I -->|Update| C
+    I -->|Log| J[payment_log table]
 ```
 
----
+## 🧩 Core Components
 
-## Configuration & Setup
+### 1️⃣ Checkout (`checkout.php`)
+- Order summary with shipping information form
+- Creates a pending order record in database
+- Handles shipping address validation and storage
+- Sets up the checkout session state
 
-1. **Clone & Install**
+### 2️⃣ Payment Methods (`payment_methods.php`)
+- Payment selection interface (currently Stripe cards)
+- CSRF-protected form submission
+- Secure payment flow state management
+- Multi-device session tracking
+
+### 3️⃣ Payment Processing (`process_payment.php`)
+- Stripe SDK integration for payment processing
+- Idempotent transaction handling
+- Detailed error management with fallbacks
+- Records all attempts in `payment` table
+- Implements various payment flow security validations
+
+### 4️⃣ Webhook Handler (`webhook.php`)
+- Signature verification for Stripe events
+- Asynchronous order and payment status updates
+- Event handlers for:
+  - `payment_intent.succeeded`
+  - `payment_intent.payment_failed`
+  - `charge.refunded`
+- Idempotency checks to prevent duplicate processing
+
+### 5️⃣ Result Pages
+- `success.php`: Order confirmation with details
+- `cancel.php`: Payment failure handling with suggestions
+
+## 📊 Database Schema
+
+### Tables Structure
+
+| Table | Primary Purpose | Key Fields |
+|-------|----------------|------------|
+| `orders` | Order information | order_id, user_id, delivery_status |
+| `order_items` | Products in orders | order_item_id, product_id, quantity |
+| `payment` | Payment transaction data | payment_id, stripe_id, status |
+| `payment_log` | Audit trail entries | log_id, payment_id, log_message |
+
+### Key Database Operations
+
+```sql
+-- Idempotent payment record insertion
+INSERT INTO payment (
+    payment_id, order_id, total_amount, 
+    payment_status, payment_method, stripe_id
+) VALUES (
+    :payment_id, :order_id, :amount, 
+    :status, :method, :stripe_id
+)
+ON DUPLICATE KEY UPDATE 
+    last_error = VALUES(last_error),
+    payment_status = IF(payment_status = 'completed', payment_status, VALUES(payment_status));
+```
+
+## 🛠️ Setup & Configuration
+
+### Prerequisites
+- PHP 7.4+ with PDO MySQL extension
+- Composer for dependencies
+- Stripe account with API keys
+
+### Installation
+
+1. **Clone & Install Dependencies**
    ```bash
    git clone <repo-url>
    cd FYP/User/payment
    composer install
    ```
 
-2. **Environment**
-   Copy `.env.example -> .env` and configure:
+2. **Environment Configuration**
+   Create a `.env` file from the template:
    ```ini
    STRIPE_SECRET_KEY=sk_test_...
    STRIPE_WEBHOOK_SECRET=whsec_...
+   STRIPE_PUBLIC_KEY=pk_test_...
    DB_DSN=mysql:host=localhost;dbname=verosports;charset=utf8mb4
    DB_USER=root
    DB_PASS=
+   LOG_LEVEL=info
    ```
 
-3. **Logs Directory**
+3. **Directory Preparation**
    ```bash
    mkdir -p logs
    chmod 775 logs
    ```
 
-4. **Database**
-   - Import schema (see `schema.json`)
-   - Ensure tables `payment` and `payment_log` exist
+4. **Database Setup**
+   - Import database schema
+   - Verify tables: `orders`, `order_items`, `payment`, `payment_log`
 
 5. **Local Webhook Testing**
    ```bash
+   # Using Stripe CLI
    npm install -g stripe-cli
    stripe login
    stripe listen --forward-to "http://localhost/FYP/User/payment/webhook.php"
    ```
 
----
+## 🔒 Security & Best Practices
 
-## Security & Best Practices
+| Area | Implementation |
+|------|---------------|
+| **CSRF Protection** | Token validation on all forms |
+| **SQL Injection Prevention** | PDO prepared statements only |
+| **XSS Defense** | `htmlspecialchars()` on all output |
+| **Monetary Precision** | All amounts stored as integers (cents/pence) |
+| **Code Standards** | PSR-12 with `declare(strict_types=1);` |
+| **Error Handling** | Structured exception handling with logging |
+| **Idempotency** | Transaction ID checking to prevent duplicates |
 
-- **CSRF**: Validate `csrf_token` on all POST forms
-- **SQL**: Use PDO prepared statements
-- **XSS**: Escape output with `htmlspecialchars()`
-- **Logging**: Use Monolog for all sensitive actions
-- **PSR-12**: All PHP files start with `declare(strict_types=1);`
+## 💡 Developer Guidelines
 
----
+### Logging Best Practices
+```php
+// Critical payment events
+$logger->info('Payment successful', [
+    'payment_id' => $paymentId,
+    'order_id' => $orderId,
+    'amount' => $amount,
+    'user_id' => $userId
+]);
 
-## Developer Notes
+// Errors with sensitive data redaction
+$logger->error('Stripe API error', [
+    'code' => $e->getCode(),
+    'message' => $e->getMessage(),
+    'order_id' => $orderId,
+    // Never log full card details or security codes
+]);
+```
 
-- **Idempotence**: Payment processing must detect and reuse existing transaction IDs
-- **Error Handling**: Log exceptions and errors in `logs/payment.log`
-- **Precision**: Always store money in integer cents/pence
+### Idempotent Processing
+Ensure all payment operations can be safely retried:
+
+1. Always use idempotency keys with Stripe
+2. Check database for existing records before creating new ones
+3. Design update operations to be repeatable without side effects
+
+### Transaction Handling
+
+```php
+try {
+    $db->beginTransaction();
+    
+    // Update payment record
+    $db->execute("UPDATE payment SET payment_status = ? WHERE payment_id = ?",
+        ['completed', $paymentId]);
+    
+    // Update order status
+    $db->execute("UPDATE orders SET delivery_status = ? WHERE order_id = ?",
+        ['prepare', $orderId]);
+    
+    // Log the transaction
+    $db->execute("INSERT INTO payment_log (payment_id, log_level, log_message) 
+                 VALUES (?, ?, ?)",
+        [$paymentId, 'info', 'Payment completed successfully']);
+    
+    $db->commit();
+} catch (Exception $e) {
+    $db->rollback();
+    $logger->error('Transaction failed', ['error' => $e->getMessage()]);
+}
+```
 
 ---
