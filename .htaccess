@@ -15,6 +15,8 @@ DirectoryIndex index.php
 RewriteEngine On
 RewriteRule ^User/logs/.* - [F,L]
 RewriteRule ^User/app/.*\.php$ - [F,L]
+RewriteRule ^User/payment/logs/.* - [F,L]
+RewriteRule ^User/api/.*\.php$ - [F,L]
 
 # Disable directory listing for security
 <IfModule mod_autoindex.c>
