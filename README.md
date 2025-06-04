@@ -29,8 +29,8 @@ An e-commerce platform for selling sports products (footwear, apparel, equipment
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-org/verosports.git
-   cd verosports
+   git clone https://github.com/Chua0427/FYP.git
+   cd FYP
    ```
 2. Install dependencies:
    ```bash
@@ -41,7 +41,7 @@ An e-commerce platform for selling sports products (footwear, apparel, equipment
    - Update DB credentials (host, username, password, database)
 4. Import schema:
    ```bash
-   mysql -u root -p verosports < schema.sql
+   mysql -u root -p FYP < schema.sql
    ```
 5. Set up XAMPP/Apache root to point to **`/FYP/User`** directory or configure virtual host.
 
