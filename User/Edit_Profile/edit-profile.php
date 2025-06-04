@@ -2,7 +2,7 @@
 // Include authentication check
 require_once __DIR__ . '/../auth_check.php';
 
-session_start();
+// Session is already started in auth_check.php
 require_once 'db-connect.php';
 
 // Redirect if not logged in
