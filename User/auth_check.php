@@ -21,13 +21,43 @@ if (isset($_SESSION['user_type']) && ($_SESSION['user_type'] == '2' || $_SESSION
             'ip' => $_SERVER['REMOTE_ADDR']
         ]);
     }
+
+    // Allow search operations in view-only mode without redirect
+    $currentPage = basename($_SERVER['SCRIPT_NAME']);
+    if ($currentPage === 'search_product.php') {
+        return;
+    }
     
-    // If this is a request that would change data or requires a redirect, show notification
+    // Restricted folders for admin view-only mode
+    $restrictedFolders = [
+        '/order/',
+        '/login/',
+        '/Registration/',
+        '/Review_Page/',
+        '/View_Order/',
+        '/Delivery_Status_Page/',
+        '/Edit_Profile/'
+    ];
+    
+    // Check if current URI contains any restricted folder
+    $currentUri = $_SERVER['REQUEST_URI'];
+    $inRestrictedFolder = false;
+    foreach ($restrictedFolders as $folder) {
+        if (strpos($currentUri, $folder) !== false) {
+            $inRestrictedFolder = true;
+            break;
+        }
+    }
+
+    // If this is a request that would change data, requires a redirect, contact-us form, 
+    // or is in a restricted folder, show notification
     if ($_SERVER['REQUEST_METHOD'] === 'POST' || 
         isset($_GET['action']) || 
-        strpos($_SERVER['REQUEST_URI'], 'checkout') !== false ||
-        strpos($_SERVER['REQUEST_URI'], 'payment') !== false ||
-        strpos($_SERVER['REQUEST_URI'], 'profile') !== false) {
+        strpos($currentUri, 'checkout') !== false ||
+        strpos($currentUri, 'payment') !== false ||
+        strpos($currentUri, 'profile') !== false ||
+        strpos($currentUri, 'contact') !== false ||
+        $inRestrictedFolder) {
         
         // Store the current URL for the redirect back
         $_SESSION['admin_redirect_from'] = $_SERVER['REQUEST_URI'];
