@@ -172,8 +172,17 @@ body {
     margin: 20px 0;
 }
 
-.admin i{
+.admin .logout i{
     background: linear-gradient(135deg,red,rgb(255, 100, 100));
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 20px;
+    width: 100px;
+    color: white;
+}
+
+.admin #edit i{
+    background-color: rgb(0, 202, 0);
     padding: 10px;
     border-radius: 10px;
     font-size: 20px;

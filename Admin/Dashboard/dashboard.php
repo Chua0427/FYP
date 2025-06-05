@@ -187,7 +187,8 @@ if ($_SESSION['user_type'] != 2 && $_SESSION['user_type'] != 3) {
                 <img src="../../upload/' . $row['profile_image'] . '" alt="Profile Image">
                 <p>Welcome Back ! '.$row['first_name'].'</p>
                 <p>Email: '.$row['email'].'</p>
-                <a href="/FYP/FYP/Admin/logout.php" ><i class="fa-solid fa-right-from-bracket"></i></a>
+                <a href="../view_Admin/edit_admin.php?id= '.$row['user_id'].' "class="btn btn-edit" id="edit"><i class="fa-solid fa-pen"></i></a>
+                <a href="/FYP/FYP/Admin/logout.php" class="logout"><i class="fa-solid fa-right-from-bracket"></i></a>
             </div>';
         }
 
