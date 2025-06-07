@@ -342,7 +342,7 @@ input[type="file"]:focus {
         gap: 10px;
     }
 }
-/* 新增邮箱错误提示的专用样式 */
+
 .email-feedback {
     font-size: 0.85rem;
     margin-top: 5px;
