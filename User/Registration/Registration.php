@@ -11,10 +11,18 @@ if ($conn->connect_error) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // 新增密码复杂度验证
     $raw_password = $_POST["password"];
     $passwordError = null;
+    $birthday = new DateTime($_POST["birthday_date"]);
+    $today = new DateTime();
+    $age = $today->diff($birthday)->y;
     
+    if ($age < 18) {
+        die("<script>
+            alert('You must be at least 18 years old to register.');
+            window.history.back();
+            </script>");
+    }
     if (strlen($raw_password) < 8) {
         $passwordError = "Password must be at least 8 characters";
     } elseif (!preg_match("/[A-Z]/", $raw_password)) {
@@ -63,7 +71,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
     
-    // Rest of your registration code...
     if(isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] == UPLOAD_ERR_OK) {
         $upload = "../../upload/";
         $originalName = $_FILES['profile_image']['name'];

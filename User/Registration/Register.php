@@ -85,34 +85,25 @@
                     <input type="text" id="postcode" name="postcode" pattern="[0-9]{5}" required placeholder="e.g. 50000">
                 </div>
                 <div class="form-group">
-                    <label for="city">City</label>
-                    <input type="text" id="city" name="city" required placeholder="Enter your city">
-                </div>
-                <div class="form-group">
                     <label for="state">State</label>
                     <select id="state" name="state" required>
-                        <option value="" disabled selected>Select your state</option>
-                        <option value="Johor">Johor</option>
-                        <option value="Kedah">Kedah</option>
-                        <option value="Kelantan">Kelantan</option>
-                        <option value="Kuala Lumpur">Kuala Lumpur</option>
-                        <option value="Melaka">Melaka</option>
-                        <option value="Negeri Sembilan">Negeri Sembilan</option>
-                        <option value="Pahang">Pahang</option>
-                        <option value="Penang">Penang</option>
-                        <option value="Perak">Perak</option>
-                        <option value="Perlis">Perlis</option>
-                        <option value="Sabah">Sabah</option>
-                        <option value="Sarawak">Sarawak</option>
-                        <option value="Selangor">Selangor</option>
-                        <option value="Terengganu">Terengganu</option>
+                        <option value="">Select State</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="birthday_date">Date of Birth</label>
-                    <input type="date" id="birthday_date" name="birthday_date" required>
+                    <label for="city">City</label>
+                        <select id="city" name="city" required>
+                    <option value="">Select City</option>
+                    </select>
                 </div>
+
+                <div class="form-group">
+    <label for="birthday_date">Date of Birth</label>
+    <input type="date" id="birthday_date" name="birthday_date" 
+           max="<?php echo date('Y-m-d', strtotime('-18 years')); ?>" 
+           required>
+</div>
                 <div class="form-group">
                     <label>Gender</label>
                     <div class="gender-options">
@@ -227,20 +218,6 @@
                 document.getElementById('confirmFeedback').textContent = 'Passwords must match!';
                 document.getElementById('confirmFeedback').className = 'password-feedback invalid';
                 confirmPassword.focus();
-            }
-        });
-
-        // Profile picture preview (optional enhancement)
-        document.getElementById('profile_image').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                if (!file.type.match('image.*')) {
-                    alert('Please select an image file');
-                    this.value = '';
-                } else if (file.size > 2000000) { // 2MB limit
-                    alert('Image size should be less than 2MB');
-                    this.value = '';
-                }
             }
         });
     </script>
