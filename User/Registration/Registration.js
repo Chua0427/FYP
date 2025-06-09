@@ -1,7 +1,52 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM fully loaded, running Registration.js");
 
-    // 密码可见性切换功能
+    const cityByState = {
+        "Johor": ["Johor Bahru", "Batu Pahat", "Muar", "Segamat", "Kluang", "Kota Tinggi", "Pontian", "Mersing", "Tangkak"],
+        "Kedah": ["Alor Setar", "Sungai Petani", "Kulim", "Langkawi", "Jitra", "Baling"],
+        "Kelantan": ["Kota Bharu", "Pasir Mas", "Tanah Merah", "Gua Musang", "Tumpat"],
+        "Melaka": ["Melaka City", "Ayer Keroh", "Alor Gajah", "Jasin"],
+        "Negeri Sembilan": ["Seremban", "Port Dickson", "Nilai", "Bahau", "Kuala Pilah"],
+        "Pahang": ["Kuantan", "Temerloh", "Bentong", "Jerantut", "Pekan", "Raub"],
+        "Penang": ["George Town", "Butterworth", "Bukit Mertajam", "Bayan Lepas", "Balik Pulau"],
+        "Perak": ["Ipoh", "Taiping", "Teluk Intan", "Lumut", "Sitiawan", "Kampar"],
+        "Perlis": ["Kangar", "Arau", "Padang Besar"],
+        "Sabah": ["Kota Kinabalu", "Sandakan", "Tawau", "Lahad Datu", "Keningau"],
+        "Sarawak": ["Kuching", "Miri", "Sibu", "Bintulu", "Limbang", "Mukah"],
+        "Selangor": ["Shah Alam", "Petaling Jaya", "Subang Jaya", "Klang", "Kajang", "Rawang"],
+        "Terengganu": ["Kuala Terengganu", "Kemaman", "Dungun", "Marang", "Besut"],
+        "Kuala Lumpur": ["Kuala Lumpur"],
+        "Labuan": ["Labuan"],
+        "Putrajaya": ["Putrajaya"]
+    };
+
+    const selected_state = document.getElementById("state");
+    const selected_city = document.getElementById("city");
+
+    // Populate states dropdown
+    for(let state in cityByState) {
+        let option = document.createElement("option");
+        option.value = state;
+        option.textContent = state;
+        selected_state.appendChild(option);
+    }
+
+    // Update cities when state changes
+    selected_state.addEventListener("change", function() {
+        const state = this.value;
+        selected_city.innerHTML = '<option value="">Select City</option>';
+
+        if(state in cityByState) {
+            cityByState[state].forEach(city => {
+                let option = document.createElement("option");
+                option.value = city;
+                option.textContent = city;
+                selected_city.appendChild(option);
+            });
+        }
+    });
+
+    // Password visibility toggle function
     function setupPasswordToggle(inputId, iconId) {
         const passwordInput = document.getElementById(inputId);
         const eyeIcon = document.getElementById(iconId);
@@ -35,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
         special: document.getElementById('specialReq')
     };
 
-    // 新增密码有效性状态
+    // Track password validity state
     let isPasswordValid = false;
 
     function checkPasswordStrength(password) {
@@ -46,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
             special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
         };
 
-        // 更新图标状态
+        // Update requirement icons
         requirements.length.querySelector('i').className = 
             requirementsMet.length ? 'fas fa-check' : 'fas fa-circle';
         requirements.upper.querySelector('i').className = 
@@ -56,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
         requirements.special.querySelector('i').className = 
             requirementsMet.special ? 'fas fa-check' : 'fas fa-circle';
 
-        // 检查是否满足所有条件
+        // Check if all requirements are met
         isPasswordValid = Object.values(requirementsMet).every(v => v);
         return requirementsMet;
     }
@@ -79,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const requirementsMet = checkPasswordStrength(passwordValue);
         updateStrengthMeter(requirementsMet);
 
-        // 密码有效性反馈
+        // Password validity feedback
         if (passwordValue) {
             if (!isPasswordValid) {
                 passwordFeedback.textContent = 'Please fulfill all password requirements';
@@ -90,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // 确认密码验证
+        // Password confirmation validation
         if (confirmPassword.value && passwordValue !== confirmPassword.value) {
             confirmFeedback.textContent = '✗ Passwords do not match';
             confirmFeedback.className = 'password-feedback invalid';
@@ -103,20 +148,43 @@ document.addEventListener('DOMContentLoaded', function() {
     password.addEventListener('input', validatePasswords);
     confirmPassword.addEventListener('input', validatePasswords);
 
-    // 表单提交验证
+    function validateAge() {
+        const birthdayInput = document.getElementById('birthday_date');
+        const birthdayDate = new Date(birthdayInput.value);
+        const today = new Date();
+        const minAgeDate = new Date(
+            today.getFullYear() - 18,
+            today.getMonth(),
+            today.getDate()
+        );
+
+        if (birthdayDate > minAgeDate) {
+            alert('You must be at least 18 years old to register.');
+            return false;
+        }
+        return true;
+    }
+
+    // Form submission validation
     document.getElementById('registrationForm').addEventListener('submit', function(e) {
         let errorMessages = [];
 
-        // 密码有效性检查
+        // Password validity check
         if (!isPasswordValid) {
             errorMessages.push('Password must meet all requirements');
             passwordFeedback.classList.add('invalid');
         }
 
-        // 密码匹配检查
+        // Password match check
         if (password.value !== confirmPassword.value) {
             errorMessages.push('Passwords do not match');
             confirmFeedback.classList.add('invalid');
+        }
+        
+        // Age validation
+        if (!validateAge()) {
+            e.preventDefault();
+            return;
         }
 
         if (errorMessages.length > 0) {
@@ -125,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // 邮箱实时验证（未修改，但独立运行）
+    // Email validation
     document.getElementById('email').addEventListener('blur', function() {
         const email = this.value;
         const emailError = document.getElementById('emailError');
@@ -135,33 +203,19 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // 基础邮箱格式验证
+        // Basic email format validation
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             emailError.style.display = 'block';
             emailError.textContent = 'Please enter a valid email address';
             return;
         }
         
-        // 异步检查邮箱是否存在
+        // Async email existence check
         fetch('check_email.php?email=' + encodeURIComponent(email))
             .then(response => response.json())
             .then(data => {
                 emailError.style.display = data.exists ? 'block' : 'none';
                 emailError.textContent = data.exists ? 'This email is already registered' : '';
             });
-    });
-
-    // 文件上传验证（未修改）
-    document.getElementById('profile_image').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            if (!file.type.match('image.*')) {
-                alert('Please select an image file');
-                this.value = '';
-            } else if (file.size > 2000000) {
-                alert('Image size should be less than 2MB');
-                this.value = '';
-            }
-        }
     });
 });
