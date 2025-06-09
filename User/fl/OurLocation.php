@@ -102,7 +102,7 @@
         </iframe>
 
         <div class="info">
-            <p><i class="fas fa-map-marker-alt"></i>Address: No. 123, Jalan Utama, 50000 Kuala Lumpur, Malaysia</p>
+            <p><i class="fas fa-map-marker-alt"></i>Address: Jalan Ayer Keroh Lama, 75450 Bukit Beruang, Melaka</p>
             <p><i class="fas fa-phone"></i>Contact Number: 012-3456789</p>
             <p><i class="fas fa-clock"></i>Working Hour: Monday - Saturday, 10:00 a.m. - 7:00 p.m.</p>
             <p><i class="fas fa-envelope"></i>Email: support@verosports.com</p>

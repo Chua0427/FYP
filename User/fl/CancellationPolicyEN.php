@@ -132,29 +132,17 @@
         
         .language-switcher {
             text-align: right;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         
         .language-switcher a {
-            color: var(--primary-color);
+            color: #3498db;
             text-decoration: none;
             font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            padding: 8px 15px;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-            border: 1px solid var(--primary-color);
         }
         
         .language-switcher a:hover {
-            background-color: var(--primary-color);
-            color: white;
-            text-decoration: none;
-        }
-        
-        .language-switcher a i {
-            margin-right: 8px;
+            text-decoration: underline;
         }
         
         @media (max-width: 768px) {
@@ -195,11 +183,10 @@
         }
     </style>
 </head>
-<body>
-    
+<body>  
     <div class="policy-container">
         <div class="language-switcher">
-            <a href="CancellationPolicyBM.php"><i class="fas fa-language"></i>View in Bahasa Malaysia</a>
+            <a href="CancellationPolicyBM.php">View in Bahasa Malaysia</a>
         </div>
         
         <h1>Cancellation Policy</h1>
