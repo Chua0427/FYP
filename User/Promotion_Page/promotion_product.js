@@ -51,17 +51,17 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.append('product_categories[]', cat);
         });
         
-        // 添加性别数组
+        // add gender array
         finalGenders.forEach(g => {
             formData.append('gender[]', g);
         });
         
-        // 添加品牌数组
+        // add brand array
         finalBrands.forEach(b => {
             formData.append('brand[]', b);
         });
         
-        // 添加价格
+        // add price
         formData.append('minprice', min);
         formData.append('maxprice', max);
     

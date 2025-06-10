@@ -110,11 +110,7 @@
 <body>
     <?php include __DIR__ . '/../Header_and_Footer/header.php'; ?>
     
-    <div class="faq-container">
-        <div class="language-switcher">
-            <a href="E-InvoiceBM.php">View in Bahasa Malaysia</a>
-        </div>
-        
+    <div class="faq-container">        
         <h1>E-Invoice Frequently Asked Questions</h1>
         
         <div class="faq-item">
@@ -149,32 +145,17 @@
         
         <div class="faq-item">
             <div class="question"><span class="q">Q:</span> Will I get an e-invoice after making a purchase?</div>
-            <div class="answer"><span class="a">A:</span> Yes, after making a purchase, you can request the counter worker to issue an e-invoice.</div>
+            <div class="answer"><span class="a">A:</span> Yes, after making a purchase the e-Invoice will be auto send to your registered email..</div>
         </div>
-        
-        <div class="faq-item">
-            <div class="question"><span class="q">Q:</span> Where do I need to get a QR to scan?</div>
-            <div class="answer"><span class="a">A:</span> The QR code can be found on your e-invoice receipt that the employee issues.</div>
-        </div>
-        
+
         <div class="faq-item">
             <div class="question"><span class="q">Q:</span> What do I need to prepare to get an e-invoice?</div>
-            <div class="answer"><span class="a">A:</span> You just need to bring a copy of the receipt and IC to make an e-invoice request.</div>
+            <div class="answer"><span class="a">A:</span> You do not need to prepare anything as the e-Invoice will be auto send to your registered email.</div>
         </div>
         
         <div class="faq-item">
             <div class="question"><span class="q">Q:</span> Where can I read about this e-invoicing?</div>
             <div class="answer"><span class="a">A:</span> You can visit <a href="https://www.hasil.gov.my/e-invoice/" target="_blank">https://www.hasil.gov.my/e-invoice/</a> for more information.</div>
-        </div>
-        
-        <div class="faq-item">
-            <div class="question"><span class="q">Q:</span> I forgot to ask the e-invoice during my purchase, can I get it now?</div>
-            <div class="answer"><span class="a">A:</span> Yes, e-Invoice can only be claimed at the store where you made the purchase with the same month.</div>
-        </div>
-        
-        <div class="faq-item">
-            <div class="question"><span class="q">Q:</span> Can I make an e-invoicing claim without having to register as an VeroSports member?</div>
-            <div class="answer"><span class="a">A:</span> Yes, it is possible to submit an e-Invoicing claim without registering as an VeroSports member. However, we strongly recommend registering as a member with VeroSports, as this will not only enable you to take advantage of the e-Invoicing feature, but also provide you with a range of additional benefits. By registering, you will be eligible to receive a 15% voucher on your purchase, as well as being the first to receive information about ongoing promotions and exclusive offers at VeroSports.</div>
         </div>
     </div>
     

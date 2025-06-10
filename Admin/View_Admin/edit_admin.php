@@ -7,6 +7,14 @@ include __DIR__ . '/../../connect_db/config.php';
 
 if (isset($_GET['id'])) {
     $admin_id = (int)$_GET['id'];
+
+    $currentUserId = $_SESSION['user_id'];
+    
+    if ($currentUserId !== $admin_id) {
+        echo "<script>alert('You are not authorized to edit this profile.'); history.back();</script>";
+        exit;
+    }
+
     $sql = "SELECT * FROM users WHERE user_id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $admin_id);

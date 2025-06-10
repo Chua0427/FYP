@@ -20,9 +20,17 @@ $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $birthday = new DateTime($_POST['birthday_date']);
+    $today = new DateTime();
+    $age = $today->diff($birthday)->y;
+    
+    if ($age < 18) {
+        $error_message = "You must be at least 18 years old to register.";
+    } else {
+        
     $first_name = htmlspecialchars(trim($_POST['first_name']));
     $last_name = htmlspecialchars(trim($_POST['last_name']));
-    $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
     $mobile_number = htmlspecialchars(trim($_POST['mobile_number']));
     $address = htmlspecialchars(trim($_POST['address']));
     $postcode = htmlspecialchars(trim($_POST['postcode']));
@@ -49,11 +57,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $profile_image = $new_filename;
         }
     }
+}
     
     $sql = "UPDATE users SET 
             first_name = ?, 
             last_name = ?, 
-            email = ?, 
             mobile_number = ?, 
             address = ?, 
             postcode = ?, 
@@ -65,10 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             WHERE user_id = ?";
     
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssssssssssi", 
+    $stmt->bind_param("ssssssssssi", 
         $first_name, 
         $last_name, 
-        $email, 
         $mobile_number, 
         $address, 
         $postcode, 
@@ -145,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-row">
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" readonly>
                 </div>
                 
                 <div class="form-group">
@@ -167,19 +174,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 <div class="form-group">
                     <label for="state">State</label>
-                    <input type="text" id="state" name="state" value="<?php echo htmlspecialchars($user['state']); ?>" required>
-                </div>
-                
+                    <select id="state" name="state" required>
+                        <option value="">Select State</option>
+                    </select>
+                    </div>
+
                 <div class="form-group">
                     <label for="city">City</label>
-                    <input type="text" id="city" name="city" value="<?php echo htmlspecialchars($user['city']); ?>" required>
+                    <select id="city" name="city" required>
+                     <option value="">Select City</option>
+                    </select>
                 </div>
             </div>
             
             <div class="form-row">
                 <div class="form-group">
                     <label for="birthday_date">Birthday</label>
-                    <input type="date" id="birthday_date" name="birthday_date" value="<?php echo htmlspecialchars($user['birthday_date']); ?>" required>
+                   <input type="date" id="birthday_date" name="birthday_date" value="<?php echo htmlspecialchars($user['birthday_date']); ?>" max="<?php echo date('Y-m-d', strtotime('-18 years')); ?>" required>
                 </div>
                 
                 <div class="form-group">
@@ -226,18 +237,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
+document.getElementById('profileForm').addEventListener('submit', function(e) {
+    const birthdayInput = document.getElementById('birthday_date');
+    const birthdayDate = new Date(birthdayInput.value);
+    const today = new Date();
+    const minAgeDate = new Date(
+        today.getFullYear() - 18,
+        today.getMonth(),
+        today.getDate()
+    );
+
+    if (birthdayDate > minAgeDate) {
+        alert('You must be at least 18 years old to register.');
+        e.preventDefault();
+        return;
+    }
+
         // Form validation
         document.getElementById('profileForm').addEventListener('submit', function(e) {
             const email = document.getElementById('email').value;
             const mobile = document.getElementById('mobile_number').value;
-            
-            // Simple email validation
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                alert('Please enter a valid email address');
-                e.preventDefault();
-                return;
-            }
-            
+
             // Simple mobile validation (adjust regex as needed)
             if (!/^[\d\s\-+]{10,15}$/.test(mobile)) {
                 alert('Please enter a valid mobile number');
@@ -246,5 +266,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         });
     </script>
+    <script src="edit-profile.js"></script>
 </body>
 </html>
