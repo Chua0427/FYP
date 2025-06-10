@@ -9,8 +9,9 @@ if (isset($_GET['id'])) {
     $admin_id = (int)$_GET['id'];
 
     $currentUserId = $_SESSION['user_id'];
+    $currentUserType = $_SESSION['user_type'];
     
-    if ($currentUserId !== $admin_id) {
+    if ($currentUserId !== $admin_id && $currentUserType !=3) {
         echo "<script>alert('You are not authorized to edit this profile.'); history.back();</script>";
         exit;
     }
