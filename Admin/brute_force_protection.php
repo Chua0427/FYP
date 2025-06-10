@@ -37,14 +37,14 @@ class BruteForceProtection {
      */
     private function ensureTableExists(): void {
         $sql = "CREATE TABLE IF NOT EXISTS login_attempts (
-            id INT(11) AUTO_INCREMENT PRIMARY KEY,
-            username VARCHAR(255) NOT NULL,
+            login_attempts_id INT(11) AUTO_INCREMENT PRIMARY KEY,
+            admin_email VARCHAR(255) NOT NULL,
             ip_address VARCHAR(45) NOT NULL,
             user_agent VARCHAR(255),
             attempt_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             is_successful TINYINT(1) DEFAULT 0,
             lockout_until TIMESTAMP NULL DEFAULT NULL,
-            INDEX (username),
+            INDEX (admin_email),
             INDEX (ip_address)
         )";
         
@@ -59,11 +59,11 @@ class BruteForceProtection {
     /**
      * Record a failed login attempt
      * 
-     * @param string $username The username attempting to log in
+     * @param string $admin_email The admin email attempting to log in
      * @param string $ip_address The IP address of the client
      * @return void
      */
-    public function recordFailedAttempt(string $username, ?string $ip_address = null): void {
+    public function recordFailedAttempt(string $admin_email, ?string $ip_address = null): void {
         if ($ip_address === null) {
             $ip_address = $this->getClientIP();
         }
@@ -72,7 +72,7 @@ class BruteForceProtection {
         
         // Calculate lockout time based on previous attempts
         $lockout_until = null;
-        $attempts_count = $this->getAttemptCount($username, $ip_address);
+        $attempts_count = $this->getAttemptCount($admin_email, $ip_address);
         
         // If we've reached max attempts, set a lockout
         if ($attempts_count >= $this->max_attempts - 1) {  // -1 because we're about to add another
@@ -93,10 +93,10 @@ class BruteForceProtection {
         
         try {
             $stmt = $this->pdo->prepare("INSERT INTO login_attempts 
-                (username, ip_address, user_agent, is_successful, lockout_until) 
-                VALUES (:username, :ip_address, :user_agent, 0, :lockout_until)");
+                (admin_email, ip_address, user_agent, is_successful, lockout_until) 
+                VALUES (:admin_email, :ip_address, :user_agent, 0, :lockout_until)");
                 
-            $stmt->bindParam(':username', $username);
+            $stmt->bindParam(':admin_email', $admin_email);
             $stmt->bindParam(':ip_address', $ip_address);
             $stmt->bindParam(':user_agent', $user_agent);
             $stmt->bindParam(':lockout_until', $lockout_until);
@@ -104,7 +104,7 @@ class BruteForceProtection {
             
             // Log suspicious activity if there are multiple failed attempts
             if ($attempts_count >= $this->max_attempts - 1) {
-                $this->logSuspiciousActivity($username, $ip_address, $attempts_count + 1);
+                $this->logSuspiciousActivity($admin_email, $ip_address, $attempts_count + 1);
             }
         } catch (PDOException $e) {
             error_log("Failed to record login attempt: " . $e->getMessage());
@@ -114,11 +114,11 @@ class BruteForceProtection {
     /**
      * Record a successful login attempt
      * 
-     * @param string $username The username that successfully logged in
+     * @param string $admin_email The admin email that successfully logged in
      * @param string $ip_address The IP address of the client
      * @return void
      */
-    public function recordSuccessfulLogin(string $username, ?string $ip_address = null): void {
+    public function recordSuccessfulLogin(string $admin_email, ?string $ip_address = null): void {
         if ($ip_address === null) {
             $ip_address = $this->getClientIP();
         }
@@ -128,10 +128,10 @@ class BruteForceProtection {
         try {
             // Record the successful attempt
             $stmt = $this->pdo->prepare("INSERT INTO login_attempts 
-                (username, ip_address, user_agent, is_successful) 
-                VALUES (:username, :ip_address, :user_agent, 1)");
+                (admin_email, ip_address, user_agent, is_successful) 
+                VALUES (:admin_email, :ip_address, :user_agent, 1)");
                 
-            $stmt->bindParam(':username', $username);
+            $stmt->bindParam(':admin_email', $admin_email);
             $stmt->bindParam(':ip_address', $ip_address);
             $stmt->bindParam(':user_agent', $user_agent);
             $stmt->execute();
@@ -143,22 +143,22 @@ class BruteForceProtection {
     /**
      * Reset lockouts after successful login
      * 
-     * @param string $username The username to clear lockouts for
+     * @param string $admin_email The admin email to clear lockouts for
      * @param string $ip_address The IP address to clear lockouts for
      * @return void
      */
-    public function clearLockouts(string $username, ?string $ip_address = null): void {
+    public function clearLockouts(string $admin_email, ?string $ip_address = null): void {
         if ($ip_address === null) {
             $ip_address = $this->getClientIP();
         }
         
         try {
-            // Reset the lockout for this username and IP
+            // Reset the lockout for this admin email and IP
             $stmt = $this->pdo->prepare("UPDATE login_attempts 
                 SET lockout_until = NULL 
-                WHERE username = :username OR ip_address = :ip_address");
+                WHERE admin_email = :admin_email OR ip_address = :ip_address");
                 
-            $stmt->bindParam(':username', $username);
+            $stmt->bindParam(':admin_email', $admin_email);
             $stmt->bindParam(':ip_address', $ip_address);
             $stmt->execute();
         } catch (PDOException $e) {
@@ -169,11 +169,11 @@ class BruteForceProtection {
     /**
      * Check if a user or IP is currently locked out
      * 
-     * @param string $username The username to check
+     * @param string $admin_email The admin email to check
      * @param string $ip_address The IP address to check (optional)
      * @return array Lockout info with 'is_locked' boolean and 'remaining_time' in seconds
      */
-    public function isLockedOut(string $username, ?string $ip_address = null): array {
+    public function isLockedOut(string $admin_email, ?string $ip_address = null): array {
         if ($ip_address === null) {
             $ip_address = $this->getClientIP();
         }
@@ -188,14 +188,14 @@ class BruteForceProtection {
             // Check for active lockouts
             $stmt = $this->pdo->prepare("SELECT lockout_until 
                 FROM login_attempts 
-                WHERE (username = :username OR (:ip_blocking = 1 AND ip_address = :ip_address))
+                WHERE (admin_email = :admin_email OR (:ip_blocking = 1 AND ip_address = :ip_address))
                 AND lockout_until IS NOT NULL 
                 AND lockout_until > NOW()
                 ORDER BY lockout_until DESC
                 LIMIT 1");
                 
             $use_ip_blocking = $this->ip_blocking ? 1 : 0;
-            $stmt->bindParam(':username', $username);
+            $stmt->bindParam(':admin_email', $admin_email);
             $stmt->bindParam(':ip_address', $ip_address);
             $stmt->bindParam(':ip_blocking', $use_ip_blocking, PDO::PARAM_INT);
             $stmt->execute();
@@ -224,25 +224,25 @@ class BruteForceProtection {
     }
 
     /**
-     * Get the number of failed attempts for a username or IP
+     * Get the number of failed attempts for an admin email or IP
      * 
-     * @param string $username The username to check
+     * @param string $admin_email The admin email to check
      * @param string $ip_address The IP address to check
      * @return int Number of failed attempts within the time window
      */
-    private function getAttemptCount(string $username, string $ip_address): int {
+    private function getAttemptCount(string $admin_email, string $ip_address): int {
         $count = 0;
         $window_start = date('Y-m-d H:i:s', time() - $this->attempt_window);
         
         try {
             $stmt = $this->pdo->prepare("SELECT COUNT(*) as attempts 
                 FROM login_attempts
-                WHERE (username = :username OR (:ip_blocking = 1 AND ip_address = :ip_address))
+                WHERE (admin_email = :admin_email OR (:ip_blocking = 1 AND ip_address = :ip_address))
                 AND attempt_time > :window_start
                 AND is_successful = 0");
                 
             $use_ip_blocking = $this->ip_blocking ? 1 : 0;
-            $stmt->bindParam(':username', $username);
+            $stmt->bindParam(':admin_email', $admin_email);
             $stmt->bindParam(':ip_address', $ip_address);
             $stmt->bindParam(':ip_blocking', $use_ip_blocking, PDO::PARAM_INT);
             $stmt->bindParam(':window_start', $window_start);
@@ -295,15 +295,15 @@ class BruteForceProtection {
     /**
      * Log suspicious login activity
      * 
-     * @param string $username The username being targeted
+     * @param string $admin_email The admin email being targeted
      * @param string $ip_address The IP address of the client
      * @param int $attempts Number of failed attempts
      */
-    private function logSuspiciousActivity(string $username, string $ip_address, int $attempts): void {
+    private function logSuspiciousActivity(string $admin_email, string $ip_address, int $attempts): void {
         // Log to application logs if Monolog is available
         if (isset($GLOBALS['authLogger'])) {
             $GLOBALS['authLogger']->warning('Possible brute force attack detected', [
-                'username' => $username,
+                'admin_email' => $admin_email,
                 'ip_address' => $ip_address,
                 'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
                 'failed_attempts' => $attempts
@@ -311,7 +311,7 @@ class BruteForceProtection {
         } else {
             // Fallback to error_log
             error_log("SECURITY WARNING: Possible brute force attack on admin login. " .
-                      "Username: $username, IP: $ip_address, Attempts: $attempts");
+                      "Admin email: $admin_email, IP: $ip_address, Attempts: $attempts");
         }
     }
 
