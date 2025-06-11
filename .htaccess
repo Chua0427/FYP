@@ -20,11 +20,11 @@ RewriteRule ^User/app/.*\.php$ - [F,L]
 RewriteRule ^User/payment/logs/.* - [F,L]
 
 # Exception for frequently used API endpoints
-RewriteCond %{REQUEST_URI} !^/FYP/FYP/User/api/add_to_cart\.php$
-RewriteCond %{REQUEST_URI} !^/FYP/FYP/User/api/get_cart_count\.php$
-RewriteCond %{REQUEST_URI} !^/FYP/FYP/User/api/product_sizes\.php$
-RewriteCond %{REQUEST_URI} !^/FYP/FYP/User/api/get_cart_data\.php$
-RewriteCond %{REQUEST_URI} !^/FYP/FYP/User/api/get_order_details\.php$
+RewriteCond %{REQUEST_URI} !^/FYP/User/api/add_to_cart\.php$
+RewriteCond %{REQUEST_URI} !^/FYP/User/api/get_cart_count\.php$
+RewriteCond %{REQUEST_URI} !^/FYP/User/api/product_sizes\.php$
+RewriteCond %{REQUEST_URI} !^/FYP/User/api/get_cart_data\.php$
+RewriteCond %{REQUEST_URI} !^/FYP/User/api/get_order_details\.php$
 
 # Block other API endpoints
 RewriteRule ^User/api/.*\.php$ - [F,L]

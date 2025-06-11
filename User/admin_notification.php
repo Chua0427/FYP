@@ -6,13 +6,13 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Check if this is actually an admin. If not, redirect to homepage
 if (!isset($_SESSION['user_type']) || ($_SESSION['user_type'] != '2' && $_SESSION['user_type'] != '3')) {
-    header('Location: /FYP/FYP/User/HomePage/homePage.php');
+    header('Location: /FYP/User/HomePage/homePage.php');
     exit;
 }
 
 // Get the previous page for back link
-$redirect_back = '/FYP/FYP/User/HomePage/homePage.php';
-$admin_dashboard = '/FYP/FYP/Admin/Dashboard/dashboard.php';
+$redirect_back = '/FYP/User/HomePage/homePage.php';
+$admin_dashboard = '/FYP/Admin/Dashboard/dashboard.php';
 ?>
 
 <!DOCTYPE html>

@@ -84,7 +84,7 @@ if (ini_get("session.use_cookies")) {
 session_destroy();
 
 // Redirect to login page
-header("Location: /FYP/FYP/Admin/login.php");
+header("Location: /FYP/Admin/login.php");
 exit;
 
 /**

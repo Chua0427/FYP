@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Prefetch cart API to reduce latency on first call
-    prefetchResource('/FYP/FYP/User/api/add_to_cart.php');
+    prefetchResource('/FYP/User/api/add_to_cart.php');
 });
 
 function openModal()
@@ -165,7 +165,7 @@ function addToCart() {
     const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
     
     // Send AJAX request
-    fetch('/FYP/FYP/User/api/add_to_cart.php', {
+    fetch('/FYP/User/api/add_to_cart.php', {
         method: 'POST',
         body: formData,
         credentials: 'same-origin', // Include cookies for authentication

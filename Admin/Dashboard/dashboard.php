@@ -13,14 +13,14 @@ if (session_status() == PHP_SESSION_NONE) {
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_type'])) {
-    header("Location: /FYP/FYP/Admin/login.php");
+    header("Location: /FYP/Admin/login.php");
     exit;
 }
 
 // Check if user is admin (user_type = 2 or user_type = 3)
 if ($_SESSION['user_type'] != 2 && $_SESSION['user_type'] != 3) {
     // Redirect non-admin users to the main site
-    header("Location: /FYP/FYP/User/HomePage/homePage.php");
+    header("Location: /FYP/User/HomePage/homePage.php");
     exit;
 }
 ?>
@@ -188,7 +188,7 @@ if ($_SESSION['user_type'] != 2 && $_SESSION['user_type'] != 3) {
                 <p>Welcome Back ! '.$row['first_name'].'</p>
                 <p>Email: '.$row['email'].'</p>
                 <a href="../view_Admin/edit_admin.php?id= '.$row['user_id'].' "class="btn btn-edit" id="edit"><i class="fa-solid fa-pen"></i></a>
-                <a href="/FYP/FYP/Admin/logout.php" class="logout"><i class="fa-solid fa-right-from-bracket"></i></a>
+                <a href="/FYP/Admin/logout.php" class="logout"><i class="fa-solid fa-right-from-bracket"></i></a>
             </div>';
         }
 

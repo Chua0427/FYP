@@ -135,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             // Set secure admin authentication cookie
             setcookie('admin_logged_in', 'true', [
                 'expires' => time() + 3600, // 1 hour
-                'path' => '/FYP/FYP/Admin/',
+                'path' => '/FYP/Admin/',
                 'httponly' => true,
                 'samesite' => 'Strict'
             ]);
@@ -151,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             }
             
             // Redirect to admin dashboard
-            header("Location: /FYP/FYP/Admin/Dashboard/dashboard.php");
+            header("Location: /FYP/Admin/Dashboard/dashboard.php");
             exit;
         } else {
             // Failed password - record failed attempt
@@ -365,7 +365,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             </div>
             
             <div class="back-link">
-                <a href="/FYP/FYP/User/HomePage/homePage.php"><i class="fas fa-arrow-left"></i> Back to Main Site</a>
+                <a href="/FYP/User/HomePage/homePage.php"><i class="fas fa-arrow-left"></i> Back to Main Site</a>
             </div>
         </div>
     </div>

@@ -18,7 +18,7 @@ use PHPMailer\PHPMailer\SMTP;
 
 // Check if user is already authenticated with token
 if (Auth::check()) {
-    header('Location: /FYP/FYP/User/HomePage/homePage.php');
+    header('Location: /FYP/User/HomePage/homePage.php');
     exit;
 }
 
@@ -84,7 +84,7 @@ if (isset($_SESSION['send_otp']) && $_SESSION['send_otp'] === true) {
 }
 
 // Get redirect URL from session
-$redirect = $_SESSION['redirect_after_login'] ?? '/FYP/FYP/User/HomePage/homePage.php';
+$redirect = $_SESSION['redirect_after_login'] ?? '/FYP/User/HomePage/homePage.php';
 
 // Function to generate a random OTP
 function generateOTP() {
@@ -177,7 +177,7 @@ if (isset($_POST['otp_submit'])) {
                 $_SESSION['login_error'] = 'Admin accounts must use the admin login page.';
                 
                 // Redirect to admin login page
-                header("Location: /FYP/FYP/Admin/Dashboard/dashboard.php");
+                header("Location: /FYP/Admin/Dashboard/dashboard.php");
                 exit();
             }
             
@@ -240,7 +240,7 @@ if (isset($_POST['otp_submit'])) {
             SessionHelper::regenerateSession(true, false);
             
             // Redirect to destination
-            $redirect = isset($_SESSION['redirect_after_login']) ? $_SESSION['redirect_after_login'] : '/FYP/FYP/User/HomePage/homePage.php';
+            $redirect = isset($_SESSION['redirect_after_login']) ? $_SESSION['redirect_after_login'] : '/FYP/User/HomePage/homePage.php';
             unset($_SESSION['redirect_after_login']);
             header("Location: $redirect");
             exit;

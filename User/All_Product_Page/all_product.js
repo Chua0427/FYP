@@ -62,7 +62,7 @@ function updateHeaderCartCount(count) {
 
 // Function to refresh cart count from server
 function refreshHeaderCartCount() {
-    fetch('/FYP/FYP/User/api/get_cart_count.php', {
+    fetch('/FYP/User/api/get_cart_count.php', {
         method: 'GET',
         credentials: 'same-origin',
         headers: {

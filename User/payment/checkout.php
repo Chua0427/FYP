@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
-require_once '/xampp/htdocs/FYP/FYP/User/payment/secrets.php';
+require_once '/xampp/htdocs/FYP/User/payment/secrets.php';
 require_once __DIR__ . '/db.php';
 require __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/csrf.php';

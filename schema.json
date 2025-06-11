@@ -1,0 +1,44 @@
+{
+    "$id": "https://getcomposer.org/schema.json",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Schema for composer.json",
+    "type": "object",
+    "required": [
+        "name",
+        "description"
+    ],
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Package name"
+        },
+        "description": {
+            "type": "string",
+            "description": "Package description"
+        },
+        "version": {
+            "type": "string",
+            "description": "Package version"
+        },
+        "type": {
+            "type": "string",
+            "description": "Package type (e.g. library, project)"
+        },
+        "license": {
+            "type": "string",
+            "description": "Package license"
+        },
+        "require": {
+            "type": "object",
+            "description": "Required packages"
+        },
+        "autoload": {
+            "type": "object",
+            "description": "Autoload configuration"
+        },
+        "config": {
+            "type": "object",
+            "description": "Configuration options"
+        }
+    }
+}

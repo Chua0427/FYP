@@ -4,7 +4,7 @@ declare(strict_types=1);
 // Create this file at: /FYP/FYP/User/api/get_cart_data.php
 
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
-require_once '/xampp/htdocs/FYP/FYP/User/payment/db.php';
+require_once __DIR__ . '/../payment/db.php';
 require __DIR__ . '/../app/init.php';
 
 // Set headers for JSON response

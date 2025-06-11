@@ -12,7 +12,7 @@
         $_SESSION['admin_redirect_from'] = $_SERVER['REQUEST_URI'];
         
         // Redirect to admin notification page
-        header('Location: /FYP/FYP/User/admin_notification.php');
+        header('Location: /FYP/User/admin_notification.php');
         exit;
     }
     

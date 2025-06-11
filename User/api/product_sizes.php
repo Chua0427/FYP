@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
-require_once '/xampp/htdocs/FYP/FYP/User/payment/db.php';
+require_once __DIR__ . '/../payment/db.php';
 require_once __DIR__ . '/../app/init.php';
 
 // Start session if not already started

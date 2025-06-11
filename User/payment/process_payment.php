@@ -20,7 +20,7 @@ file_put_contents($logDir . '/process_payment_access.log',
     ($_SERVER['REQUEST_METHOD'] ?? 'UNKNOWN') . PHP_EOL, FILE_APPEND);
 
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
-require_once '/xampp/htdocs/FYP/FYP/User/payment/secrets.php';
+require_once '/xampp/htdocs/FYP/User/payment/secrets.php';
 require_once __DIR__ . '/db.php';
 require __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/csrf.php';
@@ -563,7 +563,7 @@ try {
                 error_log("Payment complete - preparing redirect to success page, order_id={$order_id}");
                 
                 // Determine redirect URL
-                $redirectUrl = "/FYP/FYP/User/payment/success.php?order_id=" . urlencode((string)$order_id);
+                $redirectUrl = "/FYP/User/payment/success.php?order_id=" . urlencode((string)$order_id);
 
                 // Attempt PHP header redirect
                 if (!headers_sent($file, $line)) {

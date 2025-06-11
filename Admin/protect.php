@@ -18,7 +18,7 @@ if (in_array($current, ['login.php', 'logout.php'], true)) {
 
 // If accessed directly, redirect to dashboard
 if (in_array($current, ['protect.php', 'index.php'], true)) {
-    header('Location: /FYP/FYP/Admin/Dashboard/dashboard.php');
+    header('Location: /FYP/Admin/Dashboard/dashboard.php');
     exit;
 }
 ?> 

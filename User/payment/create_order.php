@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
-require_once '/xampp/htdocs/FYP/FYP/User/payment/db.php';
+require_once '/xampp/htdocs/FYP/User/payment/db.php';
 require_once __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/csrf.php';
 
@@ -97,7 +97,7 @@ try {
     // Return success response with redirect to payment methods
     echo json_encode([
         'success' => true,
-        'redirect_url' => '/FYP/FYP/User/payment/payment_methods.php'
+        'redirect_url' => '/FYP/User/payment/payment_methods.php'
     ]);
     exit;
     

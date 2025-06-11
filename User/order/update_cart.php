@@ -8,7 +8,7 @@ while (ob_get_level()) {
 ob_start();
 
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
-require_once '/xampp/htdocs/FYP/FYP/User/payment/db.php';
+require_once '/xampp/htdocs/FYP/User/payment/db.php';
 require_once __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/csrf.php';
 

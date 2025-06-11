@@ -9,7 +9,7 @@ header('Expires: 0');
 require_once __DIR__ . '/../auth_check.php';
 
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
-require_once '/xampp/htdocs/FYP/FYP/User/payment/db.php';
+require_once __DIR__ . '/../payment/db.php';
 require __DIR__ . '/../app/init.php';
 require_once __DIR__ . '/../app/csrf.php';
 require_once __DIR__ . '/../app/auth-check.php';
@@ -177,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ]);
                         
                         // Redirect to create order first
-                        header('Location: /FYP/FYP/User/payment/checkout.php');
+                        header('Location: /FYP/User/payment/checkout.php');
                     } else {
                         $error = "Your cart is empty.";
                     }
@@ -260,7 +260,7 @@ include __DIR__ . '/../Header_and_Footer/header.php';
             <?php if (empty($cartItems)): ?>
                 <div class="empty-cart">
                     <p>Your cart is empty</p>
-                    <a href="/FYP//FYP/User/HomePage/homePage.php" class="continue-shopping">Continue Shopping</a>
+                    <a href="/FYP/User/HomePage/homePage.php" class="continue-shopping">Continue Shopping</a>
                 </div>
             <?php else: ?>
                 <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">

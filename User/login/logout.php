@@ -8,7 +8,7 @@ require_once __DIR__ . '/../app/auth.php';
 // Check if this is an admin in view-only mode
 if (isset($_SESSION['admin_view_only']) && $_SESSION['admin_view_only'] === true) {
     // Redirect to admin logout instead
-    header("Location: /FYP/FYP/Admin/logout.php");
+    header("Location: /FYP/Admin/logout.php");
     exit;
 }
 
@@ -69,5 +69,5 @@ if (ini_get("session.use_cookies")) {
 session_destroy();
 
 // Redirect to login page
-header("Location: /FYP/FYP/User/login/login.php");
+header("Location: /FYP/User/login/login.php");
 exit; 

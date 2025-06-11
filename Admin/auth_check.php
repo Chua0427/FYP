@@ -83,7 +83,7 @@ if (!isValidAdminSession()) {
     $_SESSION['login_error'] = 'Please log in to access admin area';
     
     // Redirect to login page
-    header('Location: /FYP/FYP/Admin/login.php');
+    header('Location: /FYP/Admin/login.php');
     exit;
 } else {
     // Admin is logged in, check and clear any user tokens

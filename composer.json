@@ -1,0 +1,23 @@
+{
+    "$schema": "schema.json",
+    "name": "verosports/fyp",
+    "description": "VeroSports E-commerce Platform",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.0",
+        "monolog/monolog": "^3.0",
+        "stripe/stripe-php": "^10.0",
+        "dompdf/dompdf": "^2.0"
+    },
+    "autoload": {
+        "classmap": [
+            "FYP/User/app/"
+        ]
+    },
+    "config": {
+        "platform": {
+            "php": "8.0"
+        }
+    }
+}

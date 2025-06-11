@@ -55,7 +55,7 @@ if ($is_authenticated) {
 // Get cart count if user is authenticated
 $cartCount = 0;
 if ($is_authenticated) {
-    require_once '/xampp/htdocs/FYP/FYP/User/payment/db.php';
+    require_once '/xampp/htdocs/FYP/User/payment/db.php';
     
     try {
         $db = new Database();
@@ -242,11 +242,11 @@ if (class_exists('Auth') && Auth::isAdminViewOnly()) {
                             <a href="../login/manage_sessions.php">Manage Devices</a>
 
                             <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] == 2): ?>
-                                <a href="/FYP/FYP/Admin/Dashboard/dashboard.php">Admin Dashboard</a>
+                                <a href="/FYP/Admin/Dashboard/dashboard.php">Admin Dashboard</a>
                             <?php endif; ?>
 
                             <?php if (isset($_SESSION['admin_view_only']) && $_SESSION['admin_view_only'] === true): ?>
-                                <a href="/FYP/FYP/Admin/logout.php">Logout</a>
+                                <a href="/FYP/Admin/logout.php">Logout</a>
                             <?php else: ?>
                                 <a href="../login/logout.php">Logout</a>
                             <?php endif; ?>
@@ -336,7 +336,7 @@ if (class_exists('Auth') && Auth::isAdminViewOnly()) {
     
     // Function to refresh cart count from server
     function refreshHeaderCartCount() {
-        fetch('/FYP/FYP/User/api/get_cart_count.php', {
+        fetch('/FYP/User/api/get_cart_count.php', {
             method: 'GET',
             credentials: 'same-origin',
             headers: {

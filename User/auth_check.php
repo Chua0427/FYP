@@ -63,7 +63,7 @@ if (isset($_SESSION['user_type']) && ($_SESSION['user_type'] == 2 || $_SESSION['
         $_SESSION['admin_redirect_from'] = $_SERVER['REQUEST_URI'];
         
         // Redirect to admin notification page
-        header('Location: /FYP/FYP/User/admin_notification.php');
+        header('Location: /FYP/User/admin_notification.php');
         exit;
     }
 }

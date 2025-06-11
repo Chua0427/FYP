@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
-require_once '/xampp/htdocs/FYP/FYP/User/payment/db.php';
+require_once '/xampp/htdocs/FYP/User/payment/db.php';
 
 /**
  * Order Service class for handling order-related operations
@@ -447,7 +447,7 @@ class OrderService
                 \Stripe\Stripe::setApiKey($apiKey);
             } else {
                 // Load Stripe API key from secrets file
-                require_once '/xampp/htdocs/FYP/FYP/User/payment/secrets.php';
+                require_once '/xampp/htdocs/FYP/User/payment/secrets.php';
                 
                 // Initialize Stripe SDK
                 \Stripe\Stripe::setApiKey($stripeSecretKey);

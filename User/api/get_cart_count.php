@@ -8,7 +8,7 @@ header('Pragma: no-cache');
 header('Expires: 0');
 
 require_once '/xampp/htdocs/FYP/vendor/autoload.php';
-require_once '/xampp/htdocs/FYP/FYP/User/payment/db.php';
+require_once __DIR__ . '/../payment/db.php';
 require __DIR__ . '/../app/init.php';
 
 // Initialize session if not already started

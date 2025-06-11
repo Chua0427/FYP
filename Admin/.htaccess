@@ -47,7 +47,7 @@ php_value error_log /path/to/error_log
 
 # Require authentication for all folders
 RewriteEngine On
-RewriteBase /FYP/FYP/Admin/
+RewriteBase /FYP/Admin/
 RewriteCond %{REQUEST_URI} !login\.php$ [NC]
 RewriteCond %{REQUEST_URI} !logout\.php$ [NC]
 RewriteCond %{REQUEST_URI} !\.(?:css|js|jpe?g|gif|png|ico)$ [NC]

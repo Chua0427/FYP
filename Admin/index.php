@@ -9,5 +9,5 @@ declare(strict_types=1);
 require_once __DIR__ . '/protect.php';
 
 // If reached here, already authenticated - redirect to dashboard
-header('Location: /FYP/FYP/Admin/Dashboard/dashboard.php');
+header('Location: /FYP/Admin/Dashboard/dashboard.php');
 exit;

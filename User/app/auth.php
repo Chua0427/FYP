@@ -187,7 +187,7 @@ class Auth {
     public static function requireAuth(?string $redirect_url = null): void {
         if (!self::check()) {
             $current_url = urlencode($_SERVER['REQUEST_URI']);
-            $redirect = $redirect_url ?? "/FYP/FYP/User/login/login.php?redirect={$current_url}";
+            $redirect = $redirect_url ?? "/FYP/User/login/login.php?redirect={$current_url}";
             header("Location: {$redirect}");
             exit;
         }
@@ -399,7 +399,7 @@ class Auth {
         $_SESSION['admin_redirect_from'] = $_SERVER['REQUEST_URI'];
         
         // Redirect to admin notification page
-        header('Location: /FYP/FYP/User/admin_notification.php');
+        header('Location: /FYP/User/admin_notification.php');
         exit;
     }
 }
